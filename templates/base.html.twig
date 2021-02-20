@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="robots" content="noindex, nofollow">
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        {# <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.ico') }}" /> #}
+
+        <title>{% block title %}Stories{% endblock %}</title>
+        {% block stylesheets %}
+        {% endblock %}
+    </head>
+    <body>
+        <div>Menu</div>
+        {% block body %}{% endblock %}
+
+
+        <div>Footer</div>
+        {% block javascripts %}
+        {% endblock %}
+    </body>
+</html>

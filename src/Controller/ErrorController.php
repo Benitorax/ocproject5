@@ -10,7 +10,7 @@ class ErrorController extends Controller
 
     public function errorServer($e)
     {
-        return $this->view->render('error/error_500', [
+        return $this->view->render('error/error_500.html.twig', [
             'error' => $e
         ]);
     }

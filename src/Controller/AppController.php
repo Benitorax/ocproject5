@@ -8,11 +8,7 @@ class AppController extends Controller
 {
     public function home()
     {
-        // if(isset($post['submit'])) {
-        //     $articleDAO = new ArticleDAO();
-        //     $articleDAO->addArticle($post);
-        //     header('Location: ../public/index.php');
-        // }
+
         $post = new Post();
         $post->setId('123')
         ->setTitle('Mon titre de la mort')
@@ -26,7 +22,7 @@ class AppController extends Controller
         
         $this->postDAO->addPost($post);
 
-        return $this->view->render('home/home', [
+        return $this->view->render('home/home.html.twig', [
             'post' => $post
         ]);
     }

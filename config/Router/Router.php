@@ -2,6 +2,7 @@
 namespace Config\Router;
 
 use Exception;
+use Config\Router\Request;
 use App\Controller\AppController;
 use App\Controller\ErrorController;
 
