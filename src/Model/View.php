@@ -12,9 +12,9 @@ class View
     private $loader;
     private $twig;
 
-    public function __construct()
+    public function __construct(Request $request)
     {
-        $this->request = new Request();
+        $this->request = $request;
         $this->session = $this->request->getSession();
         $this->loader = new FilesystemLoader(\dirname(\dirname(__DIR__)).'\templates');
         $this->twig = new Environment($this->loader, [
@@ -26,6 +26,7 @@ class View
     {
         // add session to have session data inside Twig template
         // $data = array_merge($data, $this->session->toArray());
+        $data = array_merge($data, []);
         echo $this->twig->render($template, $data);
     }
 }

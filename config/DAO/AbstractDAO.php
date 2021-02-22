@@ -4,7 +4,7 @@ namespace Config\DAO;
 use PDO;
 use Exception;
 
-abstract class DAO
+abstract class AbstractDAO
 {
     const HOST = 'localhost';
     const DB_NAME = 'ocproject5';

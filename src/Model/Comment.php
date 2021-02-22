@@ -2,19 +2,18 @@
 namespace App\Model;
 
 use DateTime;
+use App\Model\Post;
 use App\Model\User;
 
-class Post
+class Comment
 {
     private string $id;
-    private string $title;
-    private string $slug;
-    private string $shortText;
     private string $text;
     private DateTime $createdAt;
     private DateTime $updatedAt;
-    private bool $isPublished;
+    private bool $isValidated;
     private User $user;
+    private Post $post;
 
     public function getId(): string
     {
@@ -24,42 +23,6 @@ class Post
     public function setId($id): self
     {
         $this->id = $id;
-
-        return $this;
-    }
-
-    public function getTitle(): ?string
-    {
-        return $this->title;
-    }
-
-    public function setTitle($title): self
-    {
-        $this->title = $title;
-
-        return $this;
-    }
-
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug($slug): self
-    {
-        $this->slug = $slug;
-
-        return $this;
-    }
-
-    public function getShortText(): ?string
-    {
-        return $this->shortText;
-    }
-
-    public function setShortText($shortText): self
-    {
-        $this->shortText = $shortText;
 
         return $this;
     }
@@ -100,19 +63,19 @@ class Post
         return $this;
     }
 
-    public function getIsPublished(): ?bool
+    public function getIsValidated(): ?bool
     {
-        return $this->isPublished;
+        return $this->isValidated;
     }
 
-    public function setIsPublished($isPublished): self
+    public function setIsValidated($isValidated): self
     {
-        $this->isPublished = $isPublished;
+        $this->isValidated = $isValidated;
 
         return $this;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
@@ -120,6 +83,18 @@ class Post
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    public function getPost(): ?Post
+    {
+        return $this->post;
+    }
+
+    public function setPost(Post $post): self
+    {
+        $this->post = $post;
 
         return $this;
     }

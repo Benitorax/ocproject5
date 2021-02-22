@@ -5,18 +5,20 @@ use Exception;
 use Config\Router\Routes;
 use Config\Router\Request;
 use App\Controller\ErrorController;
+use Config\Container\Container;
 
 class Router
 {
     private $errorController;
     private $request;
     private $routes;
+    private $container;
 
-    public function __construct()
+    public function __construct(Request $request, Routes $routes, ErrorController $errorController)
     {
-        $this->errorController = new ErrorController();
-        $this->request = new Request();
-        $this->routes = (new Routes)->getRoutes();
+        $this->errorController = $errorController;
+        $this->request = $request;
+        $this->routes = $routes->getRoutes();
     }
 
     public function run()
@@ -52,10 +54,9 @@ class Router
     {
         foreach($this->routes as $route) {
             $routePath = $route->getPath();
-            $pattern = preg_replace('#\{\w+\}#', '[\w]+', $routePath);
+            $pattern = preg_replace('#\{\w+\}#', '[_\w\-]+', $routePath);
 
-
-            if(preg_match('#'.$pattern.'#', $requestUri, $matches1)) {
+            if(preg_match('#^'.$pattern.'$#', $requestUri, $matches1)) {
                 $pathElements = explode('/', $routePath);
                 $uriElements = explode('/', $requestUri);
 
@@ -65,7 +66,10 @@ class Router
                         $this->request->getAttributes()->set($element, $uriElements[$key]);
                     }
                 }
-                $this->request->getAttributes()->set('route_parameters', $routeParameters);
+
+                if(isset($routeParameters)) {
+                    $this->request->getAttributes()->set('route_parameters', $routeParameters);
+                }
 
                 return $route;
             } 
@@ -85,12 +89,19 @@ class Router
 
     public function executeController($callable)
     {
-        [$class, $method] = $callable;
-        $controller = [new $class, $method];
+        [$classname, $method] = $callable;
+        // TODO Get the controller from Container;
+        $class = $this->container->getController($classname);
+        $controller = [$class, $method];
         if(is_callable($controller)) {
             $controller();
         } else {
             $this->errorController->errorNotFound();
         }
+    }
+
+    public function setContainer(Container $container)
+    {
+        $this->container = $container;
     }
 }
