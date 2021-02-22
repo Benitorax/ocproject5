@@ -9,7 +9,7 @@ abstract class Controller
 {
     protected $view;
     protected $postDAO;
-    private $request;
+    protected $request;
     protected $get;
     protected $post;
     protected $session;

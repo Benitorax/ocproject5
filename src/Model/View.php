@@ -24,6 +24,7 @@ class View
 
     public function render($template, $data = [])
     {
+        // add session to have session data inside Twig template
         // $data = array_merge($data, $this->session->toArray());
         echo $this->twig->render($template, $data);
     }

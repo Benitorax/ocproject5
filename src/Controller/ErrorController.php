@@ -5,7 +5,7 @@ class ErrorController extends Controller
 {
     public function errorNotFound()
     {
-        return $this->view->render('error/error_404');
+        return $this->view->render('error/error_404.html.twig');
     }
 
     public function errorServer($e)
