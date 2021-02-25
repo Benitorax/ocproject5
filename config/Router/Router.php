@@ -8,14 +8,12 @@ use Config\Container\Container;
 
 class Router
 {
-    private $errorController;
     private $request;
     private $routes;
     private $container;
 
-    public function __construct(Routes $routes, ErrorController $errorController, Container $container)
+    public function __construct(Routes $routes, Container $container)
     {
-        $this->errorController = $errorController;
         $this->routes = $routes->getRoutes();
         $this->container = $container;
     }
@@ -29,7 +27,7 @@ class Router
         }
         catch (Exception $e)
         {
-            $this->errorController->errorServer($e);
+            $this->errorServer($e);
         }
     }
 
@@ -38,11 +36,11 @@ class Router
         $route = $this->matchRoute($requestUri);
 
         if(!$route) {
-            $this->errorController->errorNotFound();
+            $this->errorNotFound();
         } else {
             $isMethodValid = $this->matchMethod($this->request->getMethod(), $route->getMethods());
             if(!$isMethodValid) {
-                $this->errorController->errorNotFound();
+                $this->errorNotFound();
             } else {
                 $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
                 $this->executeController($route->getCallable(), $arguments);
@@ -75,7 +73,17 @@ class Router
         }
     }
 
-    public function executeController($callable, $arguments)
+    public function errorNotFound($error = null)
+    {
+        $this->executeController([ErrorController::class, 'notFound'], $error);
+    }
+
+    public function errorServer($error = null)
+    {
+        $this->executeController([ErrorController::class, 'server'], $error);
+    }
+
+    public function executeController($callable, $arguments = null)
     {
         [$classname, $method] = $callable;
         $object = $this->container->createService($classname);
@@ -83,9 +91,13 @@ class Router
         $controller = [$object, $method];
 
         if(is_callable($controller)) {
-            $controller(...$arguments);
+            if(is_array($arguments)) {
+                $controller(...$arguments);
+            } else {
+                $controller($arguments);
+            }
         } else {
-            $this->errorController->errorNotFound();
+            $this->errorNotFound();
         }
     }
 
