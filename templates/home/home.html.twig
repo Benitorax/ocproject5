@@ -5,6 +5,7 @@
 {% block body %}
     <div>
         <h2><a href="../public/index.php?route=post&postId={{ post.id }}">{{ post.title }}</a></h2>
+        <p>Slug : {{ post.slug }}</p>
         <p>Intro : {{ post.shortText }}</p>
         <p>Contenu : {{ post.text }}</p>
         <p>Username : {{ post.user.username }}</p>

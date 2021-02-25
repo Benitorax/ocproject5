@@ -3,7 +3,6 @@ namespace Config\Router;
 
 use Exception;
 use Config\Router\Routes;
-use Config\Router\Request;
 use App\Controller\ErrorController;
 use Config\Container\Container;
 
@@ -14,17 +13,19 @@ class Router
     private $routes;
     private $container;
 
-    public function __construct(Request $request, Routes $routes, ErrorController $errorController)
+    public function __construct(Routes $routes, ErrorController $errorController, Container $container)
     {
         $this->errorController = $errorController;
-        $this->request = $request;
         $this->routes = $routes->getRoutes();
+        $this->container = $container;
     }
 
-    public function run()
+    public function run(Request $request)
     {
+        $this->request = $request;
+        
         try{
-            $this->match();
+            $this->match($this->request->getRequestUri());
         }
         catch (Exception $e)
         {
@@ -32,9 +33,8 @@ class Router
         }
     }
 
-    public function match()
+    public function match($requestUri)
     {
-        $requestUri = $this->request->getRequestUri();
         $route = $this->matchRoute($requestUri);
 
         if(!$route) {
@@ -44,7 +44,8 @@ class Router
             if(!$isMethodValid) {
                 $this->errorController->errorNotFound();
             } else {
-                $this->executeController($route->getCallable());
+                $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
+                $this->executeController($route->getCallable(), $arguments);
             }
         }
 
@@ -54,22 +55,9 @@ class Router
     {
         foreach($this->routes as $route) {
             $routePath = $route->getPath();
-            $pattern = preg_replace('#\{\w+\}#', '[_\w\-]+', $routePath);
+            $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
-            if(preg_match('#^'.$pattern.'$#', $requestUri, $matches1)) {
-                $pathElements = explode('/', $routePath);
-                $uriElements = explode('/', $requestUri);
-
-                foreach($pathElements as $key => $element) {
-                    if(preg_match('#\{\w+\}#', $element, $matches)) {
-                        $routeParameters[$element] = $uriElements[$key];
-                        $this->request->getAttributes()->set($element, $uriElements[$key]);
-                    }
-                }
-
-                if(isset($routeParameters)) {
-                    $this->request->getAttributes()->set('route_parameters', $routeParameters);
-                }
+            if(preg_match('#^'.$pattern.'$#', $requestUri, $matches)) {
 
                 return $route;
             } 
@@ -87,21 +75,55 @@ class Router
         }
     }
 
-    public function executeController($callable)
+    public function executeController($callable, $arguments)
     {
         [$classname, $method] = $callable;
-        // TODO Get the controller from Container;
-        $class = $this->container->getController($classname);
-        $controller = [$class, $method];
+        $object = $this->container->createService($classname);
+        $object->setRequest($this->request);
+        $controller = [$object, $method];
+
         if(is_callable($controller)) {
-            $controller();
+            $controller(...$arguments);
         } else {
             $this->errorController->errorNotFound();
         }
     }
 
-    public function setContainer(Container $container)
+    public function resolveControllerArguments($callable, $routePath, $requestUri)
     {
-        $this->container = $container;
+        $pathElements = explode('/', $routePath);
+        $uriElements = explode('/', $requestUri);
+
+        foreach($pathElements as $key => $element) {
+            if(preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
+                $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);
+                $start = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$1', $element);
+                $end = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$3', $element);
+                preg_match('#^'.$start.'([-\w]+)'.$end.'$#', $uriElements[$key], $matches);
+
+                if(count($matches)) {
+                    $value = $matches[1];
+                }
+
+                $routeParams[$paramName] = $value;
+                $this->request->getAttributes()->set($paramName, $value);
+            }            
+        }
+        if(isset($routeParams)) {
+            $this->request->getAttributes()->set('route_params', $routeParams);
+        }
+        
+        $reflection = new \ReflectionMethod($callable[0], $callable[1]);
+
+        $arguments = [];
+        foreach ($reflection->getParameters() as $param) {
+            if(array_key_exists($param->name, $routeParams)) {
+                $arguments[] = $routeParams[$param->name];
+            } else {
+                throw new \Exception(sprintf("The parameter '%s' for %s::%s doesn't exist inside your route", $param->name, $callable[0], $callable[1]));
+            }
+        }
+
+        return $arguments;
     }
 }

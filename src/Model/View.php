@@ -12,10 +12,8 @@ class View
     private $loader;
     private $twig;
 
-    public function __construct(Request $request)
+    public function __construct()
     {
-        $this->request = $request;
-        $this->session = $this->request->getSession();
         $this->loader = new FilesystemLoader(\dirname(\dirname(__DIR__)).'\templates');
         $this->twig = new Environment($this->loader, [
             'cache' => \dirname(\dirname(__DIR__)).'\var\cache\twig',
@@ -28,5 +26,11 @@ class View
         // $data = array_merge($data, $this->session->toArray());
         $data = array_merge($data, []);
         echo $this->twig->render($template, $data);
+    }
+
+    public function setRequest(Request $request) 
+    {
+        $this->request = $request;
+        $this->session = $this->request->getSession();
     }
 }

@@ -13,15 +13,16 @@ class Request
     private $session;
     private $attributes;
 
-
-    public function __construct()
+    public function create(): self
     {
-        $this->get = new Parameter($_GET);
-        $this->post = new Parameter($_POST);
-        $this->cookies = new Parameter($_COOKIE);
-        $this->server = new Parameter($_SERVER);
-        $this->session = new Session($_SESSION);
+        $this->get = new Parameter($_GET ?: []);
+        $this->post = new Parameter($_POST ?: []);
+        $this->cookies = new Parameter($_COOKIE ?: []);
+        $this->server = new Parameter($_SERVER ?: []);
+        $this->session = new Session($_SESSION ?: []);
         $this->attributes = new Parameter([]);
+
+        return $this;
     }
 
     public function getGet(): Parameter

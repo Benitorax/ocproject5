@@ -8,7 +8,8 @@
         <h2><a href="../public/index.php?route=post&postId={{ post.id }}">{{ post.title }}</a></h2>
         <p>Intro : {{ post.shortText }}</p>
         <p>Contenu : {{ post.text }}</p>
-        <p>Id : {{ post.userId }}</p>
+        <p>Publié par : {{ post.user.username }}</p>
+        <p>Email : {{ post.user.email }}</p>
         <p>Créé le : {{ post.createdAt|date('Y-m-d H:i:s') }}</p>
     </div>
     <br>

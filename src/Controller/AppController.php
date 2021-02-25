@@ -6,15 +6,53 @@ use App\Model\User;
 use App\Controller\Controller;
 
 class AppController extends Controller
-{
+{  
     public function home()
     {
         $user = new User();
         $userId = rand(10000, 99999);
         $user->setId($userId)
-            ->setEmail('name'.rand(1000, 9999))
+            ->setEmail('name'.$userId)
             ->setPassword('123456')
-            ->setUsername('Martouflette'.rand(1000, 9999))
+            ->setUsername('Martouflette'.$userId.'@mail.com')
+            ->setCreatedAt(new \DateTime())
+            ->setUpdatedAt(new \DateTime())
+            ->setIsAdmin(false)
+            ->setIsBlocked(false);
+        $titles = [
+            "C'est la casse du siècle !",
+            "Pandémie ici et là-bas ?!",
+            "Word of the month",
+            "¿Qué tenemos en nuestro plato? "
+        ];
+        $post = new Post();
+        $postId = rand(10000, 99999);
+        $post->setId($postId)
+        ->setTitle($titles[array_rand($titles)])
+        ->setShortText('Mon introduction')
+        ->setText('Le texte complètement vide')
+        ->setIsPublished(true)
+        ->setUser($user);
+
+        $this->get('PostManager')->createAndSave($post);
+
+        $this->get('PostDAO')->add($post);
+        $this->get('UserDAO')->add($user);
+
+        return $this->view->render('home/home.html.twig', [
+            'post' => $post,
+            'user' => $user
+        ]);
+    }
+
+    public function post($slug, $username)
+    {
+        $user = new User();
+        $userId = rand(10000, 99999);
+        $user->setId($userId)
+            ->setEmail($username.$userId.'@mail.com')
+            ->setPassword('123456')
+            ->setUsername($username.$userId)
             ->setCreatedAt(new \DateTime())
             ->setUpdatedAt(new \DateTime())
             ->setIsAdmin(false)
@@ -23,7 +61,7 @@ class AppController extends Controller
         $post = new Post();
         $postId = rand(10000, 99999);
         $post->setId($postId)
-        ->setTitle('Mon titre de la mort')
+        ->setTitle($slug)
         ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
         ->setShortText('Mon introduction')
         ->setText('Le texte complètement vide')
@@ -32,42 +70,9 @@ class AppController extends Controller
         ->setIsPublished(true)
         ->setUser($user);
 
-        $this->postDAO->add($post);
-        $this->userDAO->add($user);
-
-        return $this->view->render('home/home.html.twig', [
-            'post' => $post,
-            'user' => $user
-        ]);
-    }
-
-    public function post()
-    {
-        $user = new User();
-        $userId = rand(10000, 99999);
-        $user->setId($userId)
-            ->setEmail('name'.rand(1000, 9999))
-            ->setPassword('123456')
-            ->setUsername('Martouflette')
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
-            ->setIsAdmin(true)
-            ->setIsBlocked(false);
-
-        $post = new Post();
-        $postId = rand(10000, 99999);
-        $post->setId($postId)
-        ->setTitle('Mon titre de la mort')
-        ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
-        ->setShortText('Mon introduction')
-        ->setText('Le texte complètement vide')
-        ->setCreatedAt(new \DateTime())
-        ->setUpdatedAt(new \DateTime())
-        ->setIsPublished(true)
-        ->setUser($user);
+        $this->get('PostDAO')->add($post);
+        $this->get('UserDAO')->add($user);
         
-        $this->postDAO->add($post);
-
         return $this->view->render('post/show.html.twig', [
             'post' => $post
         ]);

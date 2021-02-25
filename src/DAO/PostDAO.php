@@ -1,6 +1,7 @@
 <?php
 namespace App\DAO;
 
+use PDO;
 use App\Model\Post;
 use App\Model\User;
 use Config\DAO\AbstractDAO;
@@ -45,6 +46,16 @@ class PostDAO extends AbstractDAO
         $result->closeCursor();
 
         return $this->buildObject($post);
+    }
+
+    public function getCountBySlug($slug): int
+    {
+        $sql = 'SELECT COUNT(*) AS count FROM post WHERE slug LIKE :slug';
+        $result = $this->createQuery($sql, ['slug' => $slug.'%']);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $result->closeCursor();
+
+        return $row['count'];
     }
 
     public function add(Post $post)

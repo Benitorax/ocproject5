@@ -7,7 +7,7 @@ use Config\Router\Route;
 class Routes
 {
     private $routes = [
-        '/post/{slug}/comment/{id}' => [
+        '/post/{slug}/author/{username}' => [
             'method' => 'GET',
             'callable' => 'App\Controller\AppController::post'
         ],
