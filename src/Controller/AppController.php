@@ -39,7 +39,7 @@ class AppController extends Controller
         $this->get('PostDAO')->add($post);
         $this->get('UserDAO')->add($user);
 
-        return $this->view->render('home/home.html.twig', [
+        return $this->view->render('app/home.html.twig', [
             'post' => $post,
             'user' => $user
         ]);
@@ -75,6 +75,22 @@ class AppController extends Controller
         
         return $this->view->render('post/show.html.twig', [
             'post' => $post
+        ]);
+    }
+
+    public function login()
+    {
+
+        
+        return $this->view->render('app/login.html.twig', [
+        ]);
+    }
+
+    public function register()
+    {
+        var_dump($this->request->getMethod(), $this->post);
+
+        return $this->view->render('app/register.html.twig', [
         ]);
     }
 }

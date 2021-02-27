@@ -3,6 +3,7 @@ namespace App\Model;
 
 use Twig\Environment;
 use Config\Router\Request;
+use App\Service\TwigExtension;
 use Twig\Loader\FilesystemLoader;
 
 class View
@@ -18,6 +19,7 @@ class View
         $this->twig = new Environment($this->loader, [
             'cache' => \dirname(\dirname(__DIR__)).'\var\cache\twig',
         ]);
+        $this->twig->addExtension(new TwigExtension());
     }
 
     public function render($template, $data = [])
@@ -31,6 +33,6 @@ class View
     public function setRequest(Request $request) 
     {
         $this->request = $request;
-        $this->session = $this->request->getSession();
+        $this->session = $this->request->session;
     }
 }

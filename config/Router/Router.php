@@ -105,7 +105,8 @@ class Router
     {
         $pathElements = explode('/', $routePath);
         $uriElements = explode('/', $requestUri);
-
+        
+        // find every route params in url and make them variables
         foreach($pathElements as $key => $element) {
             if(preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
                 $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);

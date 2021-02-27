@@ -6,53 +6,23 @@ use Config\Router\Parameter;
 
 class Request
 {
-    private $get;
-    private $post;
-    private $cookies;
-    private $server;
-    private $session;
-    private $attributes;
+    public $query;
+    public $request;
+    public $cookies;
+    public $server;
+    public $session;
+    public $attributes;
 
     public function create(): self
     {
-        $this->get = new Parameter($_GET ?: []);
-        $this->post = new Parameter($_POST ?: []);
+        $this->query = new Parameter($_GET ?: []);
+        $this->request = new Parameter($_POST ?: []);
         $this->cookies = new Parameter($_COOKIE ?: []);
         $this->server = new Parameter($_SERVER ?: []);
         $this->session = new Session($_SESSION ?: []);
         $this->attributes = new Parameter([]);
 
         return $this;
-    }
-
-    public function getGet(): Parameter
-    {
-        return $this->get;
-    }
-
-    public function getPost(): Parameter
-    {
-        return $this->post;
-    }
-
-    public function getCookies(): Parameter
-    {
-        return $this->cookies;
-    }
-
-    public function getServer(): Parameter
-    {
-        return $this->server;
-    }
-
-    public function getSession(): Session
-    {
-        return $this->session;
-    }
-
-    public function getAttributes(): Parameter
-    {
-        return $this->attributes;
     }
 
     public function getMethod()

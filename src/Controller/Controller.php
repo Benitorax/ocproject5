@@ -24,9 +24,9 @@ abstract class Controller
     public function setRequest(Request $request) 
     {
         $this->request = $request;
-        $this->get = $this->request->getGet();
-        $this->post = $this->request->getPost();
-        $this->session = $this->request->getSession();
+        $this->query = $this->request->query;
+        $this->post = $this->request->request;
+        $this->session = $this->request->session;
         $this->view->setRequest($request);
     }
 

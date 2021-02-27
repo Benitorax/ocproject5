@@ -3,15 +3,22 @@ namespace Config\Router;
 
 class Route
 {
+    private string $name;
     private string $path;
     private array $callable;
     private array $methods;
 
-    public function __construct(string $path, string $callable, $methods)
+    public function __construct(string $path, string $callable, $methods, $name = null)
     {
         $this->path = $path;
+        $this->name = $name;
         $this->setCallable($callable);
         $this->setMethods($methods);
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 
     public function getPath()
