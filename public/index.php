@@ -3,8 +3,8 @@ require dirname(__DIR__).'/vendor/autoload.php';
 // Comment or delete the line below for production
 require_once dirname(__DIR__).'/config/Debug/Debug.php';
 
+use Config\Request\Request;
 use Config\Container\Container;
-use Config\Router\Request;
 
 session_start();
 

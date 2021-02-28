@@ -1,35 +1,17 @@
 <?php
 namespace App\DAO;
 
-use App\DAO\PostDAO;
-use App\DAO\UserDAO;
-use App\DAO\CommentDAO;
+use Config\DAO\AbstractDAO;
 
-class DAO
+class DAO extends AbstractDAO
 {
-    private $userDAO;
-    private $postDAO;
-    private $commentDAO;
-
-    public function __construct(UserDAO $userDAO, PostDAO $postDAO, CommentDAO $commentDAO)
+    public function getCountBy(string $table, string $colName, $value): int
     {
-        $this->userDAO = $userDAO;
-        $this->postDAO = $postDAO;
-        $this->commentDAO = $commentDAO;
-    }
+        $sql = 'SELECT COUNT(*) AS count FROM '.$table.' WHERE '.$colName.' = :'.$colName;
+        $result = $this->createQuery($sql, [$colName => $value]);
+        $row = $result->fetch(\PDO::FETCH_ASSOC);
+        $result->closeCursor();
 
-    public function getUserDAO()
-    {
-        return $this->userDAO;
-    }
-
-    public function getPostDAO()
-    {
-        return $this->postDAO;
-    }
-
-    public function getCommentDAO()
-    {
-        return $this->commentDAO;
+        return $row['count'];
     }
 }

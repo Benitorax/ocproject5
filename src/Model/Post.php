@@ -1,18 +1,18 @@
 <?php
 namespace App\Model;
 
-use DateTime;
 use App\Model\User;
+use App\Model\TimestampTrait;
 
 class Post
 {
+    use TimestampTrait;
+
     private string $id;
     private string $title;
     private string $slug;
     private string $shortText;
     private string $text;
-    private DateTime $createdAt;
-    private DateTime $updatedAt;
     private bool $isPublished;
     private User $user;
 
@@ -72,30 +72,6 @@ class Post
     public function setText($text): self
     {
         $this->text = $text;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

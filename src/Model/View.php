@@ -2,7 +2,7 @@
 namespace App\Model;
 
 use Twig\Environment;
-use Config\Router\Request;
+use Config\Request\Request;
 use App\Service\TwigExtension;
 use Twig\Loader\FilesystemLoader;
 
@@ -13,13 +13,13 @@ class View
     private $loader;
     private $twig;
 
-    public function __construct()
+    public function __construct(TwigExtension $twigExtension)
     {
         $this->loader = new FilesystemLoader(\dirname(\dirname(__DIR__)).'\templates');
         $this->twig = new Environment($this->loader, [
-            'cache' => \dirname(\dirname(__DIR__)).'\var\cache\twig',
+            'cache' => \dirname(__DIR__, 2).'\var\cache\twig',
         ]);
-        $this->twig->addExtension(new TwigExtension());
+        $this->twig->addExtension($twigExtension);
     }
 
     public function render($template, $data = [])

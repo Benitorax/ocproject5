@@ -3,6 +3,7 @@ namespace App\Controller;
 
 use App\Model\Post;
 use App\Model\User;
+use App\Model\UserDTO;
 use App\Controller\Controller;
 
 class AppController extends Controller
@@ -16,9 +17,7 @@ class AppController extends Controller
             ->setPassword('123456')
             ->setUsername('Martouflette'.$userId.'@mail.com')
             ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
-            ->setIsAdmin(false)
-            ->setIsBlocked(false);
+            ->setUpdatedAt(new \DateTime());
         $titles = [
             "C'est la casse du siècle !",
             "Pandémie ici et là-bas ?!",
@@ -54,10 +53,8 @@ class AppController extends Controller
             ->setPassword('123456')
             ->setUsername($username.$userId)
             ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
-            ->setIsAdmin(false)
-            ->setIsBlocked(false);
-
+            ->setUpdatedAt(new \DateTime());
+            
         $post = new Post();
         $postId = rand(10000, 99999);
         $post->setId($postId)
@@ -88,9 +85,21 @@ class AppController extends Controller
 
     public function register()
     {
-        var_dump($this->request->getMethod(), $this->post);
+        $userDTO = new UserDTO();
+
+        if($this->request->getMethod() === 'POST') {
+            $userManager = $this->get('UserManager');
+            $userDTO = $userManager->hydrateUserDTO($userDTO, $this->request->request);
+            $userDTO = $this->get('UserValidation')->validate($userDTO);
+
+            if($userDTO->isValid) {
+                // $userManager->saveNewUser($userDTO);
+                $this->redirectToRoute('login');
+            }
+        }
 
         return $this->view->render('app/register.html.twig', [
+            'form' => $userDTO
         ]);
     }
 }

@@ -1,5 +1,5 @@
 <?php
-namespace Config\Router;
+namespace Config\Request;
 
 class FlashMessages
 {

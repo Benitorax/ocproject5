@@ -1,6 +1,5 @@
 <?php
-namespace Config\Router;
-
+namespace Config\Request;
 
 class Parameter implements \IteratorAggregate, \Countable
 {

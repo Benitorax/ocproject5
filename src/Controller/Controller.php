@@ -1,10 +1,9 @@
 <?php
 namespace App\Controller;
 
-use App\DAO\DAO;
 use App\Model\View;
+use Config\Request\Request;
 use Config\Container\Container;
-use Config\Router\Request;
 
 abstract class Controller
 {
@@ -37,5 +36,15 @@ abstract class Controller
         }
         
         return $this->container->getService('App\\Service\\'.$name);
+    }
+
+    public function redirectToRoute(string $routeName, array $parameters = null) 
+    {
+        header("Location: ".$this->get('UrlGenerator')->generate($routeName, $parameters));
+        exit();
+        
+        // return $this->view->render('app/redirect.html.twig', [
+        //     'url' => $this->get('UrlGenerator')->generate($routeName, $parameters)
+        // ]); 
     }
 }

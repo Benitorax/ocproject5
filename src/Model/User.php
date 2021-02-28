@@ -1,18 +1,16 @@
 <?php
 namespace App\Model;
 
-use DateTime;
-
 class User
 {
+    use TimestampTrait;
+    
     private string $id;
     private string $email;
     private string $password;
     private string $username;
-    private DateTime $createdAt;
-    private DateTime $updatedAt;
-    private bool $isAdmin;
-    private bool $isBlocked;
+    private bool $isAdmin = false;
+    private bool $isBlocked = false;
 
     public function getId(): string
     {
@@ -58,30 +56,6 @@ class User
     public function setUsername($username): self
     {
         $this->username = $username;
-
-        return $this;
-    }
-
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
 
         return $this;
     }

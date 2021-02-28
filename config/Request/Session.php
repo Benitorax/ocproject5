@@ -1,7 +1,7 @@
 <?php
-namespace Config\Router;
+namespace Config\Request;
 
-use Config\Router\FlashMessages;
+use Config\Request\FlashMessages;
 
 class Session implements \IteratorAggregate, \Countable
 {

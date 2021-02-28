@@ -3,8 +3,9 @@ namespace Config\Router;
 
 use Exception;
 use Config\Router\Routes;
-use App\Controller\ErrorController;
+use Config\Request\Request;
 use Config\Container\Container;
+use App\Controller\ErrorController;
 
 class Router
 {
@@ -119,11 +120,11 @@ class Router
                 }
 
                 $routeParams[$paramName] = $value;
-                $this->request->getAttributes()->set($paramName, $value);
+                $this->request->attributes->set($paramName, $value);
             }            
         }
         if(isset($routeParams)) {
-            $this->request->getAttributes()->set('route_params', $routeParams);
+            $this->request->attributes->set('route_params', $routeParams);
         }
         
         $reflection = new \ReflectionMethod($callable[0], $callable[1]);

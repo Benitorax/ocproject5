@@ -1,8 +1,8 @@
 <?php
-namespace Config\Router;
+namespace Config\Request;
 
-use Config\Router\Session;
-use Config\Router\Parameter;
+use Config\Request\Session;
+use Config\Request\Parameter;
 
 class Request
 {
