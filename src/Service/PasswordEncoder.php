@@ -1,6 +1,8 @@
 <?php
 namespace App\Service;
 
+use App\Model\User;
+
 class PasswordEncoder
 {
     const OPTIONS = [
@@ -12,12 +14,8 @@ class PasswordEncoder
         return password_hash($password, PASSWORD_BCRYPT, self::OPTIONS);
     }
 
-    public function checkPassword($password, $encodedPassword): bool
+    public function isPasswordValid(User $user, string $password): bool
     {
-        if($this->encode($password) === $encodedPassword) {
-            return true;
-        } else {
-            return false;
-        }
+        return password_verify($password, $user->getPassword());
     }
 }

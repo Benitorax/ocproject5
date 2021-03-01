@@ -1,16 +1,19 @@
 <?php
 namespace App\Service;
 
-use App\DAO\PostDAO;
+use App\DAO\DAO;
 use App\Model\Post;
+use App\DAO\PostDAO;
 
 class PostManager
 {
     private $postDAO;
+    private $dao;
     
-    public function __construct(PostDAO $postDAO)
+    public function __construct(PostDAO $postDAO, DAO $dao)
     {
-        $this->postDAO = $postDAO;
+        $this->dao = $dao;
+        $this->dao = $dao;
     }
     
     public function createAndSave(Post $post): Post
@@ -25,9 +28,9 @@ class PostManager
 
     public function slugify($title) {
         $slug = mb_strtolower(preg_replace(array('/[^a-zA-Z0-9 \'-]/', '/[ -\']+/', '/^-|-$/'), array('', '-', ''), $this->removeAccent(trim($title))));
-        $count = $this->postDAO->getCountBySlug($slug);
+        $count = $this->dao->getCountBy('post', 'slug', $slug.'%', 'LIKE');
 
-        return ($count > 0) ? ($slug . '-' . $count) : $slug;
+        return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;
     }
 
     public function removeAccent($str)

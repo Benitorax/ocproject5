@@ -28,7 +28,7 @@ class Post
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -40,7 +40,7 @@ class Post
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -57,26 +57,26 @@ class Post
         return $this->shortText;
     }
 
-    public function setShortText($shortText): self
+    public function setShortText(?string $shortText): self
     {
         $this->shortText = $shortText;
 
         return $this;
     }
 
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
 
-    public function setText($text): self
+    public function setText(?string $text): self
     {
         $this->text = $text;
 
         return $this;
     }
 
-    public function getIsPublished(): ?bool
+    public function getIsPublished(): bool
     {
         return $this->isPublished;
     }

@@ -3,53 +3,45 @@ namespace App\DAO;
 
 use App\Model\User;
 use Config\DAO\AbstractDAO;
+use Config\DAO\DAOInterface;
 
-class UserDAO extends AbstractDAO
+class UserDAO extends AbstractDAO implements DAOInterface
 {
-    private function buildObject($row): User
+    const SQL_SELECT = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user';
+
+    public function buildObject(\stdClass $object): User
     {
         $user = new User();
-        $user->setId($row['id'])
-            ->setEmail($row['email'])
-            ->setPassword($row['password'])
-            ->setUsername($row['username'])
-            ->setCreatedAt($row['created_at'])
-            ->setUpdatedAt($row['updated_at'])
-            ->setIsAdmin($row['is_admin'])
-            ->setIsBlocked($row['is_blocked']);
+        $user->setId($object->id)
+            ->setEmail($object->email)
+            ->setPassword($object->password)
+            ->setUsername($object->username)
+            ->setCreatedAt(new \DateTime($object->created_at))
+            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setIsAdmin($object->is_admin)
+            ->setIsBlocked($object->is_blocked);
 
         return $user;
     }
 
-    public function get()
+    public function getOneBy(array $parameters): User
     {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user ORDER BY id DESC';
-        $result = $this->createQuery($sql);
-        $users = [];
-        foreach ($result as $row){
-            $userId = $row['id'];
-            $users[$userId] = $this->buildObject($row);
-        }
-        $result->closeCursor();
-
-        return $users;
+        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getById($userId): User
+    public function getBy(array $parameters): array
     {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user ORDER BY id DESC';
-        $result = $this->createQuery($sql, [$userId]);
-        $user = $result->fetch();
-        $result->closeCursor();
+        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+    }
 
-        return $this->buildObject($user);
+    public function getAll(): array
+    {
+        return $this->selectAll(self::SQL_SELECT, $this);
     }
 
     public function add(User $user)
     {
-        $sql = 'INSERT INTO user (id, email, password, username, created_at, updated_at, is_admin, is_blocked) 
-            VALUES (:id, :email, :password, :username, :created_at, :updated_at, :is_admin, :is_blocked)';
-        $this->createQuery($sql, [
+        $this->insert('user', [
             'id' => $user->getId(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),

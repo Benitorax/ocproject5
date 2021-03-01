@@ -5,52 +5,46 @@ use PDO;
 use App\Model\Post;
 use App\Model\User;
 use Config\DAO\AbstractDAO;
+use Config\DAO\DAOInterface;
 
-class PostDAO extends AbstractDAO
+class PostDAO extends AbstractDAO implements DAOInterface
 {
-    private function buildObject($row): Post
+    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post';
+    
+    public function buildObject(\stdClass $object): Post
     {
         $post = new Post();
-        $post->setId($row['id'])
-            ->setTitle($row['title'])
-            ->setSlug($row['slug'])
-            ->setShortText($row['short_text'])
-            ->setText($row['text'])
-            ->setCreatedAt($row['created_at'])
-            ->setUpdatedAt($row['updated_at'])
-            ->setIsPublished($row['is_published'])
-            ->setUser($this->getUserById($row['user_id']));
+        $post->setId($object->id)
+            ->setTitle($object->title)
+            ->setSlug($object->slug)
+            ->setShortText($object->short_text)
+            ->setText($object->text)
+            ->setCreatedAt(new \DateTime($object->created_at))
+            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setIsPublished($object->is_published)
+            ->setUser($this->getUserById($object->user_id));
             
         return $post;
     }
 
-    public function getAll()
+    public function getOneBy(array $parameters): User
     {
-        $sql = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post ORDER BY id DESC';
-        $result = $this->createQuery($sql);
-        $posts = [];
-        foreach ($result as $row){
-            $postId = $row['id'];
-            $posts[$postId] = $this->buildObject($row);
-        }
-        $result->closeCursor();
-
-        return $posts;
+        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getById($postId): Post
+    public function getBy(array $parameters): array
     {
-        $sql = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post WHERE id = ?';
-        $result = $this->createQuery($sql, [$postId]);
-        $post = $result->fetch();
-        $result->closeCursor();
+        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+    }
 
-        return $this->buildObject($post);
+    public function getAll(): array
+    {
+        return $this->selectAll(self::SQL_SELECT, $this);
     }
 
     public function getCountBySlug($slug): int
     {
-        $sql = 'SELECT COUNT(*) AS count FROM post WHERE slug LIKE :slug';
+        $sql = 'SELECT COUNT(*) AS count FROM post';
         $result = $this->createQuery($sql, ['slug' => $slug.'%']);
         $row = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();

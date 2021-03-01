@@ -11,26 +11,26 @@
                     <form method="post">
                         <div class="form-group">
                             <label for="email">Email address</label>
-                            <input name ="email" type="email" class="form-control" id="email" aria-describedby="emailHelp" value="{{ form.email }}">
+                            <input type="email" class="form-control" name ="email" id="email" aria-describedby="emailHelp" value="{{ form.email }}">
                             {% if form.messages.email is not null %}<div class="invalid-feedback">{{ form.messages.email }}</div>{% endif %}
                         </div>
                         <div class="form-group">
                             <label for="password1">Password</label>
-                            <input name="password1" type="password" class="form-control" id="password1">
+                            <input type="password" class="form-control" name="password1" id="password1">
                             {% if form.messages.password1 is not null %}<div class="invalid-feedback">{{ form.messages.password1 }}</div>{% endif %}
                         </div>
                         <div class="form-group">
                             <label for="password2">Repeat password</label>
-                            <input name="password2" type="password" class="form-control" id="password2">
+                            <input type="password" class="form-control" name="password2" id="password2">
                             {% if form.messages.password2 is not null %}<div class="invalid-feedback">{{ form.messages.password2 }}</div>{% endif %}
                         </div>
                         <div class="form-group">
                             <label for="username">Username</label>
-                            <input name="username" type="text" class="form-control" id="username" value="{{ form.username }}" required>
+                            <input type="text" class="form-control" name="username"  id="username" value="{{ form.username }}" required>
                             {% if form.messages.username is not null %}<div class="invalid-feedback">{{ form.messages.username }}</div>{% endif %}
                         </div>
                         <div class="form-group form-check">
-                            <input name="terms" type="checkbox" class="form-check-input" id="terms">
+                            <input type="checkbox" class="form-check-input" name="terms" id="terms">
                             <label class="form-check-label" for="terms">I agree to the <a href="#">Terme of Use</a>.</label>
                             {% if form.messages.terms is not null %}<div class="invalid-feedback">{{ form.messages.terms }}</div>{% endif %}
                         </div>

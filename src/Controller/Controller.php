@@ -31,8 +31,12 @@ abstract class Controller
 
     public function get(string $name)
     {
-        if(preg_match('#DAO#', $name)) {
+        if(preg_match('#DAO$#', $name)) {
             return $this->container->getService('App\\DAO\\'.$name);
+        }
+
+        if(preg_match('#Validation$#', $name)) {
+            return $this->container->getService('App\\Service\\Validation\\'.$name);
         }
         
         return $this->container->getService('App\\Service\\'.$name);

@@ -4,6 +4,7 @@ namespace App\Service;
 use App\Model\User;
 use App\DAO\UserDAO;
 use App\Model\UserDTO;
+use App\Model\LoginDTO;
 use Config\Request\Parameter;
 
 class UserManager
@@ -17,7 +18,16 @@ class UserManager
         $this->encoder = $encoder;
     }
 
-    public function hydrateUserDTO(UserDTO $userDTO, Parameter $post)
+    public function hydrateLoginDTO(LoginDTO $login, Parameter $post): LoginDTO
+    {
+        $login->email = $post->get('email') ?: '';
+        $login->password = $post->get('password') ?: '';
+        $login->rememberme = $post->get('rememberme') ?: false;
+
+        return $login;
+    }
+    
+    public function hydrateUserDTO(UserDTO $userDTO, Parameter $post): UserDTO
     {
         $userDTO->email = $post->get('email') ?: '';
         $userDTO->password1 = $post->get('password1') ?: '';
@@ -28,7 +38,7 @@ class UserManager
         return $userDTO;
     }
 
-    public function saveNewUser(UserDTO $userDTO)
+    public function saveNewUser(UserDTO $userDTO): User
     {
         $user = new User();
 

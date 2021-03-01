@@ -1,5 +1,5 @@
 <?php
-namespace App\Service;
+namespace App\Service\Validation;
 
 use App\Model\UserDTO;
 use App\Service\Validation\Validation;
@@ -8,7 +8,7 @@ class UserValidation extends Validation
 {
     const EMAIL = [
         ['notBlank'],
-        ['minLength', 9],
+        ['minLength', 8],
         ['maxLength', 50],
         ['unique', 'user:email']
     ];

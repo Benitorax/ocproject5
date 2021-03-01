@@ -3,6 +3,7 @@ namespace Config\DAO;
 
 use PDO;
 use Exception;
+use stdClass;
 
 abstract class AbstractDAO
 {
@@ -33,9 +34,9 @@ abstract class AbstractDAO
             return $this->connection;
         }
 
-        catch(Exception $errorConnection)
+        catch(Exception $connectionError)
         {
-            die ('Erreur de connection :'.$errorConnection->getMessage());
+            die ('Connection error:'.$connectionError->getMessage());
         }
 
     }
@@ -44,21 +45,145 @@ abstract class AbstractDAO
     {
         if($parameters)
         {
-            $result = $this->checkConnection()->prepare($sql);
-            $result->setFetchMode(PDO::FETCH_CLASS, static::class);
+            $stmt = $this->checkConnection()->prepare($sql);
 
             foreach($parameters as $key => $value) {
-                $result->bindValue(':'.$key, $value);
+                $stmt->bindValue(':'.$key, $value);
             }
             
-            $result->execute($parameters);
+            $stmt->execute($parameters);
 
-            return $result;
+            return $stmt;
+
+        } else {
+            $stmt = $this->checkConnection()->query($sql);
+
+            return $stmt;    
+        }
+    }
+
+    /**
+     * var $parameters = [id => $id, username => $username]
+     * return <object> A model object
+     */
+    public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
+    {
+        $stmt = $this->select($sqlPrefix, $parameters);
+        $result = $stmt->fetchObject(stdClass::class);
+        $stmt->closeCursor();
+
+        return $dao->buildObject($result);
+    }
+
+    /**
+     * var $parameters = [id => $id, username => $username]
+     * return <object> A model object
+     */
+    public function selectResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
+    {
+        $stmt = $this->select($sqlPrefix, $parameters);
+        $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
+        $stmt->closeCursor();
+
+        $objects = [];
+        foreach ($result as $row){
+            $objects[] = $dao->buildObject($row);
+        } 
+
+        return $objects;
+    }
+
+    public function selectAll(string $sqlPrefix, DAOInterface $dao)
+    {
+        $stmt = $this->select($sqlPrefix);
+        $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
+        $stmt->closeCursor();
+
+        $objects = [];
+        foreach ($result as $row){
+            $objects[] = $dao->buildObject($row);
+        } 
+
+        return $objects;
+    }
+
+    /**
+     * var $parameters = [id => $id, username => $username]
+     * return <object> A model object
+     */
+    public function select(string $sql, array $parameters = null, array $orderBy = null)
+    {
+        if($parameters) {
+            $sql = $this->addWhere($sql, $parameters);
+        }
+        $sql = $this->addOrderBy($sql, $orderBy);
+        
+        return $this->createQuery($sql, $parameters);
+    }
+
+    public function insert(string $tableName, array $parameters)
+    {
+        [$colNameString, $paramString] = $this->paramsToStrings($parameters);
+
+        $sql = 'INSERT INTO '.$tableName.' ('.$colNameString.') VALUES ('.$paramString.')';
+        $this->createQuery($sql, $parameters);
+    }
+
+    private function paramsToStrings(array $parameters): array
+    {
+        $i = 1;
+        $colNameString = '';
+        $paramString = '';
+
+        foreach($parameters as $key => $value) {
+            if($i < count($parameters)) {
+                $colNameString .= $key.', ';
+                $paramString .= ':'.$key.', ';
+            } else {
+                $colNameString .= $key;
+                $paramString .= ':'.$key;
+            }
+            $i++;
         }
 
-        $result = $this->checkConnection()->query($sql);
-        $result->setFetchMode(PDO::FETCH_CLASS, static::class);
+        return [$colNameString, $paramString];
+    }
 
-        return $result;
+    private function addWhere(string $sqlPrefix, array $parameters): string
+    {
+        $i = 1;
+        $where = ' WHERE ';
+
+        foreach($parameters as $key => $value) {
+            if($i < count($parameters)) {
+                $where .= $key.' = :'.$key.' AND ';
+            } else {
+                $where .= $key.' = :'.$key;
+            }
+            $i++;
+        }
+
+        return $sqlPrefix . $where;
+    }
+
+    private function addOrderBy(string $sql, array $orderBy = null): string
+    {
+        if($orderBy) {
+            $i = 1;
+            $order = ' ORDER BY ';
+
+            foreach($orderBy as $key => $value) {
+                if($i < count($orderBy)) {
+                    $order .= $key.' '.$value.', ';
+                } else {
+                    $order .= $key.' '.$value;
+                }
+                $i++;
+            }
+    
+            return $sql.$order;
+        } else {
+            return $sql.' ORDER BY updated_at DESC';
+        }
     }
 }

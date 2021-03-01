@@ -77,7 +77,7 @@ class Constraint
 
     public function identical($value1, $value2, $name = null)
     {
-        if($value1 !== $value2) {
+        if(strtolower($value1) !== strtolower($value2)) {
             if($name) {
                 return 'The '.$name.' should be the same in both field';
             } else {

@@ -5,13 +5,19 @@ use Config\DAO\AbstractDAO;
 
 class DAO extends AbstractDAO
 {
-    public function getCountBy(string $table, string $colName, $value): int
+    public function getCountBy(string $table, string $colName, $value, string $mode = null): int
     {
-        $sql = 'SELECT COUNT(*) AS count FROM '.$table.' WHERE '.$colName.' = :'.$colName;
-        $result = $this->createQuery($sql, [$colName => $value]);
-        $row = $result->fetch(\PDO::FETCH_ASSOC);
-        $result->closeCursor();
+        if(strtoupper($mode) === 'LIKE') {
+            $sqlMode = ' LIKE :';
+        } else {
+            $sqlMode = ' = :';
+        }
+        $sql = 'SELECT COUNT(id) AS count FROM '.$table.' WHERE '.$colName.$sqlMode.$colName;
+        $stmt = $this->createQuery($sql, [$colName => $value]);
+        $stmt->bindColumn(1, $count);
+        $stmt->fetchAll(\PDO::FETCH_BOUND);
+        $stmt->closeCursor();
 
-        return $row['count'];
+        return $count;
     }
 }

@@ -24,7 +24,7 @@ class User
         return $this;
     }
 
-    public function getEmail(): ?string
+    public function getEmail(): string
     {
         return $this->email;
     }
@@ -36,7 +36,7 @@ class User
         return $this;
     }
 
-    public function getPassword(): ?string
+    public function getPassword(): string
     {
         return $this->password;
     }
@@ -48,7 +48,7 @@ class User
         return $this;
     }
 
-    public function getUsername(): ?string
+    public function getUsername(): string
     {
         return $this->username;
     }
@@ -60,7 +60,7 @@ class User
         return $this;
     }
 
-    public function getIsAdmin(): ?bool
+    public function getIsAdmin(): bool
     {
         return $this->isAdmin;
     }
@@ -72,7 +72,7 @@ class User
         return $this;
     }
 
-    public function getIsBlocked(): ?bool
+    public function getIsBlocked(): bool
     {
         return $this->isBlocked;
     }

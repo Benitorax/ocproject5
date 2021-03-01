@@ -4,45 +4,39 @@ namespace App\DAO;
 use App\Model\User;
 use App\Model\Comment;
 use Config\DAO\AbstractDAO;
+use Config\DAO\DAOInterface;
 
-class CommentDAO extends AbstractDAO
+class CommentDAO extends AbstractDAO implements DAOInterface
 {
-    private function buildObject($row): Comment
+    const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
+
+    public function buildObject(\stdClass $object): Comment
     {
         $comment = new Comment();
-        $comment->setId($row['id'])
-            ->setText($row['text'])
-            ->setCreatedAt($row['created_at'])
-            ->setUpdatedAt($row['updated_at'])
-            ->setIsValidated($row['is_validated'])
-            ->setUser($row['user_id'])
-            ->setPost($row['post_id']);
+        $comment->setId($object->id)
+            ->setText($object->text)
+            ->setCreatedAt(new \DateTime($object->created_at))
+            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setIsValidated($object->is_validated)
+            ->setUser($object->user_id)
+            ->setPost($object->post_id);
 
         return $comment;
     }
 
-    public function getAll()
+    public function getOneBy(array $parameters): User
     {
-        $sql = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment ORDER BY id DESC';
-        $result = $this->createQuery($sql);
-        $comments = [];
-        foreach ($result as $row){
-            $commentId = $row['id'];
-            $comments[$commentId] = $this->buildObject($row);
-        }
-        $result->closeCursor();
-
-        return $comments;
+        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getById($commentId): Comment
+    public function getBy(array $parameters): array
     {
-        $sql = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment ORDER BY id DESC';
-        $result = $this->createQuery($sql, [$commentId]);
-        $comment = $result->fetch();
-        $result->closeCursor();
+        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+    }
 
-        return $this->buildObject($comment);
+    public function getAll(): array
+    {
+        return $this->selectAll(self::SQL_SELECT, $this);
     }
 
     public function add(Comment $comment)
