@@ -3,15 +3,16 @@ namespace App\Controller;
 
 class ErrorController extends Controller
 {
-    public function errorNotFound()
+    public function notFound()
     {
-        return $this->view->render('error/error_404');
+        return $this->view->render('error/error_404.html.twig');
     }
 
-    public function errorServer($e)
+    public function server($e)
     {
-        return $this->view->render('error/error_500', [
-            'error' => $e
+        return $this->view->render('error/error_500.html.twig', [
+            'code' => $e->getCode(),
+            'message' => $e->getMessage()
         ]);
     }
 }

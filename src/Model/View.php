@@ -1,44 +1,38 @@
 <?php
 namespace App\Model;
 
-use Config\Router\Request;
+use Twig\Environment;
+use Config\Request\Request;
+use App\Service\TwigExtension;
+use Twig\Loader\FilesystemLoader;
 
 class View
 {
-    private $file;
-    private $title;
     private $request;
     private $session;
+    private $loader;
+    private $twig;
 
-    public function __construct()
+    public function __construct(TwigExtension $twigExtension)
     {
-        $this->request = new Request();
-        $this->session = $this->request->getSession();
+        $this->loader = new FilesystemLoader(\dirname(\dirname(__DIR__)).'\templates');
+        $this->twig = new Environment($this->loader, [
+            'cache' => \dirname(__DIR__, 2).'\var\cache\twig',
+        ]);
+        $this->twig->addExtension($twigExtension);
     }
 
     public function render($template, $data = [])
     {
-        $this->file = '../templates/'.$template.'.php';
-        $content  = $this->renderFile($this->file, $data);
-        $view = $this->renderFile('../templates/base.php', [
-            'title' => $this->title,
-            'content' => $content,
-            'session' => $this->session
-        ]);
-        
-        echo $view;
+        // add session to have session data inside Twig template
+        // $data = array_merge($data, $this->session->toArray());
+        $data = array_merge($data, []);
+        echo $this->twig->render($template, $data);
     }
 
-    private function renderFile($file, $data)
+    public function setRequest(Request $request) 
     {
-        if(file_exists($file)){
-            extract($data);
-            ob_start();
-            require $file;
-
-            return ob_get_clean();
-        }
-
-        header('Location: index.php?route=notFound');
+        $this->request = $request;
+        $this->session = $this->request->session;
     }
 }

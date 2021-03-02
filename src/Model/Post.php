@@ -1,19 +1,20 @@
 <?php
 namespace App\Model;
 
-use DateTime;
+use App\Model\User;
+use App\Model\TimestampTrait;
 
 class Post
 {
+    use TimestampTrait;
+
     private string $id;
     private string $title;
     private string $slug;
     private string $shortText;
     private string $text;
-    private DateTime $createdAt;
-    private DateTime $updatedAt;
     private bool $isPublished;
-    private string $userId;
+    private User $user;
 
     public function getId(): string
     {
@@ -27,7 +28,7 @@ class Post
         return $this;
     }
 
-    public function getTitle(): ?string
+    public function getTitle(): string
     {
         return $this->title;
     }
@@ -39,7 +40,7 @@ class Post
         return $this;
     }
 
-    public function getSlug(): ?string
+    public function getSlug(): string
     {
         return $this->slug;
     }
@@ -56,50 +57,26 @@ class Post
         return $this->shortText;
     }
 
-    public function setShortText($shortText): self
+    public function setShortText(?string $shortText): self
     {
         $this->shortText = $shortText;
 
         return $this;
     }
 
-    public function getText(): string
+    public function getText(): ?string
     {
         return $this->text;
     }
 
-    public function setText($text): self
+    public function setText(?string $text): self
     {
         $this->text = $text;
 
         return $this;
     }
 
-    public function getCreatedAt(): DateTime
-    {
-        return $this->createdAt;
-    }
-
-    public function setCreatedAt(DateTime $createdAt): self
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getUpdatedAt(): ?DateTime
-    {
-        return $this->updatedAt;
-    }
-
-    public function setUpdatedAt(DateTime $updatedAt): self
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    public function getIsPublished(): ?bool
+    public function getIsPublished(): bool
     {
         return $this->isPublished;
     }
@@ -111,14 +88,14 @@ class Post
         return $this;
     }
 
-    public function getUserId(): ?string
+    public function getUser(): User
     {
-        return $this->userId;
+        return $this->user;
     }
 
-    public function setUserId($userId): self
+    public function setUser(User $user): self
     {
-        $this->userId = $userId;
+        $this->user = $user;
 
         return $this;
     }

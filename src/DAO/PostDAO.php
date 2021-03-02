@@ -1,51 +1,58 @@
 <?php
 namespace App\DAO;
 
+use PDO;
 use App\Model\Post;
-use Config\DAO\DAO;
+use App\Model\User;
+use Config\DAO\AbstractDAO;
+use Config\DAO\DAOInterface;
 
-class PostDAO extends DAO
+class PostDAO extends AbstractDAO implements DAOInterface
 {
-    private function buildObject($row)
+    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post';
+    
+    public function buildObject(\stdClass $object): Post
     {
         $post = new Post();
-        $post->setId($row['id'])
-        ->setTitle($row['title'])
-        ->setSlug($row['slug'])
-        ->setShortText($row['short_text'])
-        ->setText($row['text'])
-        ->setCreatedAt($row['created_at'])
-        ->setUpdatedAt($row['updated_at'])
-        ->setIsPublished($row['is_published'])
-        ->setUserId($row['user_id']);
+        $post->setId($object->id)
+            ->setTitle($object->title)
+            ->setSlug($object->slug)
+            ->setShortText($object->short_text)
+            ->setText($object->text)
+            ->setCreatedAt(new \DateTime($object->created_at))
+            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setIsPublished($object->is_published)
+            ->setUser($this->getUserById($object->user_id));
+            
         return $post;
     }
 
-    public function getPosts()
+    public function getOneBy(array $parameters): User
     {
-        $sql = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post ORDER BY id DESC';
-        $result = $this->createQuery($sql);
-        $posts = [];
-        foreach ($result as $row){
-            $postId = $row['id'];
-            $posts[$postId] = $this->buildObject($row);
-        }
-        $result->closeCursor();
-
-        return $posts;
+        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getPost($postId)
+    public function getBy(array $parameters): array
     {
-        $sql = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post WHERE id = ?';
-        $result = $this->createQuery($sql, [$postId]);
-        $article = $result->fetch();
-        $result->closeCursor();
-
-        return $this->buildObject($article);
+        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function addPost($post)
+    public function getAll(): array
+    {
+        return $this->selectAll(self::SQL_SELECT, $this);
+    }
+
+    public function getCountBySlug($slug): int
+    {
+        $sql = 'SELECT COUNT(*) AS count FROM post';
+        $result = $this->createQuery($sql, ['slug' => $slug.'%']);
+        $row = $result->fetch(PDO::FETCH_ASSOC);
+        $result->closeCursor();
+
+        return $row['count'];
+    }
+
+    public function add(Post $post)
     {
         $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id) 
             VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
@@ -57,8 +64,28 @@ class PostDAO extends DAO
             'text' => $post->getText(),
             'created_at' => ($post->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($post->getUpdatedAt())->format('Y-m-d H:i:s'),
-            'is_published' => $post->getIsPublished(),
-            'user_id' => $post->getUserId(),
+            'is_published' => intval($post->getIsPublished()),
+            'user_id' => $post->getUser()->getId(),
         ]);
+    }
+
+    // TODO Create a function to attach user to each post
+    public function getUserById($userId) {
+        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user ORDER BY id DESC';
+        $result = $this->createQuery($sql, [$userId]);
+        $row = $result->fetch();
+        $result->closeCursor();
+
+        $user = new User();
+        $user->setId($row['id'])
+            ->setEmail($row['email'])
+            ->setPassword($row['password'])
+            ->setUsername($row['username'])
+            ->setCreatedAt($row['created_at'])
+            ->setUpdatedAt($row['updated_at'])
+            ->setIsAdmin($row['is_admin'])
+            ->setIsBlocked($row['is_blocked']);
+
+        return $user;
     }
 }
