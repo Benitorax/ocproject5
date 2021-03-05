@@ -7,7 +7,8 @@ namespace Config\DAO;
 interface DAOInterface
 {
     /**
-     * return <object> A model object from database with PDOStatement fetch.
+     * @param stdClass $class from database with PDOStatement fetch
+     * @return <object> A model object 
      */
     public function buildObject(\stdClass $class);
 }

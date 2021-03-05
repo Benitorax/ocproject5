@@ -63,8 +63,8 @@ abstract class AbstractDAO
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -76,8 +76,8 @@ abstract class AbstractDAO
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function selectResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -108,8 +108,8 @@ abstract class AbstractDAO
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function select(string $sql, array $parameters = null, array $orderBy = null)
     {
@@ -135,6 +135,7 @@ abstract class AbstractDAO
         $colNameString = '';
         $paramString = '';
 
+        // TO DO replace $parameters with array_keys($parameters) to delete $value
         foreach($parameters as $key => $value) {
             if($i < count($parameters)) {
                 $colNameString .= $key.', ';
@@ -154,6 +155,7 @@ abstract class AbstractDAO
         $i = 1;
         $where = ' WHERE ';
 
+        // TO DO replace $parameters with array_keys($parameters) to delete $value
         foreach($parameters as $key => $value) {
             if($i < count($parameters)) {
                 $where .= $key.' = :'.$key.' AND ';

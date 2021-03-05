@@ -2,7 +2,7 @@
 namespace Config\Router;
 
 use Exception;
-use Config\Router\Routes;
+use Config\Router\Route;
 use Config\Request\Request;
 use Config\Container\Container;
 use App\Controller\ErrorController;
@@ -13,9 +13,10 @@ class Router
     private $routes;
     private $container;
 
-    public function __construct(Routes $routes, Container $container)
+    public function __construct(Container $container)
     {
-        $this->routes = $routes->getRoutes();
+        $this->initializeRoutes();
+
         $this->container = $container;
     }
 
@@ -24,7 +25,7 @@ class Router
         $this->request = $request;
         
         try{
-            $this->match($this->request->getRequestUri());
+            $this->match($this->request->getRequestUri(), $this->request->getMethod());
         }
         catch (Exception $e)
         {
@@ -32,33 +33,31 @@ class Router
         }
     }
 
-    public function match($requestUri)
+    public function match(string $requestUri, string $requestMethod)
     {
-        $route = $this->matchRoute($requestUri);
+        $route = $this->matchRoute($requestUri, $requestMethod);
 
         if(!$route) {
             $this->errorNotFound();
         } else {
-            $isMethodValid = $this->matchMethod($this->request->getMethod(), $route->getMethods());
-            if(!$isMethodValid) {
-                $this->errorNotFound();
-            } else {
-                $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
-                $this->executeController($route->getCallable(), $arguments);
-            }
+            $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
+            $this->executeController($route->getCallable(), $arguments);
         }
 
     }
 
-    public function matchRoute($requestUri)
+    public function matchRoute(string $requestUri, string $requestMethod)
     {
         foreach($this->routes as $route) {
             $routePath = $route->getPath();
             $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
             if(preg_match('#^'.$pattern.'$#', $requestUri, $matches)) {
-
-                return $route;
+                $isMethodValid = $this->matchMethod($requestMethod, $route->getMethods());
+                
+                if($isMethodValid) {
+                    return $route;
+                }
             } 
         }
 
@@ -139,5 +138,19 @@ class Router
         }
 
         return $arguments;
+    }
+
+    public function initializeRoutes()
+    {
+        $routes = require __DIR__.'/routes.php';
+        foreach($routes as $path => $data) 
+        {
+            $this->routes[] = new Route($path, $data['callable'], $data['method'] ?? null, $data['name']);
+        }
+    }
+
+    public function getRoutes(): array
+    {
+        return $this->routes;
     }
 }

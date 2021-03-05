@@ -18,7 +18,8 @@ class AppController extends Controller
             ->setPassword('123456')
             ->setUsername('Martouflette'.$userId.'@mail.com')
             ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setUpdatedAt(new \DateTime())
+        ;
         $titles = [
             "C'est la casse du siècle !",
             "Pandémie ici et là-bas ?!",
@@ -28,11 +29,12 @@ class AppController extends Controller
         $post = new Post();
         $postId = rand(10000, 99999);
         $post->setId($postId)
-        ->setTitle($titles[array_rand($titles)])
-        ->setShortText('Mon introduction')
-        ->setText('Le texte complètement vide')
-        ->setIsPublished(true)
-        ->setUser($user);
+            ->setTitle($titles[array_rand($titles)])
+            ->setShortText('Mon introduction')
+            ->setText('Le texte complètement vide')
+            ->setIsPublished(true)
+            ->setUser($user)
+        ;
 
         $this->get('PostManager')->createAndSave($post);
 

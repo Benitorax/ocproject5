@@ -1,15 +1,15 @@
 <?php
 namespace App\Service;
 
-use Config\Router\Routes;
+use Config\Router\Router;
 
 class UrlGenerator
 {
     private array $routes;
     
-    public function __construct(Routes $routes)
+    public function __construct(Router $router)
     {
-        $this->routes = $routes->getRoutes();
+        $this->routes = $router->getRoutes();
     }
 
     public function generate(string $routeName, array $routeParams = null): string

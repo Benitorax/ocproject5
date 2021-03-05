@@ -15,7 +15,7 @@ class View
 
     public function __construct(TwigExtension $twigExtension)
     {
-        $this->loader = new FilesystemLoader(\dirname(\dirname(__DIR__)).'\templates');
+        $this->loader = new FilesystemLoader(\dirname(__DIR__, 2).'\templates');
         $this->twig = new Environment($this->loader, [
             'cache' => \dirname(__DIR__, 2).'\var\cache\twig',
         ]);

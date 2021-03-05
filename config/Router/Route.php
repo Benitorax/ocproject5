@@ -36,6 +36,9 @@ class Route
         return $this->methods;
     }
 
+    /**
+     * @param string|array $method
+     */
     public function setMethods($method)
     {
         if(!$method) {
