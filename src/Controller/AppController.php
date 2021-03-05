@@ -8,7 +8,9 @@ use App\Model\LoginDTO;
 use App\Controller\Controller;
 
 class AppController extends Controller
-{  
+{
+
+  
     public function home()
     {
         $user = new User();
@@ -82,15 +84,15 @@ class AppController extends Controller
     {
         $loginDTO = new LoginDTO();
 
-        if($this->request->getMethod() === 'POST') {
+        if ($this->request->getMethod() === 'POST') {
             $loginDTO = $this->get('UserManager')->hydrateLoginDTO($loginDTO, $this->request->request);
             $loginDTO = $this->get('LoginValidation')->validate($loginDTO);
 
-            if($loginDTO->isValid) {
+            if ($loginDTO->isValid) {
                 $user = $this->get('UserDAO')->getOneBy(['email' => $loginDTO->email]);
                 $isPasswordValid = $this->get('PasswordEncoder')->isPasswordValid($user, $loginDTO->password);
 
-                if($isPasswordValid) {
+                if ($isPasswordValid) {
                     // TODO Session
                     // Flash messages
                     // $this->redirectToRoute('home');
@@ -98,7 +100,7 @@ class AppController extends Controller
             }
         }
 
-        // TO DO: Session and Flashmessages 
+        // TO DO: Session and Flashmessages
 
         return $this->view->render('app/login.html.twig', [
             'form' => $loginDTO
@@ -109,18 +111,18 @@ class AppController extends Controller
     {
         $userDTO = new UserDTO();
 
-        if($this->request->getMethod() === 'POST') {
+        if ($this->request->getMethod() === 'POST') {
             $userManager = $this->get('UserManager');
             $userDTO = $userManager->hydrateUserDTO($userDTO, $this->request->request);
             $userDTO = $this->get('UserValidation')->validate($userDTO);
 
-            if($userDTO->isValid) {
+            if ($userDTO->isValid) {
                 $userManager->saveNewUser($userDTO);
                 $this->redirectToRoute('login');
             }
         }
 
-        // TO DO: Flashmessages 
+        // TO DO: Flashmessages
 
         return $this->view->render('app/register.html.twig', [
             'form' => $userDTO

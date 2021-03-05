@@ -3,6 +3,7 @@ namespace App\Model;
 
 use Twig\Environment;
 use Config\Request\Request;
+use Config\Response\Response;
 use App\Service\TwigExtension;
 use Twig\Loader\FilesystemLoader;
 
@@ -22,15 +23,23 @@ class View
         $this->twig->addExtension($twigExtension);
     }
 
-    public function render($template, $data = [])
+    public function render($template, $data = [], Response $response = null): Response
     {
         // add session to have session data inside Twig template
         // $data = array_merge($data, $this->session->toArray());
         $data = array_merge($data, []);
-        echo $this->twig->render($template, $data);
+        $content = $this->twig->render($template, $data);
+
+        if (null === $response) {
+            $response = new Response();
+        }
+
+        $response->setContent($content);
+
+        return $response;
     }
 
-    public function setRequest(Request $request) 
+    public function setRequest(Request $request)
     {
         $this->request = $request;
         $this->session = $this->request->session;

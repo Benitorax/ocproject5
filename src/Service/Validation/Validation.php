@@ -14,10 +14,10 @@ abstract class Validation
 
     public function check(array $constraints, $value, $name = null)
     {
-        foreach($constraints as $constraint) {
+        foreach ($constraints as $constraint) {
             $error = $this->constraint->validate($constraint, $value, $name);
 
-            if($error) {
+            if ($error) {
                 return $error;
             }
         }
@@ -28,7 +28,7 @@ abstract class Validation
     public function checkIdentical($value1, $value2, $name = null)
     {
         $error = $this->constraint->identical($value1, $value2, $name);
-        if($error) {
+        if ($error) {
             return $error;
         }
 

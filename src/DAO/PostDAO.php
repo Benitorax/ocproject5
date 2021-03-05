@@ -9,7 +9,8 @@ use Config\DAO\DAOInterface;
 
 class PostDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post';
+    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id 
+                        FROM post';
     
     public function buildObject(\stdClass $object): Post
     {
@@ -70,8 +71,10 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     // TODO Create a function to attach user to each post
-    public function getUserById($userId) {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user ORDER BY id DESC';
+    public function getUserById($userId)
+    {
+        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked 
+                FROM user ORDER BY id DESC';
         $result = $this->createQuery($sql, [$userId]);
         $row = $result->fetch();
         $result->closeCursor();

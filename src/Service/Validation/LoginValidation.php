@@ -23,7 +23,7 @@ class LoginValidation extends Validation
         $login->messages['password'] = $this->check(self::PASSWORD, $login->password, 'password');
 
 
-        if(!$this->hasErrorMessages($login)) {
+        if (!$this->hasErrorMessages($login)) {
             $login->isValid = true;
         }
 
@@ -32,8 +32,8 @@ class LoginValidation extends Validation
 
     public function hasErrorMessages(LoginDTO $login)
     {
-        foreach($login->messages as $message) {
-            if($message) {
+        foreach ($login->messages as $message) {
+            if ($message) {
                 return true;
             }
         }

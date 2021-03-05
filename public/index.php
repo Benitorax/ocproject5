@@ -12,4 +12,7 @@ $request = (new Request)->create();
 $container = new Container();
 
 $router = $container->getRouter();
-$router->run($request);
+$response = $router->run($request);
+
+$response->send();
+// echo $response;

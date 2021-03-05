@@ -10,7 +10,7 @@ class Session implements \IteratorAggregate, \Countable
 
     public function __construct($session)
     {
-        foreach($session as $key => $value) {
+        foreach ($session as $key => $value) {
             $this->session[$key] = $value;
         }
         $this->flashes = new FlashMessages();

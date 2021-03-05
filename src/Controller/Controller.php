@@ -20,7 +20,7 @@ abstract class Controller
         $this->container = $container;
     }
 
-    public function setRequest(Request $request) 
+    public function setRequest(Request $request)
     {
         $this->request = $request;
         $this->query = $this->request->query;
@@ -31,24 +31,24 @@ abstract class Controller
 
     public function get(string $name)
     {
-        if(preg_match('#DAO$#', $name)) {
+        if (preg_match('#DAO$#', $name)) {
             return $this->container->getService('App\\DAO\\'.$name);
         }
 
-        if(preg_match('#Validation$#', $name)) {
+        if (preg_match('#Validation$#', $name)) {
             return $this->container->getService('App\\Service\\Validation\\'.$name);
         }
         
         return $this->container->getService('App\\Service\\'.$name);
     }
 
-    public function redirectToRoute(string $routeName, array $parameters = null) 
+    public function redirectToRoute(string $routeName, array $parameters = null)
     {
         header("Location: ".$this->get('UrlGenerator')->generate($routeName, $parameters));
         exit();
         
         // return $this->view->render('app/redirect.html.twig', [
         //     'url' => $this->get('UrlGenerator')->generate($routeName, $parameters)
-        // ]); 
+        // ]);
     }
 }

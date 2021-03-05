@@ -26,5 +26,3 @@ class TwigExtension extends AbstractExtension
         return $this->urlGenerator->generate($routeName, $routeParams);
     }
 }
-
-

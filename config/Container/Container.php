@@ -20,13 +20,13 @@ class Container
 
     public function createService(string $className): object
     {
-        if($className === get_class($this)) {
+        if ($className === get_class($this)) {
             return $this;
         }
 
         $arguments = $this->resolveServiceArguments($className);
 
-        if(is_array($arguments)) {
+        if (is_array($arguments)) {
             $service = new $className(...$arguments);
         } else {
             $service = new $className($arguments);
@@ -39,7 +39,7 @@ class Container
 
     public function hasService(string $className): bool
     {
-        if(isset($this->services[$className])) {
+        if (isset($this->services[$className])) {
             return true;
         }
         return false;
@@ -55,21 +55,21 @@ class Container
         $className = Router::class;
         if ($this->hasService($className)) {
             return $this->getService($className);
-        } 
+        }
 
         return $this->createService($className);
     }
 
     public function resolveServiceArguments(string $className): ?array
     {
-        if(method_exists($className, '__construct')) {
+        if (method_exists($className, '__construct')) {
             $reflection = new \ReflectionMethod($className, '__construct');
 
             $arguments = null;
             foreach ($reflection->getParameters() as $param) {
                 $serviceClassName = $param->getType()->getName();
 
-                if($this->hasService($serviceClassName)) {
+                if ($this->hasService($serviceClassName)) {
                     $arguments[] = $this->getService($serviceClassName);
                 } else {
                     $service = $this->createService($serviceClassName);
@@ -77,7 +77,7 @@ class Container
                 }
             }
             
-            return $arguments;    
+            return $arguments;
         }
 
         return null;

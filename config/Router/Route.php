@@ -41,9 +41,9 @@ class Route
      */
     public function setMethods($method)
     {
-        if(!$method) {
+        if (!$method) {
             $this->methods = ['GET'];
-        } elseif(!is_array($method)) {
+        } elseif (!is_array($method)) {
             $this->methods = [$method];
         } else {
             $this->methods = $method;

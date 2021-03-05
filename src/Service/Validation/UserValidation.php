@@ -34,11 +34,11 @@ class UserValidation extends Validation
         $user->messages['username'] = $this->check(self::USERNAME, $user->username, 'username');
         $user->messages['terms'] = $this->check(self::TERMS, $user->terms, 'terms of use');
 
-        if(!$user->messages['password1']) {
+        if (!$user->messages['password1']) {
             $user->messages['password2'] = $this->checkIdentical($user->password1, $user->password2, 'password');
         }
 
-        if(!$this->hasErrorMessages($user)) {
+        if (!$this->hasErrorMessages($user)) {
             $user->isValid = true;
         }
 
@@ -47,8 +47,8 @@ class UserValidation extends Validation
 
     public function hasErrorMessages(UserDTO $user)
     {
-        foreach($user->messages as $message) {
-            if($message) {
+        foreach ($user->messages as $message) {
+            if ($message) {
                 return true;
             }
         }
