@@ -27,11 +27,12 @@ class Router
         try {
             return $this->match($this->request->getRequestUri(), $this->request->getMethod());
         } catch (\Exception $e) {
-            if (substr($e->getCode(), 0, 1) == 5) {
-                return $this->errorServer($e);
-            } else {
-                return $this->errorNotFound();
-            }
+            return $this->errorServer($e);
+            // if (substr($e->getCode(), 0, 1) == 5) {
+            //     return $this->errorServer($e);
+            // } else {
+            //     return $this->errorNotFound();
+            // }
         }
     }
 

@@ -3,9 +3,9 @@ namespace App\Controller;
 
 use App\Model\Post;
 use App\Model\User;
-use App\Model\UserDTO;
-use App\Model\LoginDTO;
+use App\Form\LoginForm;
 use App\Controller\Controller;
+use App\Form\RegisterForm;
 
 class AppController extends Controller
 {
@@ -39,11 +39,9 @@ class AppController extends Controller
         ;
 
         $this->get('PostManager')->createAndSave($post);
-
-        $this->get('PostDAO')->add($post);
         $this->get('UserDAO')->add($user);
 
-        return $this->view->render('app/home.html.twig', [
+        return $this->render('app/home.html.twig', [
             'post' => $post,
             'user' => $user
         ]);
@@ -75,22 +73,22 @@ class AppController extends Controller
         $this->get('PostDAO')->add($post);
         $this->get('UserDAO')->add($user);
         
-        return $this->view->render('post/show.html.twig', [
+        return $this->render('post/show.html.twig', [
             'post' => $post
         ]);
     }
 
     public function login()
     {
-        $loginDTO = new LoginDTO();
+        $loginForm = new LoginForm();
 
         if ($this->request->getMethod() === 'POST') {
-            $loginDTO = $this->get('UserManager')->hydrateLoginDTO($loginDTO, $this->request->request);
-            $loginDTO = $this->get('LoginValidation')->validate($loginDTO);
+            $loginForm = $this->get('UserManager')->hydrateLoginForm($loginForm, $this->request->request);
+            $loginForm = $this->get('LoginValidation')->validate($loginForm);
 
-            if ($loginDTO->isValid) {
-                $user = $this->get('UserDAO')->getOneBy(['email' => $loginDTO->email]);
-                $isPasswordValid = $this->get('PasswordEncoder')->isPasswordValid($user, $loginDTO->password);
+            if ($loginForm->isValid) {
+                $user = $this->get('UserDAO')->getOneBy(['email' => $loginForm->email]);
+                $isPasswordValid = $this->get('PasswordEncoder')->isPasswordValid($user, $loginForm->password);
 
                 if ($isPasswordValid) {
                     // TODO Session
@@ -102,30 +100,30 @@ class AppController extends Controller
 
         // TO DO: Session and Flashmessages
 
-        return $this->view->render('app/login.html.twig', [
-            'form' => $loginDTO
+        return $this->render('app/login.html.twig', [
+            'form' => $loginForm
         ]);
     }
 
     public function register()
     {
-        $userDTO = new UserDTO();
+        $registerForm = new RegisterForm();
 
         if ($this->request->getMethod() === 'POST') {
             $userManager = $this->get('UserManager');
-            $userDTO = $userManager->hydrateUserDTO($userDTO, $this->request->request);
-            $userDTO = $this->get('UserValidation')->validate($userDTO);
+            $registerForm = $userManager->hydrateRegisterForm($registerForm, $this->request->request);
+            $registerForm = $this->get('RegisterValidation')->validate($registerForm);
 
-            if ($userDTO->isValid) {
-                $userManager->saveNewUser($userDTO);
+            if ($registerForm->isValid) {
+                $userManager->saveNewUser($registerForm);
                 $this->redirectToRoute('login');
             }
         }
 
         // TO DO: Flashmessages
 
-        return $this->view->render('app/register.html.twig', [
-            'form' => $userDTO
+        return $this->render('app/register.html.twig', [
+            'form' => $registerForm
         ]);
     }
 }

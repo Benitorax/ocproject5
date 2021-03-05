@@ -1,7 +1,7 @@
 <?php
 namespace App\Service\Validation;
 
-use App\Model\LoginDTO;
+use App\Form\LoginForm;
 use App\Service\Validation\Validation;
 
 class LoginValidation extends Validation
@@ -17,27 +17,16 @@ class LoginValidation extends Validation
         ['maxLength', 50]
     ];
 
-    public function validate(LoginDTO $login)
+    public function validate(LoginForm $form)
     {
-        $login->messages['email'] = $this->check(self::EMAIL, $login->email, 'email');
-        $login->messages['password'] = $this->check(self::PASSWORD, $login->password, 'password');
+        $form->messages['email'] = $this->check(self::EMAIL, $form->email, 'email');
+        $form->messages['password'] = $this->check(self::PASSWORD, $form->password, 'password');
 
 
-        if (!$this->hasErrorMessages($login)) {
-            $login->isValid = true;
+        if (!$this->hasErrorMessages($form)) {
+            $form->isValid = true;
         }
 
-        return $login;
-    }
-
-    public function hasErrorMessages(LoginDTO $login)
-    {
-        foreach ($login->messages as $message) {
-            if ($message) {
-                return true;
-            }
-        }
-
-        return false;
+        return $form;
     }
 }

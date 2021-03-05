@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\Validation;
 
+use App\Form\AbstractForm;
 use App\Service\Validation\Constraint;
 
 abstract class Validation
@@ -33,5 +34,16 @@ abstract class Validation
         }
 
         return null;
+    }
+
+    public function hasErrorMessages(AbstractForm $form)
+    {
+        foreach ($form->errors as $error) {
+            if ($error) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

@@ -1,7 +1,7 @@
 <?php
 namespace App\Controller;
 
-use App\Model\View;
+use Config\View\View;
 use Config\Request\Request;
 use Config\Container\Container;
 
@@ -40,6 +40,11 @@ abstract class Controller
         }
         
         return $this->container->getService('App\\Service\\'.$name);
+    }
+
+    public function render(string $viewPath, array $data)
+    {
+        return $this->view->render($viewPath, $data);
     }
 
     public function redirectToRoute(string $routeName, array $parameters = null)

@@ -3,8 +3,8 @@ namespace App\Service;
 
 use App\Model\User;
 use App\DAO\UserDAO;
-use App\Model\UserDTO;
-use App\Model\LoginDTO;
+use App\Form\LoginForm;
+use App\Form\RegisterForm;
 use Config\Request\Parameter;
 
 class UserManager
@@ -18,34 +18,34 @@ class UserManager
         $this->encoder = $encoder;
     }
 
-    public function hydrateLoginDTO(LoginDTO $login, Parameter $post): LoginDTO
+    public function hydrateLoginForm(LoginForm $form, Parameter $post): LoginForm
     {
-        $login->email = $post->get('email') ?: '';
-        $login->password = $post->get('password') ?: '';
-        $login->rememberme = $post->get('rememberme') ?: false;
+        $form->email = $post->get('email') ?: '';
+        $form->password = $post->get('password') ?: '';
+        $form->rememberme = $post->get('rememberme') ?: false;
 
-        return $login;
+        return $form;
     }
     
-    public function hydrateUserDTO(UserDTO $userDTO, Parameter $post): UserDTO
+    public function hydrateRegisterForm(RegisterForm $form, Parameter $post): RegisterForm
     {
-        $userDTO->email = $post->get('email') ?: '';
-        $userDTO->password1 = $post->get('password1') ?: '';
-        $userDTO->password2 = $post->get('password2') ?: '';
-        $userDTO->username = $post->get('username') ?: '';
-        $userDTO->terms = $post->get('terms') ?: false;
+        $form->email = $post->get('email') ?: '';
+        $form->password1 = $post->get('password1') ?: '';
+        $form->password2 = $post->get('password2') ?: '';
+        $form->username = $post->get('username') ?: '';
+        $form->terms = $post->get('terms') ?: false;
 
-        return $userDTO;
+        return $form;
     }
 
-    public function saveNewUser(UserDTO $userDTO): User
+    public function saveNewUser(RegisterForm $form): User
     {
         $user = new User();
 
         $user->setId(IdGenerator::generate())
-        ->setEmail($userDTO->email)
-        ->setPassword($this->encoder->encode($userDTO->password1))
-        ->setUsername($userDTO->username)
+        ->setEmail($form->email)
+        ->setPassword($this->encoder->encode($form->password1))
+        ->setUsername($form->username)
         ->setCreatedAt(new \DateTime())
         ->setUpdatedAt(new \DateTime());
 

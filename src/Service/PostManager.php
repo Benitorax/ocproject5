@@ -23,6 +23,8 @@ class PostManager
         ->setCreatedAt(new \DateTime())
         ->setUpdatedAt(new \DateTime());
 
+        $this->postDAO->add($post);
+        
         return $post;
     }
 

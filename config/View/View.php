@@ -1,5 +1,5 @@
 <?php
-namespace App\Model;
+namespace Config\View;
 
 use Twig\Environment;
 use Config\Request\Request;
@@ -11,24 +11,23 @@ class View
 {
     private $request;
     private $session;
-    private $loader;
     private $twig;
 
     public function __construct(TwigExtension $twigExtension)
     {
-        $this->loader = new FilesystemLoader(\dirname(__DIR__, 2).'\templates');
-        $this->twig = new Environment($this->loader, [
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2).'\templates');
+        $this->twig = new Environment($loader, [
             'cache' => \dirname(__DIR__, 2).'\var\cache\twig',
         ]);
         $this->twig->addExtension($twigExtension);
     }
 
-    public function render($template, $data = [], Response $response = null): Response
+    public function render($template, $parameters = [], Response $response = null): Response
     {
         // add session to have session data inside Twig template
-        // $data = array_merge($data, $this->session->toArray());
-        $data = array_merge($data, []);
-        $content = $this->twig->render($template, $data);
+        // $parameters = array_merge($parameters, $this->session->toArray());
+        $parameters = array_merge($parameters, []);
+        $content = $this->twig->render($template, $parameters);
 
         if (null === $response) {
             $response = new Response();

@@ -68,9 +68,9 @@ class Header
             if ($replace) {
                 $this->cookies = [];
             }
-            foreach ((array) $values as $cookie) {
-                $this->setCookie($cookie);
-            }
+            // foreach ((array) $values as $cookie) {
+            //     $this->setCookie($cookie);
+            // }
             $this->headerNames[$uniqueKey] = $key;
 
             return;
