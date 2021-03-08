@@ -1,19 +1,27 @@
 <?php
-namespace Config\Request;
+namespace Config\Session;
 
-use Config\Request\FlashMessages;
+use Config\Session\FlashMessages;
 
 class Session implements \IteratorAggregate, \Countable
 {
-    private $session;
-    private $flashes;
+    private array $session;
+    //private $flashName = 'flashes';
+    private FlashMessages $flashes;
 
-    public function __construct($session)
+    public function __construct()
     {
-        foreach ($session as $key => $value) {
-            $this->session[$key] = $value;
+        if (\PHP_SESSION_ACTIVE === session_status()) {
+            throw new \Exception('Failed to start the session: already started by PHP.');
         }
+
+        if (\PHP_SESSION_NONE === session_status()) {
+            $this->start();
+        }
+
         $this->flashes = new FlashMessages();
+
+        $this->loadSession();
     }
 
     public function set($name, $value)
@@ -47,9 +55,9 @@ class Session implements \IteratorAggregate, \Countable
     public function remove($name)
     {
         $retval = null;
-        if (\array_key_exists($name, $this->name)) {
-            $retval = $this->name[$name];
-            unset($this->name[$name]);
+        if (\array_key_exists($name, $this->session)) {
+            $retval = $this->session[$name];
+            unset($this->session[$name]);
         }
 
         return $retval;
@@ -63,40 +71,21 @@ class Session implements \IteratorAggregate, \Countable
         return $return;
     }
 
-    // public function show($name)
-    // {
-    //     if(isset($_SESSION[$name]))
-    //     {
-    //         $key = $this->get($name);
-    //         $this->remove($name);
-    //         return $key;
-    //     }
-    // }
-
     /**
      * Returns an iterator for session.
-     *
-     * @return \ArrayIterator An \ArrayIterator instance
      */
-    public function getIterator()
+    public function getIterator(): \ArrayIterator
     {
         return new \ArrayIterator($this->session);
     }
 
     /**
      * Returns the number of session.
-     *
-     * @return int The number of session
      */
-    public function count()
+    public function count(): int
     {
         return \count($this->session);
     }
-
-    // public function remove($name)
-    // {
-    //     unset($_SESSION[$name]);
-    // }
 
     public function start()
     {
@@ -111,5 +100,12 @@ class Session implements \IteratorAggregate, \Countable
     public function getFlashes(): FlashMessages
     {
         return $this->flashes;
+    }
+
+    public function loadSession()
+    {
+        $session = &$_SESSION;
+        $this->session = &$session;
+        $this->flashes->initialize($session['flashes']);
     }
 }

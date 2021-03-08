@@ -12,7 +12,7 @@ class PostManager
     
     public function __construct(PostDAO $postDAO, DAO $dao)
     {
-        $this->dao = $dao;
+        $this->postDAO = $postDAO;
         $this->dao = $dao;
     }
     

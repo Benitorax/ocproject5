@@ -5,17 +5,46 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\LoginForm;
 use App\Form\RegisterForm;
+use App\Service\Validation\LoginValidation;
 use Config\Request\Parameter;
+use App\Service\Validation\RegisterValidation;
+use Config\Request\Request;
 
 class UserManager
 {
     private $userDAO;
     private $encoder;
+    private $registerValidation;
+    private $loginValidation;
     
-    public function __construct(UserDAO $userDAO, PasswordEncoder $encoder)
-    {
+    public function __construct(
+        UserDAO $userDAO,
+        PasswordEncoder $encoder,
+        RegisterValidation $registerValidation,
+        LoginValidation $loginValidation
+    ) {
         $this->userDAO = $userDAO;
         $this->encoder = $encoder;
+        $this->registerValidation = $registerValidation;
+        $this->loginValidation = $loginValidation;
+    }
+
+    public function manageRegisterForm(RegisterForm $form, Request $request): RegisterForm
+    {
+        $post = $request->request;
+        $form = $this->hydrateRegisterForm($form, $post);
+        $form = $this->registerValidation->validate($form);
+
+        return $form;
+    }
+
+    public function manageLoginForm(LoginForm $form, Request $request): LoginForm
+    {
+        $post = $request->request;
+        $form = $this->hydrateLoginForm($form, $post);
+        $form = $this->loginValidation->validate($form);
+
+        return $form;
     }
 
     public function hydrateLoginForm(LoginForm $form, Parameter $post): LoginForm

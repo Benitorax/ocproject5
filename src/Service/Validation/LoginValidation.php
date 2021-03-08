@@ -19,8 +19,8 @@ class LoginValidation extends Validation
 
     public function validate(LoginForm $form)
     {
-        $form->messages['email'] = $this->check(self::EMAIL, $form->email, 'email');
-        $form->messages['password'] = $this->check(self::PASSWORD, $form->password, 'password');
+        $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
+        $form->errors['password'] = $this->check(self::PASSWORD, $form->password, 'password');
 
 
         if (!$this->hasErrorMessages($form)) {

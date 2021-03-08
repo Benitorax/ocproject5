@@ -45,7 +45,6 @@ abstract class AbstractDAO
             foreach ($parameters as $key => $value) {
                 $stmt->bindValue(':'.$key, $value);
             }
-            
             $stmt->execute($parameters);
 
             return $stmt;
@@ -66,6 +65,10 @@ abstract class AbstractDAO
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
 
+        if ($result === false) {
+            return null;
+        }
+
         return $dao->buildObject($result);
     }
 
@@ -78,6 +81,10 @@ abstract class AbstractDAO
         $stmt = $this->select($sqlPrefix, $parameters);
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
+
+        if ($result === false) {
+            return null;
+        }
 
         $objects = [];
         foreach ($result as $row) {
@@ -92,6 +99,10 @@ abstract class AbstractDAO
         $stmt = $this->select($sqlPrefix);
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
+
+        if ($result === false) {
+            throw new \Exception(sprintf('No result for this SQL command: \'%s\'', $sqlPrefix));
+        }
 
         $objects = [];
         foreach ($result as $row) {
@@ -123,6 +134,32 @@ abstract class AbstractDAO
         $this->createQuery($sql, $parameters);
     }
 
+    public function delete(string $tableName, array $parameters)
+    {
+        $sql = 'DELETE FROM '.$tableName;
+        $sql = $this->addWhere($sql, $parameters);
+        return $this->createQuery($sql, $parameters);
+    }
+
+    public function update(string $tableName, array $parameters, array $where)
+    {
+        $sql = 'UPDATE '.$tableName.' SET';
+        
+        $i = 1;
+        foreach (array_keys($parameters) as $colName) {
+            $sql .= ' '.$colName.'=:'.$colName;
+            if ($i < count($parameters)) {
+                $sql .= ', ';
+            }
+            $i++;
+        }
+
+        $sql = $this->addWhere($sql, $where);
+        $parameters = array_merge($parameters, $where);
+
+        return $this->createQuery($sql, $parameters);
+    }
+
     private function paramsToStrings(array $parameters): array
     {
         $i = 1;
@@ -150,7 +187,7 @@ abstract class AbstractDAO
         $where = ' WHERE ';
 
         // TO DO replace $parameters with array_keys($parameters) to delete $value
-        foreach ($parameters as $key => $value) {
+        foreach (array_keys($parameters) as $key) {
             if ($i < count($parameters)) {
                 $where .= $key.' = :'.$key.' AND ';
             } else {
@@ -179,7 +216,7 @@ abstract class AbstractDAO
     
             return $sql.$order;
         } else {
-            return $sql.' ORDER BY updated_at DESC';
+            return $sql;
         }
     }
 }

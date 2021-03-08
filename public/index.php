@@ -6,7 +6,6 @@ require_once dirname(__DIR__).'/config/Debug/Debug.php';
 use Config\App;
 use Config\Request\Request;
 
-session_start();
 $request = (new Request)->create();
 $app = new App();
 

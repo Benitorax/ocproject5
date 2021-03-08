@@ -1,8 +1,12 @@
 <?php
 namespace Config\Response;
 
-class Header
+use Config\Cookie\Cookie;
+
+class Headers
 {
+    public const COOKIES_FLAT = 'flat';
+    public const COOKIES_ARRAY = 'array';
     protected const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     protected const LOWER = '-abcdefghijklmnopqrstuvwxyz';
     protected $cookies = [];
@@ -47,15 +51,15 @@ class Header
             $headers = $this->headers;
         }
 
-        // if (1 <= \func_num_args() && null !== $key = func_get_arg(0)) {
-        //     $key = strtr($key, self::UPPER, self::LOWER);
+        if (1 <= \func_num_args() && null !== $key = func_get_arg(0)) {
+            $key = strtr($key, self::UPPER, self::LOWER);
 
-        //     return 'set-cookie' !== $key ? $headers[$key] ?? [] : array_map('strval', $this->getCookies());
-        // }
+            return 'set-cookie' !== $key ? $headers[$key] ?? [] : array_map('strval', $this->getCookies());
+        }
 
-        // foreach ($this->getCookies() as $cookie) {
-        //     $headers['set-cookie'][] = (string) $cookie;
-        // }
+        foreach ($this->getCookies() as $cookie) {
+            $headers['set-cookie'][] = (string) $cookie;
+        }
 
         return $headers;
     }
@@ -68,9 +72,9 @@ class Header
             if ($replace) {
                 $this->cookies = [];
             }
-            // foreach ((array) $values as $cookie) {
-            //     $this->setCookie($cookie);
-            // }
+            foreach ((array) $values as $cookie) {
+                $this->setCookie($cookie);
+            }
             $this->headerNames[$uniqueKey] = $key;
 
             return;
@@ -141,57 +145,60 @@ class Header
         return $headers;
     }
 
-    // public function setCookie(Cookie $cookie)
-    // {
-    //     $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
-    //     $this->headerNames['set-cookie'] = 'Set-Cookie';
-    // }
+    public function setCookie(Cookie $cookie)
+    {
+        $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
+        $this->headerNames['set-cookie'] = 'Set-Cookie';
+    }
 
-    // public function removeCookie($name, $path = '/', $domain = null)
-    // {
-    //     if (null === $path) {
-    //         $path = '/';
-    //     }
+    public function removeCookie($name, $path = '/', $domain = null)
+    {
+        if (null === $path) {
+            $path = '/';
+        }
 
-    //     unset($this->cookies[$domain][$path][$name]);
+        unset($this->cookies[$domain][$path][$name]);
 
-    //     if (empty($this->cookies[$domain][$path])) {
-    //         unset($this->cookies[$domain][$path]);
+        if (empty($this->cookies[$domain][$path])) {
+            unset($this->cookies[$domain][$path]);
 
-    //         if (empty($this->cookies[$domain])) {
-    //             unset($this->cookies[$domain]);
-    //         }
-    //     }
+            if (empty($this->cookies[$domain])) {
+                unset($this->cookies[$domain]);
+            }
+        }
 
-    //     if (empty($this->cookies)) {
-    //         unset($this->headerNames['set-cookie']);
-    //     }
-    // }
+        if (empty($this->cookies)) {
+            unset($this->headerNames['set-cookie']);
+        }
+    }
 
-    // public function getCookies($format = self::COOKIES_FLAT)
-    // {
-    //     if (self::COOKIES_ARRAY === $format) {
-    //         return $this->cookies;
-    //     }
+    public function getCookies($format = self::COOKIES_FLAT)
+    {
+        if (self::COOKIES_ARRAY === $format) {
+            return $this->cookies;
+        }
 
-    //     $flattenedCookies = [];
-    //     foreach ($this->cookies as $path) {
-    //         foreach ($path as $cookies) {
-    //             foreach ($cookies as $cookie) {
-    //                 $flattenedCookies[] = $cookie;
-    //             }
-    //         }
-    //     }
+        $flattenedCookies = [];
+        foreach ($this->cookies as $path) {
+            foreach ($path as $cookies) {
+                foreach ($cookies as $cookie) {
+                    $flattenedCookies[] = $cookie;
+                }
+            }
+        }
 
-    //     return $flattenedCookies;
-    // }
+        return $flattenedCookies;
+    }
 
-    // public function clearCookie(
-    //     $name, $path = '/', $domain = null, $secure = false, $httpOnly = true/*, $sameSite = null*/
-    // )
-    // {
-    //     $sameSite = \func_num_args() > 5 ? func_get_arg(5) : null;
+    public function clearCookie(
+        $name,
+        $path = '/',
+        $domain = null,
+        $secure = false,
+        $httpOnly = true/*, $sameSite = null*/
+    ) {
+        $sameSite = \func_num_args() > 5 ? func_get_arg(5) : null;
 
-    //     $this->setCookie(new Cookie($name, null, 1, $path, $domain, $secure, $httpOnly, false, $sameSite));
-    // }
+        $this->setCookie(new Cookie($name, null, 1, $path, $domain, $secure, $httpOnly, false, $sameSite));
+    }
 }

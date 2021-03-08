@@ -76,7 +76,7 @@ class Response
 
     public function __construct($content = '', int $status = 200, array $headers = [])
     {
-        $this->headers = new Header($headers);
+        $this->headers = new Headers($headers);
         $this->setContent($content);
         $this->setStatusCode($status);
         $this->setProtocolVersion('1.0');
@@ -94,10 +94,6 @@ class Response
     {
         $this->sendHeaders();
         $this->sendContent();
-
-        if (\function_exists('fastcgi_finish_request')) {
-            fastcgi_finish_request();
-        }
 
         return $this;
     }
@@ -167,9 +163,9 @@ class Response
         }
 
         // cookies
-        // foreach ($this->headers->getCookies() as $cookie) {
-        //     header('Set-Cookie: '.$cookie, false, $this->statusCode);
-        // }
+        foreach ($this->headers->getCookies() as $cookie) {
+            header('Set-Cookie: '.$cookie, false, $this->statusCode);
+        }
 
         // status
         header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->statusText), true, $this->statusCode);

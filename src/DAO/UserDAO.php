@@ -7,7 +7,7 @@ use Config\DAO\DAOInterface;
 
 class UserDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user';
+    const SQL_SELECT = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked FROM user';
 
     public function buildObject(\stdClass $object): User
     {
@@ -18,7 +18,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
             ->setUsername($object->username)
             ->setCreatedAt(new \DateTime($object->created_at))
             ->setUpdatedAt(new \DateTime($object->updated_at))
-            ->setIsAdmin($object->is_admin)
+            ->setRoles(json_decode($object->roles))
             ->setIsBlocked($object->is_blocked);
 
         return $user;
@@ -48,7 +48,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
             'username' => $user->getUsername(),
             'created_at' => ($user->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($user->getUpdatedAt())->format('Y-m-d H:i:s'),
-            'is_admin' => intval($user->getIsAdmin()),
+            'roles' => json_encode($user->getRoles()),
             'is_blocked' => intval($user->getIsBlocked())
         ]);
     }

@@ -1,5 +1,5 @@
 <?php
-namespace Config\Request;
+namespace Config\Session;
 
 class FlashMessages
 {
@@ -9,7 +9,7 @@ class FlashMessages
     {
     }
 
-    public function initialize(array &$flashes)
+    public function initialize(?array &$flashes)
     {
         $this->flashes = &$flashes;
     }
@@ -73,5 +73,10 @@ class FlashMessages
     public function clear()
     {
         return $this->all();
+    }
+
+    public function getName()
+    {
+        return $this->name;
     }
 }

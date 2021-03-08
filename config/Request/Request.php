@@ -1,7 +1,7 @@
 <?php
 namespace Config\Request;
 
-use Config\Request\Session;
+use Config\Session\Session;
 use Config\Request\Parameter;
 
 class Request
@@ -10,7 +10,7 @@ class Request
     public $request;
     public $cookies;
     public $server;
-    public $session;
+    private $session;
     public $attributes;
 
     public function create(): self
@@ -19,7 +19,6 @@ class Request
         $this->request = new Parameter($_POST ?: []);
         $this->cookies = new Parameter($_COOKIE ?: []);
         $this->server = new Parameter($_SERVER ?: []);
-        $this->session = new Session($_SESSION ?: []);
         $this->attributes = new Parameter([]);
 
         return $this;
@@ -73,5 +72,32 @@ class Request
         $this->server->set('REQUEST_URI', $requestUri);
 
         return $requestUri;
+    }
+
+    /** @return Session */
+    public function getSession()
+    {
+        if ($this->hasSession()) {
+            return $this->session;
+        }
+
+        return null;
+    }
+
+    public function setSession(Session $session)
+    {
+        $this->session = $session;
+    }
+
+    public function hasSession()
+    {
+        return null !== $this->session;
+    }
+
+    public function isSecure()
+    {
+        $https = $this->server->get('HTTPS');
+
+        return !empty($https) && 'off' !== strtolower($https);
     }
 }

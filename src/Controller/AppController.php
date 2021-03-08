@@ -3,9 +3,16 @@ namespace App\Controller;
 
 use App\Model\Post;
 use App\Model\User;
+use App\DAO\PostDAO;
+use App\DAO\UserDAO;
+use App\Service\Auth;
 use App\Form\LoginForm;
-use App\Controller\Controller;
 use App\Form\RegisterForm;
+use App\Service\PostManager;
+use App\Service\UserManager;
+use App\Controller\Controller;
+use Config\Security\PersistentToken;
+use Config\Security\RememberMeManager;
 
 class AppController extends Controller
 {
@@ -38,8 +45,8 @@ class AppController extends Controller
             ->setUser($user)
         ;
 
-        $this->get('PostManager')->createAndSave($post);
-        $this->get('UserDAO')->add($user);
+        $this->get(PostManager::class)->createAndSave($post);
+        $this->get(UserDAO::class)->add($user);
 
         return $this->render('app/home.html.twig', [
             'post' => $post,
@@ -70,8 +77,8 @@ class AppController extends Controller
         ->setIsPublished(true)
         ->setUser($user);
 
-        $this->get('PostDAO')->add($post);
-        $this->get('UserDAO')->add($user);
+        $this->get(PostDAO::class)->add($post);
+        $this->get(UserDAO::class)->add($user);
         
         return $this->render('post/show.html.twig', [
             'post' => $post
@@ -83,22 +90,24 @@ class AppController extends Controller
         $loginForm = new LoginForm();
 
         if ($this->request->getMethod() === 'POST') {
-            $loginForm = $this->get('UserManager')->hydrateLoginForm($loginForm, $this->request->request);
-            $loginForm = $this->get('LoginValidation')->validate($loginForm);
+            $loginForm = $this->get(UserManager::class)->manageLoginForm($loginForm, $this->request);
 
             if ($loginForm->isValid) {
-                $user = $this->get('UserDAO')->getOneBy(['email' => $loginForm->email]);
-                $isPasswordValid = $this->get('PasswordEncoder')->isPasswordValid($user, $loginForm->password);
+                $user = $this->get(Auth::class)->authenticate($loginForm->email, $loginForm->password);
 
-                if ($isPasswordValid) {
-                    // TODO Session
-                    // Flash messages
-                    // $this->redirectToRoute('home');
+                if ($user) {
+                    $this->session->set('user', $user);
+                    $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+                    if ($loginForm->rememberme) {
+                        $this->get(RememberMeManager::class)->createNewToken($user, $this->request);
+                    }
+                    
+                    //return $this->redirectToRoute('home');
                 }
+            } else {
+                $this->session->getFlashes()->add('danger', 'Invalid credentials.');
             }
         }
-
-        // TO DO: Session and Flashmessages
 
         return $this->render('app/login.html.twig', [
             'form' => $loginForm
@@ -108,22 +117,28 @@ class AppController extends Controller
     public function register()
     {
         $registerForm = new RegisterForm();
-
+        $this->session->clear();
+        $this->session->getFlashes()->all();
         if ($this->request->getMethod() === 'POST') {
-            $userManager = $this->get('UserManager');
-            $registerForm = $userManager->hydrateRegisterForm($registerForm, $this->request->request);
-            $registerForm = $this->get('RegisterValidation')->validate($registerForm);
+            $userManager = $this->get(UserManager::class);
+            $registerForm = $userManager->manageRegisterForm($registerForm, $this->request);
 
             if ($registerForm->isValid) {
                 $userManager->saveNewUser($registerForm);
-                $this->redirectToRoute('login');
+                $this->session->getFlashes()->add('success', 'You register with success!');
+                return $this->redirectToRoute('login');
             }
         }
-
-        // TO DO: Flashmessages
 
         return $this->render('app/register.html.twig', [
             'form' => $registerForm
         ]);
+    }
+
+    public function logout()
+    {
+        $this->session->stop();
+        $this->session->getFlashes()->add('success', 'You log out with success!');
+        return $this->redirectToRoute('login');
     }
 }

@@ -9,8 +9,8 @@ class User
     private string $email;
     private string $password;
     private string $username;
-    private bool $isAdmin = false;
-    private bool $isBlocked = false;
+    private array $roles = ['user'];
+    private bool $isBlocked = true;
 
     public function getId(): string
     {
@@ -60,14 +60,14 @@ class User
         return $this;
     }
 
-    public function getIsAdmin(): bool
+    public function getRoles(): array
     {
-        return $this->isAdmin;
+        return $this->roles;
     }
 
-    public function setIsAdmin($isAdmin): self
+    public function setRoles($roles): self
     {
-        $this->isAdmin = $isAdmin;
+        $this->roles = $roles;
 
         return $this;
     }
