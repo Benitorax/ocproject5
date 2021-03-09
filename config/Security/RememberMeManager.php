@@ -25,11 +25,13 @@ class RememberMeManager
 
     private $rememberMeDAO;
     private $userDAO;
+    private $tokenStorage;
 
-    public function __construct(RememberMeDAO $rememberMeDAO, UserDAO $userDAO)
+    public function __construct(RememberMeDAO $rememberMeDAO, UserDAO $userDAO, TokenStorage $tokenStorage)
     {
         $this->rememberMeDAO = $rememberMeDAO;
         $this->userDAO = $userDAO;
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function processAutoLoginCookie(array $cookieParts, Request $request)
@@ -122,6 +124,12 @@ class RememberMeManager
                 $this->options['samesite']
             )
         );
+    }
+
+    public function deleteToken(Request $request)
+    {
+        $this->rememberMeDAO->deleteTokenByUsername($this->tokenStorage->getToken()->getUsername());
+        $this->cancelCookie($request);
     }
 
     protected function encodeCookie(array $cookieParts)

@@ -18,9 +18,7 @@ class View
         $this->tokenStorage = $tokenStorage;
 
         $loader = new FilesystemLoader(\dirname(__DIR__, 2).'\templates');
-        $this->twig = new Environment($loader, [
-            'cache' => \dirname(__DIR__, 2).'\var\cache\twig',
-        ]);
+        $this->twig = new Environment($loader, /*['cache' => \dirname(__DIR__, 2).'\var\cache\twig']*/);
         $this->twig->addExtension($twigExtension);
     }
 

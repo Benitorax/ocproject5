@@ -51,4 +51,4 @@ function deleteDir($dirPath)
     rmdir($dirPath);
 }
 
-deleteTwigCacheFolder();
+//deleteTwigCacheFolder();

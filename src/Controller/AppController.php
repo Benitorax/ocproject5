@@ -11,8 +11,10 @@ use App\Form\RegisterForm;
 use App\Service\PostManager;
 use App\Service\UserManager;
 use App\Controller\Controller;
-use Config\Security\PersistentToken;
+use Config\Security\RememberMeDAO;
 use Config\Security\RememberMeManager;
+use Config\Security\TokenStorage;
+use Twig\Token;
 
 class AppController extends Controller
 {
@@ -87,6 +89,10 @@ class AppController extends Controller
 
     public function login()
     {
+        if ($this->get(TokenStorage::class)->getToken()) {
+            return $this->redirectToRoute('home');
+        }
+
         $loginForm = new LoginForm();
 
         if ($this->request->getMethod() === 'POST') {
@@ -98,11 +104,12 @@ class AppController extends Controller
                 if ($user) {
                     $this->session->set('user', $user);
                     $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+
                     if ($loginForm->rememberme) {
                         $this->get(RememberMeManager::class)->createNewToken($user, $this->request);
                     }
-                    
-                    //return $this->redirectToRoute('home');
+
+                    return $this->redirectToRoute('home');
                 }
             } else {
                 $this->session->getFlashes()->add('danger', 'Invalid credentials.');
@@ -137,8 +144,12 @@ class AppController extends Controller
 
     public function logout()
     {
-        $this->session->stop();
-        $this->session->getFlashes()->add('success', 'You log out with success!');
+        if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
+            $this->get(RememberMeManager::class)->deleteToken($this->request);
+        }
+
+        $this->session->clear();
+
         return $this->redirectToRoute('login');
     }
 }

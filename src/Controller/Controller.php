@@ -45,13 +45,13 @@ abstract class Controller
 
     public function redirectToRoute(string $routeName, array $parameters = [])
     {
-        // $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
-        // $response = new Response('', 302);
-        // $response->headers->set('Location', $url);
+        $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
+        $response = new Response('', 302);
+        $response->headers->set('Location', $url);
 
-        // return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
+        return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
         
-        header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
-        exit();
+        // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
+        // exit();
     }
 }

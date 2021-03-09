@@ -26,7 +26,6 @@ class App
         // Add rememberme cookie into Response if exists
         if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
             $cookie = $request->attributes->get(RememberMeManager::COOKIE_ATTR_NAME);
-
             $response->headers->setCookie($cookie);
         }
 
