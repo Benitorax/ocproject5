@@ -9,7 +9,8 @@ use Config\DAO\DAOInterface;
 
 class PostDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id FROM post';
+    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id 
+                        FROM post';
     
     public function buildObject(\stdClass $object): Post
     {
@@ -54,8 +55,8 @@ class PostDAO extends AbstractDAO implements DAOInterface
 
     public function add(Post $post)
     {
-        $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id) 
-            VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
+        $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id)'
+            .'VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
         $this->createQuery($sql, [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
@@ -70,8 +71,10 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     // TODO Create a function to attach user to each post
-    public function getUserById($userId) {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, is_admin, is_blocked FROM user ORDER BY id DESC';
+    public function getUserById($userId)
+    {
+        $sql = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked'
+                .'FROM user ORDER BY id DESC';
         $result = $this->createQuery($sql, [$userId]);
         $row = $result->fetch();
         $result->closeCursor();
@@ -83,7 +86,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
             ->setUsername($row['username'])
             ->setCreatedAt($row['created_at'])
             ->setUpdatedAt($row['updated_at'])
-            ->setIsAdmin($row['is_admin'])
+            ->setIsAdmin(json_decode($row['roles']))
             ->setIsBlocked($row['is_blocked']);
 
         return $user;

@@ -1,8 +1,11 @@
 <?php
 namespace App\Controller;
 
-use App\Model\View;
+use Config\View\View;
 use Config\Request\Request;
+use Config\Session\Session;
+use App\Service\UrlGenerator;
+use Config\Response\Response;
 use Config\Container\Container;
 
 abstract class Controller
@@ -11,6 +14,7 @@ abstract class Controller
     protected $request;
     protected $get;
     protected $post;
+    /** @var Session */
     protected $session;
     protected $container;
 
@@ -20,35 +24,34 @@ abstract class Controller
         $this->container = $container;
     }
 
-    public function setRequest(Request $request) 
+    public function setRequest(Request $request)
     {
         $this->request = $request;
         $this->query = $this->request->query;
         $this->post = $this->request->request;
-        $this->session = $this->request->session;
+        $this->session = $this->container->getService(Session::class);
         $this->view->setRequest($request);
     }
 
     public function get(string $name)
     {
-        if(preg_match('#DAO$#', $name)) {
-            return $this->container->getService('App\\DAO\\'.$name);
-        }
-
-        if(preg_match('#Validation$#', $name)) {
-            return $this->container->getService('App\\Service\\Validation\\'.$name);
-        }
-        
-        return $this->container->getService('App\\Service\\'.$name);
+        return $this->container->getService($name);
     }
 
-    public function redirectToRoute(string $routeName, array $parameters = null) 
+    public function render(string $viewPath, array $parameters = [], Response $response = null)
     {
-        header("Location: ".$this->get('UrlGenerator')->generate($routeName, $parameters));
-        exit();
+        return $this->view->render($viewPath, $parameters, $response);
+    }
+
+    public function redirectToRoute(string $routeName, array $parameters = [])
+    {
+        $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
+        $response = new Response('', 302);
+        $response->headers->set('Location', $url);
+
+        return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
         
-        // return $this->view->render('app/redirect.html.twig', [
-        //     'url' => $this->get('UrlGenerator')->generate($routeName, $parameters)
-        // ]); 
+        // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
+        // exit();
     }
 }

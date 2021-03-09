@@ -26,23 +26,38 @@
                             <li class="nav-item">
                                 <a class="nav-link disabled" href="#">Posts</a>
                             </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url('login') }}">Login</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" href="{{ url('register') }}">Register</a>
-                            </li>
+                            {% if app.user is not null %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('logout') }}">Logout</a>
+                                </li>
+                            {% else %}
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('login') }}">Login</a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{{ url('register') }}">Register</a>
+                                </li>
+                            {% endif %}
                         </ul>
                     </div>
+                    {% if app.user %}
+                        <span class="navbar-brand mb-0 h1">{{ app.user.username }}</span>
+                    {% endif %}
                 </nav>
             </header>
+            <div>
+                {% for label, messages in app.flashes %}
+                    {% for message in messages %}
+                        <div class="container rounded w-100 text-center py-3 my-3 border border-{{ label }} text-{{ label }} bg-light font-weight-bold">
+                            {{ message }}
+                        </div>
+                    {% endfor %}
+                {% endfor %}
+            </div>
             {% block body %}{% endblock %}
             <footer>
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-                    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#footerNav" aria-controls="footerNav" aria-expanded="false" aria-label="Toggle navigation">
-                        <span class="navbar-toggler-icon"></span>
-                    </button>
-                    <div class="collapse navbar-collapse" id="footerNav">
+                    <div id="footerNav">
                         <ul class="navbar-nav">
                             <li class="nav-item active">
                                 <a class="nav-link" href="#">Privacy policy</a>

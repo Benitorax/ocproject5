@@ -12,12 +12,12 @@
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control" name="email"  id="email" aria-describedby="emailHelp" value="{{ form.email }}">
-                            {% if form.messages.email is not null %}<div class="invalid-feedback">{{ form.messages.email }}</div>{% endif %}
+                            {% if form.errors.email is not null %}<div class="invalid-feedback">{{ form.errors.email }}</div>{% endif %}
                         </div>
                         <div class="form-group">
                             <label for="password">Password</label>
                             <input type="password" class="form-control" name="password" id="password">
-                            {% if form.messages.password is not null %}<div class="invalid-feedback">{{ form.messages.password }}</div>{% endif %}
+                            {% if form.errors.password is not null %}<div class="invalid-feedback">{{ form.errors.password }}</div>{% endif %}
                         </div>
                         <div class="form-group form-check">
                             <input type="checkbox" class="form-check-input" name="rememberme" id="rememberme">

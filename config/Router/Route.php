@@ -36,11 +36,14 @@ class Route
         return $this->methods;
     }
 
+    /**
+     * @param string|array $method
+     */
     public function setMethods($method)
     {
-        if(!$method) {
+        if (!$method) {
             $this->methods = ['GET'];
-        } elseif(!is_array($method)) {
+        } elseif (!is_array($method)) {
             $this->methods = [$method];
         } else {
             $this->methods = $method;

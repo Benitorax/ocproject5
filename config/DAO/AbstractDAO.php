@@ -18,7 +18,7 @@ abstract class AbstractDAO
 
     private function checkConnection()
     {
-        if($this->connection === null) {
+        if ($this->connection === null) {
             return $this->getConnection();
         }
 
@@ -27,44 +27,37 @@ abstract class AbstractDAO
 
     private function getConnection()
     {
-        try{
+        try {
             $this->connection = new PDO(self::DB_HOST, self::DB_USER, self::DB_PASS);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $this->connection;
+        } catch (Exception $connectionError) {
+            die('Connection error:'.$connectionError->getMessage());
         }
-
-        catch(Exception $connectionError)
-        {
-            die ('Connection error:'.$connectionError->getMessage());
-        }
-
     }
 
     protected function createQuery($sql, $parameters = null)
     {
-        if($parameters)
-        {
+        if ($parameters) {
             $stmt = $this->checkConnection()->prepare($sql);
 
-            foreach($parameters as $key => $value) {
+            foreach ($parameters as $key => $value) {
                 $stmt->bindValue(':'.$key, $value);
             }
-            
             $stmt->execute($parameters);
 
             return $stmt;
-
         } else {
             $stmt = $this->checkConnection()->query($sql);
 
-            return $stmt;    
+            return $stmt;
         }
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -72,12 +65,16 @@ abstract class AbstractDAO
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
 
+        if ($result === false) {
+            return null;
+        }
+
         return $dao->buildObject($result);
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function selectResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -85,10 +82,14 @@ abstract class AbstractDAO
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
 
+        if ($result === false) {
+            return null;
+        }
+
         $objects = [];
-        foreach ($result as $row){
+        foreach ($result as $row) {
             $objects[] = $dao->buildObject($row);
-        } 
+        }
 
         return $objects;
     }
@@ -99,21 +100,25 @@ abstract class AbstractDAO
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
 
+        if ($result === false) {
+            throw new \Exception(sprintf('No result for this SQL command: \'%s\'', $sqlPrefix));
+        }
+
         $objects = [];
-        foreach ($result as $row){
+        foreach ($result as $row) {
             $objects[] = $dao->buildObject($row);
-        } 
+        }
 
         return $objects;
     }
 
     /**
-     * var $parameters = [id => $id, username => $username]
-     * return <object> A model object
+     * @param $parameters = [id => $id, username => $username]
+     * @return <object> A model object
      */
     public function select(string $sql, array $parameters = null, array $orderBy = null)
     {
-        if($parameters) {
+        if ($parameters) {
             $sql = $this->addWhere($sql, $parameters);
         }
         $sql = $this->addOrderBy($sql, $orderBy);
@@ -129,14 +134,41 @@ abstract class AbstractDAO
         $this->createQuery($sql, $parameters);
     }
 
+    public function delete(string $tableName, array $parameters)
+    {
+        $sql = 'DELETE FROM '.$tableName;
+        $sql = $this->addWhere($sql, $parameters);
+        return $this->createQuery($sql, $parameters);
+    }
+
+    public function update(string $tableName, array $parameters, array $where)
+    {
+        $sql = 'UPDATE '.$tableName.' SET';
+        
+        $i = 1;
+        foreach (array_keys($parameters) as $colName) {
+            $sql .= ' '.$colName.'=:'.$colName;
+            if ($i < count($parameters)) {
+                $sql .= ', ';
+            }
+            $i++;
+        }
+
+        $sql = $this->addWhere($sql, $where);
+        $parameters = array_merge($parameters, $where);
+
+        return $this->createQuery($sql, $parameters);
+    }
+
     private function paramsToStrings(array $parameters): array
     {
         $i = 1;
         $colNameString = '';
         $paramString = '';
 
-        foreach($parameters as $key => $value) {
-            if($i < count($parameters)) {
+        // TO DO replace $parameters with array_keys($parameters) to delete $value
+        foreach ($parameters as $key => $value) {
+            if ($i < count($parameters)) {
                 $colNameString .= $key.', ';
                 $paramString .= ':'.$key.', ';
             } else {
@@ -154,8 +186,9 @@ abstract class AbstractDAO
         $i = 1;
         $where = ' WHERE ';
 
-        foreach($parameters as $key => $value) {
-            if($i < count($parameters)) {
+        // TO DO replace $parameters with array_keys($parameters) to delete $value
+        foreach (array_keys($parameters) as $key) {
+            if ($i < count($parameters)) {
                 $where .= $key.' = :'.$key.' AND ';
             } else {
                 $where .= $key.' = :'.$key;
@@ -168,12 +201,12 @@ abstract class AbstractDAO
 
     private function addOrderBy(string $sql, array $orderBy = null): string
     {
-        if($orderBy) {
+        if ($orderBy) {
             $i = 1;
             $order = ' ORDER BY ';
 
-            foreach($orderBy as $key => $value) {
-                if($i < count($orderBy)) {
+            foreach ($orderBy as $key => $value) {
+                if ($i < count($orderBy)) {
                     $order .= $key.' '.$value.', ';
                 } else {
                     $order .= $key.' '.$value;
@@ -183,7 +216,7 @@ abstract class AbstractDAO
     
             return $sql.$order;
         } else {
-            return $sql.' ORDER BY updated_at DESC';
+            return $sql;
         }
     }
 }

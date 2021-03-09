@@ -3,49 +3,78 @@ namespace App\Service;
 
 use App\Model\User;
 use App\DAO\UserDAO;
-use App\Model\UserDTO;
-use App\Model\LoginDTO;
+use App\Form\LoginForm;
+use App\Form\RegisterForm;
+use App\Service\Validation\LoginValidation;
 use Config\Request\Parameter;
+use App\Service\Validation\RegisterValidation;
+use Config\Request\Request;
 
 class UserManager
 {
     private $userDAO;
     private $encoder;
+    private $registerValidation;
+    private $loginValidation;
     
-    public function __construct(UserDAO $userDAO, PasswordEncoder $encoder)
-    {
+    public function __construct(
+        UserDAO $userDAO,
+        PasswordEncoder $encoder,
+        RegisterValidation $registerValidation,
+        LoginValidation $loginValidation
+    ) {
         $this->userDAO = $userDAO;
         $this->encoder = $encoder;
+        $this->registerValidation = $registerValidation;
+        $this->loginValidation = $loginValidation;
     }
 
-    public function hydrateLoginDTO(LoginDTO $login, Parameter $post): LoginDTO
+    public function manageRegisterForm(RegisterForm $form, Request $request): RegisterForm
     {
-        $login->email = $post->get('email') ?: '';
-        $login->password = $post->get('password') ?: '';
-        $login->rememberme = $post->get('rememberme') ?: false;
+        $post = $request->request;
+        $form = $this->hydrateRegisterForm($form, $post);
+        $form = $this->registerValidation->validate($form);
 
-        return $login;
+        return $form;
+    }
+
+    public function manageLoginForm(LoginForm $form, Request $request): LoginForm
+    {
+        $post = $request->request;
+        $form = $this->hydrateLoginForm($form, $post);
+        $form = $this->loginValidation->validate($form);
+
+        return $form;
+    }
+
+    public function hydrateLoginForm(LoginForm $form, Parameter $post): LoginForm
+    {
+        $form->email = $post->get('email') ?: '';
+        $form->password = $post->get('password') ?: '';
+        $form->rememberme = $post->get('rememberme') ?: false;
+
+        return $form;
     }
     
-    public function hydrateUserDTO(UserDTO $userDTO, Parameter $post): UserDTO
+    public function hydrateRegisterForm(RegisterForm $form, Parameter $post): RegisterForm
     {
-        $userDTO->email = $post->get('email') ?: '';
-        $userDTO->password1 = $post->get('password1') ?: '';
-        $userDTO->password2 = $post->get('password2') ?: '';
-        $userDTO->username = $post->get('username') ?: '';
-        $userDTO->terms = $post->get('terms') ?: false;
+        $form->email = $post->get('email') ?: '';
+        $form->password1 = $post->get('password1') ?: '';
+        $form->password2 = $post->get('password2') ?: '';
+        $form->username = $post->get('username') ?: '';
+        $form->terms = $post->get('terms') ?: false;
 
-        return $userDTO;
+        return $form;
     }
 
-    public function saveNewUser(UserDTO $userDTO): User
+    public function saveNewUser(RegisterForm $form): User
     {
         $user = new User();
 
         $user->setId(IdGenerator::generate())
-        ->setEmail($userDTO->email)
-        ->setPassword($this->encoder->encode($userDTO->password1))
-        ->setUsername($userDTO->username)
+        ->setEmail($form->email)
+        ->setPassword($this->encoder->encode($form->password1))
+        ->setUsername($form->username)
         ->setCreatedAt(new \DateTime())
         ->setUpdatedAt(new \DateTime());
 

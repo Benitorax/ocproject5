@@ -3,12 +3,23 @@ namespace App\Controller;
 
 use App\Model\Post;
 use App\Model\User;
-use App\Model\UserDTO;
-use App\Model\LoginDTO;
+use App\DAO\PostDAO;
+use App\DAO\UserDAO;
+use App\Service\Auth;
+use App\Form\LoginForm;
+use App\Form\RegisterForm;
+use App\Service\PostManager;
+use App\Service\UserManager;
 use App\Controller\Controller;
+use Config\Security\RememberMeDAO;
+use Config\Security\RememberMeManager;
+use Config\Security\TokenStorage;
+use Twig\Token;
 
 class AppController extends Controller
-{  
+{
+
+  
     public function home()
     {
         $user = new User();
@@ -18,7 +29,8 @@ class AppController extends Controller
             ->setPassword('123456')
             ->setUsername('Martouflette'.$userId.'@mail.com')
             ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setUpdatedAt(new \DateTime())
+        ;
         $titles = [
             "C'est la casse du siècle !",
             "Pandémie ici et là-bas ?!",
@@ -28,18 +40,17 @@ class AppController extends Controller
         $post = new Post();
         $postId = rand(10000, 99999);
         $post->setId($postId)
-        ->setTitle($titles[array_rand($titles)])
-        ->setShortText('Mon introduction')
-        ->setText('Le texte complètement vide')
-        ->setIsPublished(true)
-        ->setUser($user);
+            ->setTitle($titles[array_rand($titles)])
+            ->setShortText('Mon introduction')
+            ->setText('Le texte complètement vide')
+            ->setIsPublished(true)
+            ->setUser($user)
+        ;
 
-        $this->get('PostManager')->createAndSave($post);
+        $this->get(PostManager::class)->createAndSave($post);
+        $this->get(UserDAO::class)->add($user);
 
-        $this->get('PostDAO')->add($post);
-        $this->get('UserDAO')->add($user);
-
-        return $this->view->render('app/home.html.twig', [
+        return $this->render('app/home.html.twig', [
             'post' => $post,
             'user' => $user
         ]);
@@ -68,60 +79,77 @@ class AppController extends Controller
         ->setIsPublished(true)
         ->setUser($user);
 
-        $this->get('PostDAO')->add($post);
-        $this->get('UserDAO')->add($user);
+        $this->get(PostDAO::class)->add($post);
+        $this->get(UserDAO::class)->add($user);
         
-        return $this->view->render('post/show.html.twig', [
+        return $this->render('post/show.html.twig', [
             'post' => $post
         ]);
     }
 
     public function login()
     {
-        $loginDTO = new LoginDTO();
+        if ($this->get(TokenStorage::class)->getToken()) {
+            return $this->redirectToRoute('home');
+        }
 
-        if($this->request->getMethod() === 'POST') {
-            $loginDTO = $this->get('UserManager')->hydrateLoginDTO($loginDTO, $this->request->request);
-            $loginDTO = $this->get('LoginValidation')->validate($loginDTO);
+        $loginForm = new LoginForm();
 
-            if($loginDTO->isValid) {
-                $user = $this->get('UserDAO')->getOneBy(['email' => $loginDTO->email]);
-                $isPasswordValid = $this->get('PasswordEncoder')->isPasswordValid($user, $loginDTO->password);
+        if ($this->request->getMethod() === 'POST') {
+            $loginForm = $this->get(UserManager::class)->manageLoginForm($loginForm, $this->request);
 
-                if($isPasswordValid) {
-                    // TODO Session
-                    // Flash messages
-                    // $this->redirectToRoute('home');
+            if ($loginForm->isValid) {
+                $user = $this->get(Auth::class)->authenticate($loginForm->email, $loginForm->password);
+
+                if ($user) {
+                    $this->session->set('user', $user);
+                    $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+
+                    if ($loginForm->rememberme) {
+                        $this->get(RememberMeManager::class)->createNewToken($user, $this->request);
+                    }
+
+                    return $this->redirectToRoute('home');
                 }
+            } else {
+                $this->session->getFlashes()->add('danger', 'Invalid credentials.');
             }
         }
 
-        // TO DO: Session and Flashmessages 
-
-        return $this->view->render('app/login.html.twig', [
-            'form' => $loginDTO
+        return $this->render('app/login.html.twig', [
+            'form' => $loginForm
         ]);
     }
 
     public function register()
     {
-        $userDTO = new UserDTO();
+        $registerForm = new RegisterForm();
+        $this->session->clear();
+        $this->session->getFlashes()->all();
+        if ($this->request->getMethod() === 'POST') {
+            $userManager = $this->get(UserManager::class);
+            $registerForm = $userManager->manageRegisterForm($registerForm, $this->request);
 
-        if($this->request->getMethod() === 'POST') {
-            $userManager = $this->get('UserManager');
-            $userDTO = $userManager->hydrateUserDTO($userDTO, $this->request->request);
-            $userDTO = $this->get('UserValidation')->validate($userDTO);
-
-            if($userDTO->isValid) {
-                $userManager->saveNewUser($userDTO);
-                $this->redirectToRoute('login');
+            if ($registerForm->isValid) {
+                $userManager->saveNewUser($registerForm);
+                $this->session->getFlashes()->add('success', 'You register with success!');
+                return $this->redirectToRoute('login');
             }
         }
 
-        // TO DO: Flashmessages 
-
-        return $this->view->render('app/register.html.twig', [
-            'form' => $userDTO
+        return $this->render('app/register.html.twig', [
+            'form' => $registerForm
         ]);
+    }
+
+    public function logout()
+    {
+        if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
+            $this->get(RememberMeManager::class)->deleteToken($this->request);
+        }
+
+        $this->session->clear();
+
+        return $this->redirectToRoute('login');
     }
 }

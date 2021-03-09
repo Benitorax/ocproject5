@@ -14,11 +14,14 @@ class Constraint
     
     public function validate($constraint, $value, $name = null)
     {
-        if(is_array($constraint)) {
+        if (is_array($constraint)) {
             $callable = [$this, $constraint[0]];
             
-            if(!is_callable($callable)) {
-                throw new \Exception(sprintf('The method \'%s\' is not found in Constraint class.', $constraint[0]), 500);
+            if (!is_callable($callable)) {
+                throw new \Exception(
+                    sprintf('The method \'%s\' is not found in Constraint class.', $constraint[0]),
+                    500
+                );
             } else {
                 return $callable($constraint, $value, $name);
             }
@@ -27,8 +30,8 @@ class Constraint
     
     public function notBlank($constraint = null, $value, $name = null)
     {
-        if(empty($value)) {
-            if($name) {
+        if (empty($value)) {
+            if ($name) {
                 return 'The field "'.$name.'" should not be empty';
             } else {
                 return 'The field should not be empty';
@@ -39,8 +42,8 @@ class Constraint
     {
         $min = $constraint[1];
 
-        if(strlen($value) < $min) {
-            if($name) {
+        if (strlen($value) < $min) {
+            if ($name) {
                 return 'The field "'.$name.'" should contain at least '.$min.' characters';
             } else {
                 return 'The field should contain at least '.$min.' characters';
@@ -51,8 +54,8 @@ class Constraint
     {
         $max = $constraint[1];
 
-        if(strlen($value) > $max) {
-            if($name) {
+        if (strlen($value) > $max) {
+            if ($name) {
                 return 'The field "'.$name.'" should not contain more than '.$max.' characters';
             } else {
                 return 'The field should not contain more than '.$max.' characters';
@@ -66,8 +69,8 @@ class Constraint
 
         $count = $this->DAO->getCountBy($table, $colName, $value);
 
-        if($count > 0) {
-            if($name) {
+        if ($count > 0) {
+            if ($name) {
                 return 'The '.$name.' "'.$value.'" already exists';
             } else {
                 return 'The field with value "'.$value.'" already exists';
@@ -77,8 +80,8 @@ class Constraint
 
     public function identical($value1, $value2, $name = null)
     {
-        if(strtolower($value1) !== strtolower($value2)) {
-            if($name) {
+        if (strtolower($value1) !== strtolower($value2)) {
+            if ($name) {
                 return 'The '.$name.' should be the same in both field';
             } else {
                 return 'Both fields should have the same value';
@@ -88,15 +91,15 @@ class Constraint
 
     public function checkbox($constraint, $value, $name = null)
     {
-        if($constraint[1] !== $value) {
-            if($constraint[1] === true) {
-                if($name) {
+        if ($constraint[1] !== $value) {
+            if ($constraint[1] === true) {
+                if ($name) {
                     return 'The box "'.$name.'" must be checked';
                 } else {
                     return 'The box must be checked';
                 }
             } else {
-                if($name) {
+                if ($name) {
                     return 'The box "'.$name.'" must be unchecked';
                 } else {
                     return 'The box must be unchecked';

@@ -41,8 +41,8 @@ class CommentDAO extends AbstractDAO implements DAOInterface
 
     public function add(Comment $comment)
     {
-        $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id) 
-            VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
+        $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id)'
+            .'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
         $this->createQuery($sql, [
             'id' => $comment->getId(),
             'text' => $comment->getText(),

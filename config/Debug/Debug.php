@@ -1,15 +1,16 @@
 <?php
 
-function dump($variable, ...$variables) {
+function dump($variable, ...$variables)
+{
     $data = [$variable];
 
-    if(count($variables)) {
-        foreach($variables as $variable) {
+    if (count($variables)) {
+        foreach ($variables as $variable) {
             $data[] = $variable;
-        }            
+        }
     }
 
-    foreach($data as $key => $variable) {
+    foreach ($data as $key => $variable) {
         echo '<pre>#'.$key;
         highlight_string("<?=\n" . var_export($variable, true) . ";\n?>");
         echo '</pre>';
@@ -23,14 +24,16 @@ function dd($variable, ...$variables)
     die();
 }
 
-function deleteTwigCacheFolder() {
+function deleteTwigCacheFolder()
+{
     $dir = dirname(__DIR__, 2).'\var\\cache\\twig';
-    if(is_dir($dir)) {
+    if (is_dir($dir)) {
         deleteDir($dir);
     }
 }
 
-function deleteDir($dirPath) {
+function deleteDir($dirPath)
+{
     if (! is_dir($dirPath)) {
         throw new InvalidArgumentException("$dirPath must be a directory");
     }
@@ -48,4 +51,4 @@ function deleteDir($dirPath) {
     rmdir($dirPath);
 }
 
-deleteTwigCacheFolder();
+//deleteTwigCacheFolder();

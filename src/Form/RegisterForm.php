@@ -1,14 +1,11 @@
 <?php
-namespace App\Model;
+namespace App\Form;
 
-class UserDTO
+class RegisterForm extends AbstractForm
 {
     public string $email;
     public string $password1;
     public string $password2;
     public string $username;
     public bool $terms;
-
-    public array $messages = [];
-    public bool $isValid = false;
 }
