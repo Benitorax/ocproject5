@@ -53,6 +53,7 @@ class UserManager
         $form->email = $post->get('email') ?: '';
         $form->password = $post->get('password') ?: '';
         $form->rememberme = $post->get('rememberme') ?: false;
+        $form->csrfToken = $post->get('csrf_token') ?: '';
 
         return $form;
     }
@@ -64,6 +65,7 @@ class UserManager
         $form->password2 = $post->get('password2') ?: '';
         $form->username = $post->get('username') ?: '';
         $form->terms = $post->get('terms') ?: false;
+        $form->csrfToken = $post->get('csrf_token') ?: '';
 
         return $form;
     }

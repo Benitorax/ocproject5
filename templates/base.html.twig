@@ -27,9 +27,11 @@
                                 <a class="nav-link disabled" href="#">Posts</a>
                             </li>
                             {% if app.user is not null %}
-                                <li class="nav-item">
-                                    <a class="nav-link" href="{{ url('logout') }}">Logout</a>
-                                </li>
+                                <form method="POST" action="{{ url('logout') }}">
+                                    {% import "form/_form.html.twig" as _form %}
+                                    {{ _form.input_csrf(csrf_token()) }}
+                                    <button type="submit" class="btn btn-light my-2 my-sm-0">Logout</button>
+                                <form>
                             {% else %}
                                 <li class="nav-item">
                                     <a class="nav-link" href="{{ url('login') }}">Login</a>
@@ -45,15 +47,15 @@
                     {% endif %}
                 </nav>
             </header>
-            <div>
-                {% for label, messages in app.flashes %}
-                    {% for message in messages %}
-                        <div class="container rounded w-100 text-center py-3 my-3 border border-{{ label }} text-{{ label }} bg-light font-weight-bold">
-                            {{ message }}
-                        </div>
-                    {% endfor %}
+            {% for label, messages in app.flashes %}
+                <div>
+                {% for message in messages %}
+                    <div class="rounded w-100 text-center py-3 my-3 border border-{{ label }} text-{{ label }} bg-light font-weight-bold">
+                        {{ message }}
+                    </div>
                 {% endfor %}
-            </div>
+                </div>
+            {% endfor %}
             {% block body %}{% endblock %}
             <footer>
                 <nav class="navbar navbar-expand-lg navbar-light bg-light">

@@ -90,7 +90,7 @@ class AppController extends Controller
 
     public function login()
     {
-        if ($this->get(TokenStorage::class)->getToken()) {
+        if (!empty($this->get(TokenStorage::class)->getToken())) {
             return $this->redirectToRoute('home');
         }
 
@@ -112,7 +112,6 @@ class AppController extends Controller
 
                     return $this->redirectToRoute('home');
                 }
-            } else {
                 $this->session->getFlashes()->add('danger', 'Invalid credentials.');
             }
         }
@@ -125,8 +124,7 @@ class AppController extends Controller
     public function register()
     {
         $registerForm = new RegisterForm();
-        $this->session->clear();
-        $this->session->getFlashes()->all();
+        
         if ($this->request->getMethod() === 'POST') {
             $userManager = $this->get(UserManager::class);
             $registerForm = $userManager->manageRegisterForm($registerForm, $this->request);
@@ -145,12 +143,15 @@ class AppController extends Controller
 
     public function logout()
     {
-        if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
-            $this->get(RememberMeManager::class)->deleteToken($this->request);
+        if($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
+            if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
+                $this->get(RememberMeManager::class)->deleteToken($this->request);
+            }
+    
+            $this->session->clear();
+    
+            return $this->redirectToRoute('login');
         }
-
-        $this->session->clear();
-
-        return $this->redirectToRoute('login');
+        return $this->redirectToRoute('home');
     }
 }

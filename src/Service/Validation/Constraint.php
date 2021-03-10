@@ -13,7 +13,7 @@ class Constraint
         $this->DAO = $DAO;
     }
     
-    public function validate($constraint, $value, $name = null)
+    public function validate($constraint, $value, string $name = null)
     {
         if (is_array($constraint)) {
             $callable = [$this, $constraint[0]];
@@ -28,7 +28,7 @@ class Constraint
         }
     }
     
-    public function notBlank($constraint, $value, $name = null)
+    public function notBlank($constraint, string $value, string $name = null)
     {
         if (empty($value)) {
             if (!empty($name)) {
@@ -38,7 +38,7 @@ class Constraint
         }
     }
 
-    public function minLength($constraint, $value, $name = null)
+    public function minLength(array $constraint, string $value, string $name = null)
     {
         $min = $constraint[1];
 
@@ -50,7 +50,7 @@ class Constraint
         }
     }
     
-    public function maxLength($constraint, $value, $name = null)
+    public function maxLength(array $constraint, string $value, string $name = null)
     {
         $max = $constraint[1];
 
@@ -62,7 +62,7 @@ class Constraint
         }
     }
 
-    public function unique($constraint, $value, $name = null)
+    public function unique(array $constraint, string $value, string $name = null)
     {
         [$table, $colName] = explode(':', $constraint[1], 2);
         $count = $this->DAO->getCountBy($table, $colName, $value);
@@ -75,7 +75,7 @@ class Constraint
         }
     }
 
-    public function identical($value1, $value2, $name = null)
+    public function identical(string $value1, string $value2, string $name = null)
     {
         if (strtolower($value1) !== strtolower($value2)) {
             if (!empty($name)) {
@@ -85,7 +85,7 @@ class Constraint
         }
     }
 
-    public function checkbox($constraint, $value, $name = null)
+    public function checkbox(array $constraint, string $value, string $name = null)
     {
         if ($constraint[1] !== $value) {
             if ($constraint[1] === true) {

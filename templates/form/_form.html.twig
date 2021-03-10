@@ -1,0 +1,11 @@
+{% macro message_csrf(form = null) %}
+    {% if form.errors.csrf is not null %}
+        <span class="alert alert-danger d-block text-center">
+            <span>{{form.errors.csrf}}</span>
+        </span>
+    {% endif %}
+{% endmacro %}
+
+{% macro input_csrf(value) %}
+    <input type="hidden" id="csrf_token" name="csrf_token" value="{{ value }}">
+{% endmacro %}

@@ -1,4 +1,5 @@
 {% extends 'base.html.twig' %}
+{% import "form/_form.html.twig" as _form %}
 
 {% block title %}Register{% endblock %}
 
@@ -9,6 +10,7 @@
                 <div class="card-body">
                     <h5 class="card-title">Register</h5>
                     <form method="post">
+                        {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control" name ="email" id="email" aria-describedby="emailHelp" value="{{ form.email }}">
@@ -34,6 +36,7 @@
                             <label class="form-check-label" for="terms">I agree to the <a href="#">Terme of Use</a>.</label>
                             {% if form.errors.terms is not null %}<div class="invalid-feedback">{{ form.errors.terms }}</div>{% endif %}
                         </div>
+                        {{ _form.input_csrf(csrf_token()) }}
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>

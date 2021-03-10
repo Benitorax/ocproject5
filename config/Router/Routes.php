@@ -10,6 +10,7 @@
 return [
     '/logout' => [
         'name' => 'logout',
+        'method' => 'POST',
         'callable' => 'App\Controller\AppController::logout'
     ],
     '/login' => [

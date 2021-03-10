@@ -7,6 +7,7 @@ use Config\Session\Session;
 use App\Service\UrlGenerator;
 use Config\Response\Response;
 use Config\Container\Container;
+use Config\Security\Csrf\CsrfTokenManager;
 
 abstract class Controller
 {
@@ -53,5 +54,15 @@ abstract class Controller
         
         // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
         // exit();
+    }
+
+    public function isCsrfTokenValid(?string $token)
+    {
+        $isValid = $this->get(CsrfTokenManager::class)->isTokenValid($token);
+        
+        if($isValid) {
+            return true;
+        }
+        return false;
     }
 }
