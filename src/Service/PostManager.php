@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use DateTime;
 use App\DAO\DAO;
 use App\Model\Post;
 use App\DAO\PostDAO;
@@ -20,8 +21,8 @@ class PostManager
     {
         $post
         ->setSlug($this->slugify($post->getTitle()))
-        ->setCreatedAt(new \DateTime())
-        ->setUpdatedAt(new \DateTime());
+        ->setCreatedAt(new DateTime())
+        ->setUpdatedAt(new DateTime());
 
         $this->postDAO->add($post);
         

@@ -1,6 +1,8 @@
 <?php
 namespace Config\Session;
 
+use Exception;
+use ArrayIterator;
 use Config\Session\FlashMessages;
 
 class Session implements \IteratorAggregate, \Countable
@@ -12,7 +14,7 @@ class Session implements \IteratorAggregate, \Countable
     public function __construct()
     {
         if (\PHP_SESSION_ACTIVE === session_status()) {
-            throw new \Exception('Failed to start the session: already started by PHP.');
+            throw new Exception('Failed to start the session: already started by PHP.');
         }
 
         if (\PHP_SESSION_NONE === session_status()) {
@@ -74,9 +76,9 @@ class Session implements \IteratorAggregate, \Countable
     /**
      * Returns an iterator for session.
      */
-    public function getIterator(): \ArrayIterator
+    public function getIterator(): ArrayIterator
     {
-        return new \ArrayIterator($this->session);
+        return new ArrayIterator($this->session);
     }
 
     /**

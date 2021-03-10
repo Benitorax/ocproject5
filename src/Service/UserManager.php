@@ -1,14 +1,15 @@
 <?php
 namespace App\Service;
 
+use DateTime;
 use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\LoginForm;
 use App\Form\RegisterForm;
-use App\Service\Validation\LoginValidation;
-use Config\Request\Parameter;
-use App\Service\Validation\RegisterValidation;
 use Config\Request\Request;
+use Config\Request\Parameter;
+use App\Service\Validation\LoginValidation;
+use App\Service\Validation\RegisterValidation;
 
 class UserManager
 {
@@ -75,8 +76,8 @@ class UserManager
         ->setEmail($form->email)
         ->setPassword($this->encoder->encode($form->password1))
         ->setUsername($form->username)
-        ->setCreatedAt(new \DateTime())
-        ->setUpdatedAt(new \DateTime());
+        ->setCreatedAt(new DateTime())
+        ->setUpdatedAt(new DateTime());
 
         $this->userDAO->add($user);
 

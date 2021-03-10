@@ -1,6 +1,8 @@
 <?php
 namespace App\Controller;
 
+use DateTime;
+use Twig\Token;
 use App\Model\Post;
 use App\Model\User;
 use App\DAO\PostDAO;
@@ -11,10 +13,9 @@ use App\Form\RegisterForm;
 use App\Service\PostManager;
 use App\Service\UserManager;
 use App\Controller\Controller;
+use Config\Security\TokenStorage;
 use Config\Security\RememberMeDAO;
 use Config\Security\RememberMeManager;
-use Config\Security\TokenStorage;
-use Twig\Token;
 
 class AppController extends Controller
 {
@@ -28,8 +29,8 @@ class AppController extends Controller
             ->setEmail('name'.$userId)
             ->setPassword('123456')
             ->setUsername('Martouflette'.$userId.'@mail.com')
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime())
         ;
         $titles = [
             "C'est la casse du siècle !",
@@ -64,8 +65,8 @@ class AppController extends Controller
             ->setEmail($username.$userId.'@mail.com')
             ->setPassword('123456')
             ->setUsername($username.$userId)
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime());
             
         $post = new Post();
         $postId = rand(10000, 99999);
@@ -74,8 +75,8 @@ class AppController extends Controller
         ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
         ->setShortText('Mon introduction')
         ->setText('Le texte complètement vide')
-        ->setCreatedAt(new \DateTime())
-        ->setUpdatedAt(new \DateTime())
+        ->setCreatedAt(new DateTime())
+        ->setUpdatedAt(new DateTime())
         ->setIsPublished(true)
         ->setUser($user);
 

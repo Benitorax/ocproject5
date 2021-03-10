@@ -1,27 +1,30 @@
 <?php
 namespace Config\Security;
 
+use DateTime;
+use Exception;
+
 class PersistentToken
 {
     private string $class;
     private string $username;
     private string $series;
     private string $tokenValue;
-    private \DateTime $lastUsed;
+    private DateTime $lastUsed;
 
-    public function __construct(string $class, string $username, string $series, string $tokenValue, \DateTime $lastUsed)
+    public function __construct(string $class, string $username, string $series, string $tokenValue, DateTime $lastUsed)
     {
         if (empty($class)) {
-            throw new \Exception('$class must not be empty.');
+            throw new Exception('$class must not be empty.');
         }
         if ('' === $username) {
-            throw new \Exception('$username must not be empty.');
+            throw new Exception('$username must not be empty.');
         }
         if (empty($series)) {
-            throw new \Exception('$series must not be empty.');
+            throw new Exception('$series must not be empty.');
         }
         if (empty($tokenValue)) {
-            throw new \Exception('$tokenValue must not be empty.');
+            throw new Exception('$tokenValue must not be empty.');
         }
 
         $this->class = $class;
@@ -51,7 +54,7 @@ class PersistentToken
         return $this->tokenValue;
     }
 
-    public function getLastUsed(): \DateTime
+    public function getLastUsed(): DateTime
     {
         return $this->lastUsed;
     }

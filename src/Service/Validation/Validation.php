@@ -18,7 +18,7 @@ abstract class Validation
         foreach ($constraints as $constraint) {
             $error = $this->constraint->validate($constraint, $value, $name);
 
-            if ($error) {
+            if (!empty($error)) {
                 return $error;
             }
         }
@@ -29,7 +29,8 @@ abstract class Validation
     public function checkIdentical($value1, $value2, $name = null)
     {
         $error = $this->constraint->identical($value1, $value2, $name);
-        if ($error) {
+        
+        if (!empty($error)) {
             return $error;
         }
 
@@ -39,7 +40,7 @@ abstract class Validation
     public function hasErrorMessages(AbstractForm $form)
     {
         foreach ($form->errors as $error) {
-            if ($error) {
+            if (!empty($error)) {
                 return true;
             }
         }

@@ -8,9 +8,6 @@
     <file>public/index.php</file>
     <file>src</file>
     <file>config</file>
-
-    <exclude-pattern>src/Service/Validation/Constraint</exclude-pattern>
-    <exclude-pattern>config/Debug/Debug</exclude-pattern>
     
     <rule ref="PSR1"></rule>
     <rule ref="PSR2"></rule>

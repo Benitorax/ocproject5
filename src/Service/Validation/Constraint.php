@@ -1,6 +1,7 @@
 <?php
 namespace App\Service\Validation;
 
+use Exception;
 use App\DAO\DAO;
 
 class Constraint
@@ -18,74 +19,69 @@ class Constraint
             $callable = [$this, $constraint[0]];
             
             if (!is_callable($callable)) {
-                throw new \Exception(
+                throw new Exception(
                     sprintf('The method \'%s\' is not found in Constraint class.', $constraint[0]),
                     500
                 );
-            } else {
-                return $callable($constraint, $value, $name);
             }
+            return $callable($constraint, $value, $name);
         }
     }
     
-    public function notBlank($constraint = null, $value, $name = null)
+    public function notBlank($constraint, $value, $name = null)
     {
         if (empty($value)) {
-            if ($name) {
+            if (!empty($name)) {
                 return 'The field "'.$name.'" should not be empty';
-            } else {
-                return 'The field should not be empty';
             }
+            return 'The field should not be empty';
         }
     }
-    public function minLength($constraint = null, $value, $name = null)
+
+    public function minLength($constraint, $value, $name = null)
     {
         $min = $constraint[1];
 
         if (strlen($value) < $min) {
-            if ($name) {
+            if (!empty($name)) {
                 return 'The field "'.$name.'" should contain at least '.$min.' characters';
-            } else {
-                return 'The field should contain at least '.$min.' characters';
             }
+            return 'The field should contain at least '.$min.' characters';
         }
     }
-    public function maxLength($constraint = null, $value, $name = null)
+    
+    public function maxLength($constraint, $value, $name = null)
     {
         $max = $constraint[1];
 
         if (strlen($value) > $max) {
-            if ($name) {
+            if (!empty($name)) {
                 return 'The field "'.$name.'" should not contain more than '.$max.' characters';
-            } else {
-                return 'The field should not contain more than '.$max.' characters';
             }
+            return 'The field should not contain more than '.$max.' characters';
         }
     }
 
-    public function unique($constraint = null, $value, $name = null)
+    public function unique($constraint, $value, $name = null)
     {
         [$table, $colName] = explode(':', $constraint[1], 2);
-
         $count = $this->DAO->getCountBy($table, $colName, $value);
 
         if ($count > 0) {
-            if ($name) {
+            if (!empty($name)) {
                 return 'The '.$name.' "'.$value.'" already exists';
-            } else {
-                return 'The field with value "'.$value.'" already exists';
             }
+            return 'The field with value "'.$value.'" already exists';
         }
     }
 
     public function identical($value1, $value2, $name = null)
     {
         if (strtolower($value1) !== strtolower($value2)) {
-            if ($name) {
+            if (!empty($name)) {
                 return 'The '.$name.' should be the same in both field';
-            } else {
-                return 'Both fields should have the same value';
             }
+            return 'Both fields should have the same value';
         }
     }
 
@@ -93,17 +89,15 @@ class Constraint
     {
         if ($constraint[1] !== $value) {
             if ($constraint[1] === true) {
-                if ($name) {
+                if (!empty($name)) {
                     return 'The box "'.$name.'" must be checked';
-                } else {
-                    return 'The box must be checked';
                 }
+                return 'The box must be checked';
             } else {
-                if ($name) {
+                if (!empty($name)) {
                     return 'The box "'.$name.'" must be unchecked';
-                } else {
-                    return 'The box must be unchecked';
                 }
+                return 'The box must be unchecked';
             }
         }
     }

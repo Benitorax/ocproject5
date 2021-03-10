@@ -1,6 +1,8 @@
 <?php
 namespace Config\Security;
 
+use DateTime;
+use Exception;
 use Config\DAO\AbstractDAO;
 use Config\DAO\DAOInterface;
 use Config\Security\PersistentToken;
@@ -18,7 +20,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
             $object->username,
             $object->series,
             $object->value,
-            new \DateTime($object->last_used)
+            new DateTime($object->last_used)
         );
     }
 
@@ -31,7 +33,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
             return $token;
         }
 
-        throw new \Exception('No token found.');
+        throw new Exception('No token found.');
     }
 
     public function deleteTokenBySeries($series)
@@ -45,7 +47,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         $params = ['username' => $username];
         $this->delete(self::SQL_TABLE, $params);
     }
-    public function updateToken($series, $tokenValue, \DateTime $lastUsed)
+    public function updateToken($series, $tokenValue, DateTime $lastUsed)
     {
         $params = [
             'value' => $tokenValue,
