@@ -1,5 +1,5 @@
 <?php
-namespace Config\Security;
+namespace Config\Security\RememberMe;
 
 use DateTime;
 use Exception;
@@ -7,7 +7,7 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use Config\Cookie\Cookie;
 use Config\Request\Request;
-use Config\Security\RememberMeToken;
+use Config\Security\TokenStorage;
 
 class RememberMeManager
 {
@@ -46,6 +46,10 @@ class RememberMeManager
 
         [$series, $tokenValue] = $cookieParts;
         $persistentToken = $this->rememberMeDAO->loadTokenBySeries($series);
+
+        if (empty($persistentToken)) {
+            throw new Exception('No token found.');
+        }
 
         if (!hash_equals($persistentToken->getTokenValue(), $tokenValue)) {
             throw new Exception('This token was already used. The account is possibly compromised.');

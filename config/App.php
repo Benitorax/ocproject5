@@ -2,15 +2,13 @@
 namespace Config;
 
 use App\Model\User;
-use Config\Cookie\Cookie;
-use Config\Router\Router;
 use Config\Request\Request;
 use Config\Session\Session;
 use Config\Response\Response;
 use Config\Container\Container;
-use Config\Security\AbstractToken;
 use Config\Security\TokenStorage;
-use Config\Security\RememberMeManager;
+use Config\Security\AbstractToken;
+use Config\Security\RememberMe\RememberMeManager;
 
 class App
 {
@@ -46,9 +44,6 @@ class App
         $tokenStorage = $this->container->getService(TokenStorage::class);
         if ($session->get('user') instanceof User) {
             $tokenStorage->setUserFromSession($session);
-        }
-
-        if (null !== $tokenStorage->getToken()) {
             return;
         }
 

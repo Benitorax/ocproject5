@@ -2,7 +2,6 @@
 namespace App\Controller;
 
 use DateTime;
-use Twig\Token;
 use App\Model\Post;
 use App\Model\User;
 use App\DAO\PostDAO;
@@ -14,8 +13,7 @@ use App\Service\PostManager;
 use App\Service\UserManager;
 use App\Controller\Controller;
 use Config\Security\TokenStorage;
-use Config\Security\RememberMeDAO;
-use Config\Security\RememberMeManager;
+use Config\Security\RememberMe\RememberMeManager;
 
 class AppController extends Controller
 {
@@ -152,6 +150,7 @@ class AppController extends Controller
     
             return $this->redirectToRoute('login');
         }
+
         return $this->redirectToRoute('home');
     }
 }

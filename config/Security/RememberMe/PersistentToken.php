@@ -1,5 +1,5 @@
 <?php
-namespace Config\Security;
+namespace Config\Security\RememberMe;
 
 use DateTime;
 use Exception;

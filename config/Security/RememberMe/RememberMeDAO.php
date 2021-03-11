@@ -1,11 +1,10 @@
 <?php
-namespace Config\Security;
+namespace Config\Security\RememberMe;
 
 use DateTime;
 use Exception;
 use Config\DAO\AbstractDAO;
 use Config\DAO\DAOInterface;
-use Config\Security\PersistentToken;
 
 class RememberMeDAO extends AbstractDAO implements DAOInterface
 {
@@ -33,7 +32,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
             return $token;
         }
 
-        throw new Exception('No token found.');
+        return null;
     }
 
     public function deleteTokenBySeries($series)

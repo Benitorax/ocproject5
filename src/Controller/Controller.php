@@ -59,7 +59,7 @@ abstract class Controller
     public function isCsrfTokenValid(?string $token)
     {
         $isValid = $this->get(CsrfTokenManager::class)->isTokenValid($token);
-        
+
         if($isValid) {
             return true;
         }
