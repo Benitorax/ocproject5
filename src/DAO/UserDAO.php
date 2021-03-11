@@ -25,7 +25,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
         return $user;
     }
 
-    public function getOneBy(array $parameters): User
+    public function getOneBy(array $parameters): ?User
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }

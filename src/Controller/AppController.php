@@ -13,6 +13,8 @@ use App\Service\PostManager;
 use App\Service\UserManager;
 use App\Controller\Controller;
 use Config\Security\TokenStorage;
+use App\Service\Validation\LoginValidation;
+use App\Service\Validation\RegisterValidation;
 use Config\Security\RememberMe\RememberMeManager;
 
 class AppController extends Controller
@@ -92,51 +94,35 @@ class AppController extends Controller
             return $this->redirectToRoute('home');
         }
 
-        $loginForm = new LoginForm();
+        $form = new LoginForm($this->get(LoginValidation::class));
+        $form->handleRequest($this->request);
 
-        if ($this->request->getMethod() === 'POST') {
-            $loginForm = $this->get(UserManager::class)->manageLoginForm($loginForm, $this->request);
+        if ($form->isSubmitted && $form->isValid) {
+            $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
-            if ($loginForm->isValid) {
-                $user = $this->get(Auth::class)->authenticate($loginForm->email, $loginForm->password);
-
-                if ($user) {
-                    $this->session->set('user', $user);
-                    $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
-
-                    if ($loginForm->rememberme) {
-                        $this->get(RememberMeManager::class)->createNewToken($user, $this->request);
-                    }
-
-                    return $this->redirectToRoute('home');
-                }
-                $this->session->getFlashes()->add('danger', 'Invalid credentials.');
+            if (!empty($user)) {
+                $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+                return $this->redirectToRoute('home');
             }
+            $this->session->getFlashes()->add('danger', 'Email or password Invalid.');
         }
 
-        return $this->render('app/login.html.twig', [
-            'form' => $loginForm
-        ]);
+        return $this->render('app/login.html.twig', ['form' => $form]);
     }
 
     public function register()
     {
-        $registerForm = new RegisterForm();
-        
-        if ($this->request->getMethod() === 'POST') {
-            $userManager = $this->get(UserManager::class);
-            $registerForm = $userManager->manageRegisterForm($registerForm, $this->request);
+        $form = new RegisterForm($this->get(RegisterValidation::class));
+        $form->handleRequest($this->request);
 
-            if ($registerForm->isValid) {
-                $userManager->saveNewUser($registerForm);
-                $this->session->getFlashes()->add('success', 'You register with success!');
-                return $this->redirectToRoute('login');
-            }
+        if ($form->isSubmitted && $form->isValid) {
+            $this->get(UserManager::class)->saveNewUser($form);
+            $this->session->getFlashes()->add('success', 'You register with success!');
+
+            return $this->redirectToRoute('login');
         }
 
-        return $this->render('app/register.html.twig', [
-            'form' => $registerForm
-        ]);
+        return $this->render('app/register.html.twig', ['form' => $form]);
     }
 
     public function logout()

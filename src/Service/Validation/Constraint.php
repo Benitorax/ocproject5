@@ -87,8 +87,8 @@ class Constraint
 
     public function checkbox(array $constraint, string $value, string $name = null)
     {
-        if ($constraint[1] !== $value) {
-            if ($constraint[1] === true) {
+        if ((bool) $constraint[1] !== (bool) $value) {
+            if ((bool) $constraint[1] === (bool) true) {
                 if (!empty($name)) {
                     return 'The box "'.$name.'" must be checked';
                 }

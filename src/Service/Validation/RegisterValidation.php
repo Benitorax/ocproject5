@@ -42,7 +42,5 @@ class RegisterValidation extends Validation
         if (!$this->hasErrorMessages($form)) {
             $form->isValid = true;
         }
-
-        return $form;
     }
 }
