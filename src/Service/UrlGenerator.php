@@ -1,6 +1,7 @@
 <?php
 namespace App\Service;
 
+use Exception;
 use Config\Router\Router;
 
 class UrlGenerator
@@ -24,7 +25,7 @@ class UrlGenerator
             }
         }
 
-        throw new \Exception(sprintf("Route with name '%s' cannot be found.", $routeName), 500);
+        throw new Exception(sprintf("Route with name '%s' cannot be found.", $routeName), 500);
     }
 
     private function hydrateRouteParams(string $routePath, array $routeParams): string
@@ -37,7 +38,7 @@ class UrlGenerator
             if (array_key_exists($paramName, $routeParams)) {
                 $routePath = preg_replace('#\{'.$paramName.'\}#', $routeParams[$paramName], $routePath);
             } else {
-                throw new \Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
+                throw new Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
                 break;
             }
         }

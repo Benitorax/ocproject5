@@ -1,14 +1,16 @@
 {% extends 'base.html.twig' %}
+{% import "form/_form.html.twig" as _form %}
 
 {% block title %}Login{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <div class="col">
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-6">
             <div class="card">
                 <div class="card-body">
                     <h5 class="card-title">Login</h5>
                     <form method="POST">
+                        {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="email">Email address</label>
                             <input type="email" class="form-control" name="email"  id="email" aria-describedby="emailHelp" value="{{ form.email }}">
@@ -23,6 +25,7 @@
                             <input type="checkbox" class="form-check-input" name="rememberme" id="rememberme">
                             <label class="form-check-label" for="rememberme">Remember me</label>
                         </div>
+                        {{ _form.input_csrf(csrf_token()) }}
                         <button type="submit" class="btn btn-primary">Submit</button>
                     </form>
                 </div>

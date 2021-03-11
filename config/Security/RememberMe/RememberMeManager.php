@@ -1,11 +1,13 @@
 <?php
-namespace Config\Security;
+namespace Config\Security\RememberMe;
 
+use DateTime;
+use Exception;
 use App\Model\User;
 use App\DAO\UserDAO;
 use Config\Cookie\Cookie;
 use Config\Request\Request;
-use Config\Security\RememberMeToken;
+use Config\Security\TokenStorage;
 
 class RememberMeManager
 {
@@ -39,22 +41,26 @@ class RememberMeManager
         $this->cancelCookie($request);
 
         if (2 !== \count($cookieParts)) {
-            throw new \Exception('The cookie is invalid.');
+            throw new Exception('The cookie is invalid.');
         }
 
         [$series, $tokenValue] = $cookieParts;
         $persistentToken = $this->rememberMeDAO->loadTokenBySeries($series);
 
+        if (empty($persistentToken)) {
+            throw new Exception('No token found.');
+        }
+
         if (!hash_equals($persistentToken->getTokenValue(), $tokenValue)) {
-            throw new \Exception('This token was already used. The account is possibly compromised.');
+            throw new Exception('This token was already used. The account is possibly compromised.');
         }
 
         if ($persistentToken->getLastUsed()->getTimestamp() + $this->options['lifetime'] < time()) {
-            throw new \Exception('The cookie has expired.');
+            throw new Exception('The cookie has expired.');
         }
 
         $tokenValue = base64_encode(random_bytes(64));
-        $this->rememberMeDAO->updateToken($series, $tokenValue, new \DateTime());
+        $this->rememberMeDAO->updateToken($series, $tokenValue, new DateTime());
         $request->attributes->set(
             self::COOKIE_ATTR_NAME,
             new Cookie(
@@ -87,7 +93,7 @@ class RememberMeManager
         $user = $this->processAutoLoginCookie($cookieParts, $request);
 
         if (!$user instanceof User) {
-            throw new \Exception('processAutoLoginCookie() must return a User class.');
+            throw new Exception('processAutoLoginCookie() must return a User class.');
         }
 
         return new RememberMeToken($user);
@@ -106,7 +112,7 @@ class RememberMeManager
                 $user->getUsername(),
                 $series,
                 $tokenValue,
-                new \DateTime()
+                new DateTime()
             )
         );
 
@@ -136,7 +142,7 @@ class RememberMeManager
     {
         foreach ($cookieParts as $cookiePart) {
             if (false !== strpos($cookiePart, self::COOKIE_DELIMITER)) {
-                throw new \InvalidArgumentException(
+                throw new Exception(
                     sprintf('$cookieParts should not contain the cookie delimiter "%s".', self::COOKIE_DELIMITER)
                 );
             }

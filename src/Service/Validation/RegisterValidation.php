@@ -33,6 +33,7 @@ class RegisterValidation extends Validation
         $form->errors['password1'] = $this->check(self::PASSWORD1, $form->password1, 'password');
         $form->errors['username'] = $this->check(self::USERNAME, $form->username, 'username');
         $form->errors['terms'] = $this->check(self::TERMS, $form->terms, 'terms of use');
+        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
 
         if (!$form->errors['password1']) {
             $form->errors['password2'] = $this->checkIdentical($form->password1, $form->password2, 'password');
@@ -41,7 +42,5 @@ class RegisterValidation extends Validation
         if (!$this->hasErrorMessages($form)) {
             $form->isValid = true;
         }
-
-        return $form;
     }
 }

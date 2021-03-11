@@ -2,6 +2,7 @@
 namespace App\DAO;
 
 use PDO;
+use DateTime;
 use App\Model\Post;
 use App\Model\User;
 use Config\DAO\AbstractDAO;
@@ -20,8 +21,8 @@ class PostDAO extends AbstractDAO implements DAOInterface
             ->setSlug($object->slug)
             ->setShortText($object->short_text)
             ->setText($object->text)
-            ->setCreatedAt(new \DateTime($object->created_at))
-            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setCreatedAt(new DateTime($object->created_at))
+            ->setUpdatedAt(new DateTime($object->updated_at))
             ->setIsPublished($object->is_published)
             ->setUser($this->getUserById($object->user_id));
             

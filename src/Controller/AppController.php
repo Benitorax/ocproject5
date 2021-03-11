@@ -1,6 +1,7 @@
 <?php
 namespace App\Controller;
 
+use DateTime;
 use App\Model\Post;
 use App\Model\User;
 use App\DAO\PostDAO;
@@ -11,10 +12,10 @@ use App\Form\RegisterForm;
 use App\Service\PostManager;
 use App\Service\UserManager;
 use App\Controller\Controller;
-use Config\Security\RememberMeDAO;
-use Config\Security\RememberMeManager;
 use Config\Security\TokenStorage;
-use Twig\Token;
+use App\Service\Validation\LoginValidation;
+use App\Service\Validation\RegisterValidation;
+use Config\Security\RememberMe\RememberMeManager;
 
 class AppController extends Controller
 {
@@ -28,8 +29,8 @@ class AppController extends Controller
             ->setEmail('name'.$userId)
             ->setPassword('123456')
             ->setUsername('Martouflette'.$userId.'@mail.com')
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime())
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime())
         ;
         $titles = [
             "C'est la casse du siècle !",
@@ -64,8 +65,8 @@ class AppController extends Controller
             ->setEmail($username.$userId.'@mail.com')
             ->setPassword('123456')
             ->setUsername($username.$userId)
-            ->setCreatedAt(new \DateTime())
-            ->setUpdatedAt(new \DateTime());
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime());
             
         $post = new Post();
         $postId = rand(10000, 99999);
@@ -74,8 +75,8 @@ class AppController extends Controller
         ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
         ->setShortText('Mon introduction')
         ->setText('Le texte complètement vide')
-        ->setCreatedAt(new \DateTime())
-        ->setUpdatedAt(new \DateTime())
+        ->setCreatedAt(new DateTime())
+        ->setUpdatedAt(new DateTime())
         ->setIsPublished(true)
         ->setUser($user);
 
@@ -89,67 +90,47 @@ class AppController extends Controller
 
     public function login()
     {
-        if ($this->get(TokenStorage::class)->getToken()) {
+        if (!empty($this->get(TokenStorage::class)->getToken())) {
             return $this->redirectToRoute('home');
         }
 
-        $loginForm = new LoginForm();
+        $form = new LoginForm($this->get(LoginValidation::class));
+        $form->handleRequest($this->request);
 
-        if ($this->request->getMethod() === 'POST') {
-            $loginForm = $this->get(UserManager::class)->manageLoginForm($loginForm, $this->request);
+        if ($form->isSubmitted && $form->isValid) {
+            $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
-            if ($loginForm->isValid) {
-                $user = $this->get(Auth::class)->authenticate($loginForm->email, $loginForm->password);
-
-                if ($user) {
-                    $this->session->set('user', $user);
-                    $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
-
-                    if ($loginForm->rememberme) {
-                        $this->get(RememberMeManager::class)->createNewToken($user, $this->request);
-                    }
-
-                    return $this->redirectToRoute('home');
-                }
-            } else {
-                $this->session->getFlashes()->add('danger', 'Invalid credentials.');
+            if (!empty($user)) {
+                $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+                return $this->redirectToRoute('home');
             }
+            $this->session->getFlashes()->add('danger', 'Email or password Invalid.');
         }
 
-        return $this->render('app/login.html.twig', [
-            'form' => $loginForm
-        ]);
+        return $this->render('app/login.html.twig', ['form' => $form]);
     }
 
     public function register()
     {
-        $registerForm = new RegisterForm();
-        $this->session->clear();
-        $this->session->getFlashes()->all();
-        if ($this->request->getMethod() === 'POST') {
-            $userManager = $this->get(UserManager::class);
-            $registerForm = $userManager->manageRegisterForm($registerForm, $this->request);
+        $form = new RegisterForm($this->get(RegisterValidation::class));
+        $form->handleRequest($this->request);
 
-            if ($registerForm->isValid) {
-                $userManager->saveNewUser($registerForm);
-                $this->session->getFlashes()->add('success', 'You register with success!');
-                return $this->redirectToRoute('login');
-            }
+        if ($form->isSubmitted && $form->isValid) {
+            $this->get(UserManager::class)->saveNewUser($form);
+            $this->session->getFlashes()->add('success', 'You register with success!');
+
+            return $this->redirectToRoute('login');
         }
 
-        return $this->render('app/register.html.twig', [
-            'form' => $registerForm
-        ]);
+        return $this->render('app/register.html.twig', ['form' => $form]);
     }
 
     public function logout()
     {
-        if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
-            $this->get(RememberMeManager::class)->deleteToken($this->request);
+        if($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
+            $this->get(Auth::class)->handleLogout($this->request);
         }
 
-        $this->session->clear();
-
-        return $this->redirectToRoute('login');
+        return $this->redirectToRoute('home');
     }
 }

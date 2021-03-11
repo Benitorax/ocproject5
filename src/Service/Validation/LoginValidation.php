@@ -21,7 +21,7 @@ class LoginValidation extends Validation
     {
         $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
         $form->errors['password'] = $this->check(self::PASSWORD, $form->password, 'password');
-
+        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
 
         if (!$this->hasErrorMessages($form)) {
             $form->isValid = true;

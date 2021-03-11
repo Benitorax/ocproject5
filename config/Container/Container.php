@@ -1,6 +1,7 @@
 <?php
 namespace Config\Container;
 
+use ReflectionMethod;
 use Config\Router\Router;
 
 class Container
@@ -63,7 +64,7 @@ class Container
     public function resolveServiceArguments(string $className): ?array
     {
         if (method_exists($className, '__construct')) {
-            $reflection = new \ReflectionMethod($className, '__construct');
+            $reflection = new ReflectionMethod($className, '__construct');
 
             $arguments = null;
             foreach ($reflection->getParameters() as $param) {

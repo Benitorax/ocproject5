@@ -1,6 +1,7 @@
 <?php
 namespace App\DAO;
 
+use DateTime;
 use App\Model\User;
 use App\Model\Comment;
 use Config\DAO\AbstractDAO;
@@ -15,8 +16,8 @@ class CommentDAO extends AbstractDAO implements DAOInterface
         $comment = new Comment();
         $comment->setId($object->id)
             ->setText($object->text)
-            ->setCreatedAt(new \DateTime($object->created_at))
-            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setCreatedAt(new DateTime($object->created_at))
+            ->setUpdatedAt(new DateTime($object->updated_at))
             ->setIsValidated($object->is_validated)
             ->setUser($object->user_id)
             ->setPost($object->post_id);

@@ -1,6 +1,7 @@
 <?php
 namespace App\DAO;
 
+use DateTime;
 use App\Model\User;
 use Config\DAO\AbstractDAO;
 use Config\DAO\DAOInterface;
@@ -16,15 +17,15 @@ class UserDAO extends AbstractDAO implements DAOInterface
             ->setEmail($object->email)
             ->setPassword($object->password)
             ->setUsername($object->username)
-            ->setCreatedAt(new \DateTime($object->created_at))
-            ->setUpdatedAt(new \DateTime($object->updated_at))
+            ->setCreatedAt(new DateTime($object->created_at))
+            ->setUpdatedAt(new DateTime($object->updated_at))
             ->setRoles(json_decode($object->roles))
             ->setIsBlocked($object->is_blocked);
 
         return $user;
     }
 
-    public function getOneBy(array $parameters): User
+    public function getOneBy(array $parameters): ?User
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }

@@ -1,6 +1,7 @@
 <?php
 namespace Config\View;
 
+use Exception;
 use App\Model\User;
 use Config\Request\Request;
 use Config\Security\TokenStorage;
@@ -18,7 +19,7 @@ class AppVariable
     public function getUser(): ?User
     {
         if (null === $tokenStorage = $this->tokenStorage) {
-            throw new \Exception('The "app.user" variable is not available.');
+            throw new Exception('The "app.user" variable is not available.');
         }
 
         if (!$token = $tokenStorage->getToken()) {
@@ -38,7 +39,7 @@ class AppVariable
     public function getRequest()
     {
         if (null === $this->request) {
-            throw new \Exception('The "app.request" variable is not available.');
+            throw new Exception('The "app.request" variable is not available.');
         }
 
         return $this->request;
@@ -47,7 +48,7 @@ class AppVariable
     public function getSession()
     {
         if (null === $this->request) {
-            throw new \Exception('The "app.session" variable is not available.');
+            throw new Exception('The "app.session" variable is not available.');
         }
 
         return $this->request->hasSession() ? $this->request->getSession() : null;

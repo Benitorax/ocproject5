@@ -101,7 +101,7 @@ abstract class AbstractDAO
         $stmt->closeCursor();
 
         if ($result === false) {
-            throw new \Exception(sprintf('No result for this SQL command: \'%s\'', $sqlPrefix));
+            throw new Exception(sprintf('No result for this SQL command: \'%s\'', $sqlPrefix));
         }
 
         $objects = [];

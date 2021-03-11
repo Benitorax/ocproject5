@@ -1,6 +1,8 @@
 <?php
 namespace Config\Request;
 
+use ArrayIterator;
+
 class Parameter implements \IteratorAggregate, \Countable
 {
     private $parameters;
@@ -32,7 +34,7 @@ class Parameter implements \IteratorAggregate, \Countable
 
     public function get($key, $default = null)
     {
-        return \array_key_exists($key, $this->parameters) ? $this->parameters[$key] : $default;
+        return array_key_exists($key, $this->parameters) ? $this->parameters[$key] : $default;
     }
 
     public function set($key, $value)
@@ -42,7 +44,7 @@ class Parameter implements \IteratorAggregate, \Countable
 
     public function has($key)
     {
-        return \array_key_exists($key, $this->parameters);
+        return array_key_exists($key, $this->parameters);
     }
 
     public function remove($key)
@@ -52,16 +54,16 @@ class Parameter implements \IteratorAggregate, \Countable
 
     public function count()
     {
-        return \count($this->parameters);
+        return count($this->parameters);
     }
 
     /**
      * Returns an iterator for parameters.
      *
-     * @return \ArrayIterator An \ArrayIterator instance
+     * @return ArrayIterator An \ArrayIterator instance
      */
     public function getIterator()
     {
-        return new \ArrayIterator($this->parameters);
+        return new ArrayIterator($this->parameters);
     }
 }

@@ -1,6 +1,10 @@
 <?php
 namespace Config\Cookie;
 
+use DateTime;
+use Exception;
+use DateTimeZone;
+
 class Cookie
 {
     /**
@@ -67,9 +71,9 @@ class Cookie
         $this->samesite = $samesite;
 
         if (null !== $expires) {
-            $timestampAsDateTime = \DateTime::createFromFormat('U', $expires);
+            $timestampAsDateTime = DateTime::createFromFormat('U', $expires);
             if (false === $timestampAsDateTime) {
-                throw new \Exception(sprintf('The cookie expiration time "%s" is not valid.', $expires));
+                throw new Exception(sprintf('The cookie expiration time "%s" is not valid.', $expires));
             }
 
             $this->expires = $timestampAsDateTime->format('U');
@@ -84,7 +88,7 @@ class Cookie
         $cookie = sprintf('%s=%s', $this->name, $this->rawValue);
 
         if (null !== $this->expires) {
-            $dateTime = \DateTime::createFromFormat('U', $this->expires, new \DateTimeZone('GMT'));
+            $dateTime = DateTime::createFromFormat('U', $this->expires, new DateTimeZone('GMT'));
             $cookie .= '; expires='.str_replace('+0000', '', $dateTime->format(self::DATE_FORMATS[0]));
         }
 

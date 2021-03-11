@@ -1,11 +1,13 @@
 <?php
 namespace Config\Router;
 
+use Exception;
+use ReflectionMethod;
 use Config\Router\Route;
 use Config\Request\Request;
+use Config\Response\Response;
 use Config\Container\Container;
 use App\Controller\ErrorController;
-use Config\Response\Response;
 
 class Router
 {
@@ -41,7 +43,7 @@ class Router
         $route = $this->matchRoute($requestUri, $requestMethod);
 
         if (!$route) {
-            throw new \Exception('No route found.', 404);
+            throw new Exception('No route found.', 404);
         } else {
             $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
             return $this->executeController($route->getCallable(), $arguments);
@@ -99,7 +101,7 @@ class Router
                 return $controller($arguments);
             }
         } else {
-            throw new \Exception(
+            throw new Exception(
                 sprintf('Can\'t execute controller %s.', $controller),
                 500
             );
@@ -134,14 +136,14 @@ class Router
             $routeParams = [];
         }
         
-        $reflection = new \ReflectionMethod($callable[0], $callable[1]);
+        $reflection = new ReflectionMethod($callable[0], $callable[1]);
 
         $arguments = [];
         foreach ($reflection->getParameters() as $param) {
             if (array_key_exists($param->name, $routeParams)) {
                 $arguments[] = $routeParams[$param->name];
             } else {
-                throw new \Exception(
+                throw new Exception(
                     sprintf(
                         "The parameter {%s} for %s::%s doesn't exist inside your route",
                         $param->name,
