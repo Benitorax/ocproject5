@@ -127,10 +127,15 @@ class AppController extends Controller
 
     public function logout()
     {
-        if($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
+        if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
             $this->get(Auth::class)->handleLogout($this->request);
         }
 
         return $this->redirectToRoute('home');
+    }
+
+    public function termsOfUse()
+    {
+        return $this->render('app/terms_of_use.html.twig');
     }
 }

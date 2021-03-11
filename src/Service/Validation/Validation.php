@@ -42,7 +42,7 @@ abstract class Validation
 
     public function checkCsrfToken(string $token)
     {
-        if(!$this->csrfTokenManager->isTokenValid($token)) {
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
             return 'The CSRF token is invalid. Please try to resubmit the form.';
         }
         return null;

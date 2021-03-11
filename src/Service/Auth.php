@@ -16,12 +16,11 @@ class Auth
     private $rememberMeManager;
 
     public function __construct(
-        UserDAO $userDAO, 
-        PasswordEncoder $encoder, 
+        UserDAO $userDAO,
+        PasswordEncoder $encoder,
         Session $session,
         RememberMeManager $rememberMeManager
-    )
-    {
+    ) {
         $this->userDAO = $userDAO;
         $this->encoder = $encoder;
         $this->session = $session;
@@ -50,7 +49,7 @@ class Auth
     {
         $user = $this->authenticate($form->email, $form->password);
 
-        if(!$user instanceof User) {
+        if (!$user instanceof User) {
             return null;
         }
 

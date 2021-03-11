@@ -9,7 +9,7 @@ class CsrfTokenManager
     private $session;
     private $token = null;
     const NAMESPACE = 'csrf';
-private $generator;
+    private $generator;
     public function __construct(Session $session, CsrfTokenGenerator $generator)
     {
         $this->session = $session;
@@ -18,7 +18,7 @@ private $generator;
 
     public function generateToken(): string
     {
-        if($this->token !== null) {
+        if ($this->token !== null) {
             return $this->token;
         }
         $this->token = $this->generator->generate();
@@ -36,7 +36,7 @@ private $generator;
     {
         $sessionToken = $this->getToken(self::NAMESPACE);
         
-        if(hash_equals($sessionToken, $token ?? '')) {
+        if (hash_equals($sessionToken, $token ?? '')) {
             return true;
         }
 
@@ -45,7 +45,7 @@ private $generator;
 
     public function getToken(): ?string
     {
-        if($this->session->has(self::NAMESPACE)) {
+        if ($this->session->has(self::NAMESPACE)) {
             return $this->session->get(self::NAMESPACE);
         }
 
