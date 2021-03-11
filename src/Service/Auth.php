@@ -48,23 +48,25 @@ class Auth
 
     public function authenticateLoginForm(LoginForm $form, Request $request): ?User
     {
-        $user = $this->userDAO->getOneBy(['email' => $form->email]);
+        $user = $this->authenticate($form->email, $form->password);
 
-        if ($user === null) {
+        if(!$user instanceof User) {
             return null;
         }
 
-        $isPasswordValid = $this->encoder->isPasswordValid($user, $form->password);
-
-        if (!$isPasswordValid) {
-            return null;
-        }
-
-        if ($form->rememberme) {
+        if ((bool) $form->rememberme) {
             $this->rememberMeManager->createNewToken($user, $request);
         }
         
-        $this->session->set('user', $user);
         return $user;
+    }
+
+    public function handleLogout(Request $request)
+    {
+        if ($request->cookies->has(RememberMeManager::COOKIE_NAME)) {
+            $this->rememberMeManager->deleteToken($request);
+        }
+
+        $this->session->clear();
     }
 }

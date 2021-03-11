@@ -128,13 +128,7 @@ class AppController extends Controller
     public function logout()
     {
         if($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
-            if ($this->request->cookies->has(RememberMeManager::COOKIE_NAME)) {
-                $this->get(RememberMeManager::class)->deleteToken($this->request);
-            }
-    
-            $this->session->clear();
-    
-            return $this->redirectToRoute('login');
+            $this->get(Auth::class)->handleLogout($this->request);
         }
 
         return $this->redirectToRoute('home');
