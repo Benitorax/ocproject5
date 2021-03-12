@@ -14,6 +14,7 @@ use Config\Security\RememberMe\RememberMeManager;
 class App
 {
     private Container $container;
+    private Session $session;
 
     public function handle(Request $request): Response
     {
@@ -35,21 +36,28 @@ class App
     {
         $this->container = new Container();
         $this->container->setService($this);
-        $request->setSession($this->container->getService(Session::class));
+        
+        /** @var Session */
+        $session = $this->container->getService(Session::class);
+        $this->session = $session;
+        $request->setSession($this->session);
+
         $this->authenticate($request);
     }
 
     public function authenticate(Request $request): void
     {
-        // check User from session
-        $session = $this->container->getService(Session::class);
+        /** @var TokenStorage */
         $tokenStorage = $this->container->getService(TokenStorage::class);
-        if ($session->get('user') instanceof User) {
-            $tokenStorage->setUserFromSession($session);
+
+        // check User from session
+        if ($this->session->get('user') instanceof User) {
+            $tokenStorage->setUserFromSession($this->session);
             return;
         }
 
         // check rememberme cookie
+        /** @var RememberMeManager */
         $rememberMeManager = $this->container->getService(RememberMeManager::class);
         $token = $rememberMeManager->autoLogin($request);
 

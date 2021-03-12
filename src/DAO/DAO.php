@@ -10,7 +10,7 @@ class DAO extends AbstractDAO
      */
     public function getCountBy(string $table, string $colName, $value, string $mode = null): int
     {
-        if (strtoupper($mode) === 'LIKE') {
+        if (strtoupper((string) $mode) === 'LIKE') {
             $sqlMode = ' LIKE :';
         } else {
             $sqlMode = ' = :';

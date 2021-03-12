@@ -25,7 +25,7 @@ class CommentDAO extends AbstractDAO implements DAOInterface
         return $comment;
     }
 
-    public function getOneBy(array $parameters): User
+    public function getOneBy(array $parameters): ?Comment
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }

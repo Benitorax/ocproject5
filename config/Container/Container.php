@@ -1,6 +1,7 @@
 <?php
 namespace Config\Container;
 
+use ReflectionType;
 use ReflectionMethod;
 use Config\Router\Router;
 
@@ -54,9 +55,10 @@ class Container
     {
         $className = Router::class;
         if ($this->hasService($className)) {
+            /** @var Router */
             return $this->getService($className);
         }
-
+        /** @var Router */
         return $this->createService($className);
     }
 
@@ -70,6 +72,7 @@ class Container
             $arguments = null;
             
             foreach ($reflection->getParameters() as $param) {
+                /** @var ReflectionType */
                 $reflectionType = $param->getType();
 
                 if (method_exists($reflectionType, 'getName')) {

@@ -50,19 +50,20 @@ abstract class AbstractDAO
             }
             $stmt->execute($parameters);
 
+            /** @var PDOStatement */
             return $stmt;
         } else {
             $stmt = $this->checkConnection()->query($sql);
-
+            /** @var PDOStatement */
             return $stmt;
         }
     }
 
     /**
      * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
-     * return object A model object
+     * @return ?object A model object
      */
-    public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao): ?object
+    public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
         $stmt = $this->select($sqlPrefix, $parameters);
         $result = $stmt->fetchObject(stdClass::class);

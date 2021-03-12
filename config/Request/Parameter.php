@@ -49,7 +49,7 @@ class Parameter implements \IteratorAggregate, \Countable
     }
 
     /**
-     * @return null|string|array|object
+     * @return mixed
      */
     public function get(string $key, ?string $default = null)
     {

@@ -24,7 +24,7 @@ class View
 
     public function render(string $template, ?array $parameters = [], ?Response $response = null): Response
     {
-        $content = $this->twig->render($template, $parameters);
+        $content = $this->twig->render($template, (array) $parameters);
 
         if (null === $response) {
             $response = new Response();

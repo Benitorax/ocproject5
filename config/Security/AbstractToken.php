@@ -8,14 +8,22 @@ abstract class AbstractToken
     private ?User $user = null;
     private bool $authenticated = false;
 
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
-        return $this->user->getUsername();
+        if (!empty($this->user)) {
+            return $this->user->getUsername();
+        }
+
+        return null;
     }
 
-    public function getUser(): User
+    public function getUser(): ?User
     {
-        return $this->user;
+        if (!empty($this->user)) {
+            return $this->user;
+        }
+
+        return null;
     }
 
     public function setUser(?User $user): void

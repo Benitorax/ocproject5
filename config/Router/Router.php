@@ -6,6 +6,7 @@ use ReflectionMethod;
 use Config\Router\Route;
 use Config\Request\Request;
 use Config\Response\Response;
+use App\Controller\Controller;
 use Config\Container\Container;
 use App\Controller\ErrorController;
 
@@ -99,6 +100,8 @@ class Router
     public function executeController(array $callable, $arguments = null): Response
     {
         [$classname, $method] = $callable;
+
+        /** @var Controller abstract class of Controller */
         $object = $this->container->createService($classname);
         $object->setRequest($this->request);
         $controller = [$object, $method];
@@ -136,7 +139,7 @@ class Router
 
                 if (!empty($value)) {
                     $routeParams[$paramName] = $value;
-                    $this->request->attributes->set($paramName, $value);
+                    $this->request->attributes->set((string) $paramName, $value);
                 }
             }
         }

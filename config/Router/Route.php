@@ -11,7 +11,7 @@ class Route
     /**
      * @param string|array $methods
      */
-    public function __construct(string $path, string $callable, $methods, ?string $name = null)
+    public function __construct(string $path, string $callable, $methods, string $name)
     {
         $this->path = $path;
         $this->name = $name;

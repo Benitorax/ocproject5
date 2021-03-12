@@ -134,7 +134,9 @@ class RememberMeManager
 
     public function deleteToken(Request $request): void
     {
-        $this->rememberMeDAO->deleteTokenByUsername($this->tokenStorage->getToken()->getUsername());
+        if (!empty($this->tokenStorage->getToken())) {
+            $this->rememberMeDAO->deleteTokenByUsername((string) $this->tokenStorage->getToken()->getUsername());
+        }
         $this->cancelCookie($request);
     }
 

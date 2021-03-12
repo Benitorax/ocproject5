@@ -13,7 +13,10 @@ class Constraint
         $this->DAO = $DAO;
     }
     
-    public function validate(array $constraint, string $value, ?string $name = null): ?string
+    /**
+     * @param bool|string|int $value
+     */
+    public function validate(array $constraint, $value, ?string $name = null): ?string
     {
         $callable = [$this, $constraint[0]];
         

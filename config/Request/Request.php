@@ -26,6 +26,7 @@ class Request
 
     public function getMethod(): string
     {
+        /** @var string */
         return $this->server->get('REQUEST_METHOD', 'GET');
     }
 
@@ -49,7 +50,7 @@ class Request
             } else {
                 // HTTP proxy reqs setup request URI with scheme and host [and port] + the URL path,
                 // only use URL path.
-                $uriComponents = parse_url($requestUri);
+                $uriComponents = (array) parse_url($requestUri);
 
                 if (isset($uriComponents['path'])) {
                     $requestUri = $uriComponents['path'];

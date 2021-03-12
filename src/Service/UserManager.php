@@ -25,7 +25,7 @@ class UserManager
 
         $user->setId(IdGenerator::generate())
             ->setEmail($form->email)
-            ->setPassword($this->encoder->encode($form->password1))
+            ->setPassword((string) $this->encoder->encode($form->password1))
             ->setUsername($form->username)
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime())

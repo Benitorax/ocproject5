@@ -46,7 +46,7 @@ class Cookie
      */
     public function __construct(
         string $name,
-        ?string $value,
+        ?string $value = '',
         string $expires = null,
         ?string $path = null,
         ?string $domain = '',
@@ -56,11 +56,11 @@ class Cookie
         ?string $samesite = null
     ) {
         if ($encodedValue) {
-            $this->value = urldecode($value);
-            $this->rawValue = $value;
+            $this->value = urldecode((string) $value);
+            $this->rawValue = (string) $value;
         } else {
-            $this->value = $value;
-            $this->rawValue = rawurlencode($value);
+            $this->value = (string) $value;
+            $this->rawValue = rawurlencode((string) $value);
         }
 
         $this->name = $name;
@@ -88,6 +88,7 @@ class Cookie
         $cookie = sprintf('%s=%s', $this->name, $this->rawValue);
 
         if (null !== $this->expires) {
+            /** @var DateTime */
             $dateTime = DateTime::createFromFormat('U', $this->expires, new DateTimeZone('GMT'));
             $cookie .= '; expires='.str_replace('+0000', '', $dateTime->format(self::DATE_FORMATS[0]));
         }
@@ -120,7 +121,7 @@ class Cookie
         return $this->name;
     }
 
-    public function getValue(): string
+    public function getValue(): ?string
     {
         return $this->value;
     }

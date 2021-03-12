@@ -62,7 +62,7 @@ class AppVariable
      *  * getFlashes(['notice', 'error']) returns a nested array of type => messages.
      *
      * @param string|array $types
-     * @return array
+     * @return null|array
      */
     public function getFlashes($types = null)
     {

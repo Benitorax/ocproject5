@@ -85,8 +85,6 @@ class User
             }
         }
 
-        $this->roles = $roles;
-
         return $this;
     }
 

@@ -38,7 +38,7 @@ class CsrfTokenManager
     {
         $sessionToken = $this->getToken();
         
-        if (hash_equals($sessionToken, $token ?? '')) {
+        if (hash_equals((string) $sessionToken, $token ?? '')) {
             return true;
         }
 

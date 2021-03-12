@@ -17,7 +17,7 @@ abstract class Controller
     protected Parameter $query;
     protected Parameter $get;
     protected Parameter $post;
-    protected Session $session;
+    protected ?Session $session;
     protected Container $container;
 
     public function __construct(View $view, Container $container)
@@ -31,7 +31,7 @@ abstract class Controller
         $this->request = $request;
         $this->query = $this->request->query;
         $this->post = $this->request->request;
-        $this->session = $this->container->getService(Session::class);
+        $this->session = $this->request->getSession();
         $this->view->setRequest($request);
     }
 

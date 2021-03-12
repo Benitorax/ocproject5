@@ -11,8 +11,8 @@ class Post
     private string $id;
     private string $title;
     private string $slug;
-    private string $shortText;
-    private string $text;
+    private ?string $shortText;
+    private ?string $text;
     private bool $isPublished;
     private User $user;
 

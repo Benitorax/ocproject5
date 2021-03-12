@@ -17,8 +17,8 @@ class UrlGenerator
     {
         foreach ($this->routes as $route) {
             if ($route->getName() === $routeName) {
-                if (count($routeParams)) {
-                    return $this->hydrateRouteParams($route->getPath(), $routeParams);
+                if (count((array) $routeParams)) {
+                    return $this->hydrateRouteParams($route->getPath(), (array) $routeParams);
                 } else {
                     return $route->getPath();
                 }
@@ -33,10 +33,15 @@ class UrlGenerator
         preg_match_all('#{[-\w]+}#', $routePath, $matches);
 
         foreach ($matches[0] as $match) {
+            /** @var string */
             $paramName = preg_replace('#^\{(\w+)\}$#', '$1', $match);
 
             if (array_key_exists($paramName, $routeParams)) {
-                $routePath = preg_replace('#\{'.$paramName.'\}#', $routeParams[$paramName], $routePath);
+                $routePath = (string) preg_replace(
+                    '#\{'.$paramName.'\}#',
+                    $routeParams[$paramName],
+                    (string) $routePath
+                );
             } else {
                 throw new Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
             }

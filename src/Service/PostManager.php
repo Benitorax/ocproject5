@@ -31,11 +31,13 @@ class PostManager
 
     public function slugify(string $title): string
     {
-        $slug = mb_strtolower(preg_replace(
-            array('/[^a-zA-Z0-9 \'-]/', '/[ -\']+/', '/^-|-$/'),
-            array('', '-', ''),
-            $this->removeAccent(trim($title))
-        ));
+        $slug = mb_strtolower(
+            (string) preg_replace(
+                array('/[^a-zA-Z0-9 \'-]/', '/[ -\']+/', '/^-|-$/'),
+                array('', '-', ''),
+                $this->removeAccent(trim($title))
+            )
+        );
         $count = $this->dao->getCountBy('post', 'slug', $slug.'%', 'LIKE');
 
         return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;

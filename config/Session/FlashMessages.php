@@ -17,7 +17,11 @@ class FlashMessages
 
     public function peek(string $type, array $default = []): ?array
     {
-        return $this->has($type) ? $this->flashes[$type] : $default;
+        if ($this->has($type)) {
+            return !empty($this->flashes) ? $this->flashes[$type] : $default;
+        } else {
+            return $default;
+        }
     }
 
     public function peekAll(): ?array
@@ -31,11 +35,14 @@ class FlashMessages
             return $default;
         }
 
-        $return = $this->flashes[$type];
+        if (!empty($this->flashes)) {
+            $return = $this->flashes[$type];
+            unset($this->flashes[$type]);
+    
+            return $return;
+        }
 
-        unset($this->flashes[$type]);
-
-        return $return;
+        return $default;
     }
 
     public function all(): ?array
@@ -61,15 +68,15 @@ class FlashMessages
 
     public function has(string $type): bool
     {
-        return \array_key_exists($type, $this->flashes) && $this->flashes[$type];
+        return \array_key_exists($type, (array) $this->flashes) && is_array($this->flashes) && $this->flashes[$type];
     }
 
     public function keys(): ?array
     {
-        return array_keys($this->flashes);
+        return array_keys((array) $this->flashes);
     }
 
-    public function clear(): array
+    public function clear(): ?array
     {
         return $this->all();
     }
