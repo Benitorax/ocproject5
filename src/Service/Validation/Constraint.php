@@ -70,6 +70,18 @@ class Constraint
         return null;
     }
 
+    public function email(array $constraint, string $value, string $name = null): ?string
+    {
+        if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
+            if (!empty($name)) {
+                return 'The field "'.$name.'" has not a valid format';
+            }
+            return 'Invalid email address';
+        }
+        
+        return null;
+    }
+
     public function unique(array $constraint, string $value, string $name = null): ?string
     {
         [$table, $colName] = explode(':', $constraint[1], 2);

@@ -10,6 +10,7 @@ class RegisterValidation extends Validation
         ['notBlank'],
         ['minLength', 8],
         ['maxLength', 50],
+        ['email'],
         ['unique', 'user:email']
     ];
     const PASSWORD1 = [

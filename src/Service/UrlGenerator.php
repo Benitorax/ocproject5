@@ -33,8 +33,7 @@ class UrlGenerator
         preg_match_all('#{[-\w]+}#', $routePath, $matches);
 
         foreach ($matches[0] as $match) {
-            /** @var string */
-            $paramName = preg_replace('#^\{(\w+)\}$#', '$1', $match);
+            $paramName = (string) preg_replace('#^\{(\w+)\}$#', '$1', $match);
 
             if (array_key_exists($paramName, $routeParams)) {
                 $routePath = (string) preg_replace(

@@ -10,6 +10,7 @@ class LoginValidation extends Validation
         ['notBlank'],
         ['minLength', 8],
         ['maxLength', 50],
+        ['email']
     ];
     const PASSWORD = [
         ['notBlank'],
