@@ -17,7 +17,7 @@ class LoginValidation extends Validation
         ['maxLength', 50]
     ];
 
-    public function validate(LoginForm $form)
+    public function validate(LoginForm $form): void
     {
         $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
         $form->errors['password'] = $this->check(self::PASSWORD, $form->password, 'password');
@@ -26,7 +26,5 @@ class LoginValidation extends Validation
         if (!$this->hasErrorMessages($form)) {
             $form->isValid = true;
         }
-
-        return $form;
     }
 }

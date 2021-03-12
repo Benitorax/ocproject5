@@ -8,8 +8,8 @@ use Twig\Extension\AbstractExtension;
 
 class TwigExtension extends AbstractExtension
 {
-    private $urlGenerator;
-    private $csrfTokenManager;
+    private UrlGenerator $urlGenerator;
+    private CsrfTokenManager $csrfTokenManager;
 
     public function __construct(UrlGenerator $urlGenerator, CsrfTokenManager $csrfTokenManager)
     {
@@ -17,7 +17,7 @@ class TwigExtension extends AbstractExtension
         $this->csrfTokenManager = $csrfTokenManager;
     }
 
-    public function getFunctions()
+    public function getFunctions(): array
     {
         return [
             new TwigFunction('url', [$this, 'generateUrl']),

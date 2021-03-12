@@ -4,14 +4,15 @@ namespace Config\View;
 use Exception;
 use App\Model\User;
 use Config\Request\Request;
+use Config\Session\Session;
 use Config\Security\TokenStorage;
 
 class AppVariable
 {
-    private $request;
-    private $tokenStorage;
+    private ?Request $request = null;
+    private ?TokenStorage $tokenStorage = null;
 
-    public function setTokenStorage(TokenStorage $tokenStorage)
+    public function setTokenStorage(TokenStorage $tokenStorage): void
     {
         $this->tokenStorage = $tokenStorage;
     }
@@ -22,21 +23,21 @@ class AppVariable
             throw new Exception('The "app.user" variable is not available.');
         }
 
-        if (!$token = $tokenStorage->getToken()) {
+        $token = $tokenStorage->getToken();
+
+        if (empty($token)) {
             return null;
         }
 
-        $user = $token->getUser();
-
-        return $user instanceof User ? $user : null;
+        return $token->getUser();
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
     }
 
-    public function getRequest()
+    public function getRequest(): Request
     {
         if (null === $this->request) {
             throw new Exception('The "app.request" variable is not available.');
@@ -45,7 +46,7 @@ class AppVariable
         return $this->request;
     }
 
-    public function getSession()
+    public function getSession(): ?Session
     {
         if (null === $this->request) {
             throw new Exception('The "app.session" variable is not available.');
@@ -54,12 +55,13 @@ class AppVariable
         return $this->request->hasSession() ? $this->request->getSession() : null;
     }
 
-        /**
+    /**
      * Returns some or all the existing flash messages:
      *  * getFlashes() returns all the flash messages
      *  * getFlashes('notice') returns a simple array with flash messages of that type
      *  * getFlashes(['notice', 'error']) returns a nested array of type => messages.
      *
+     * @param string|array $types
      * @return array
      */
     public function getFlashes($types = null)

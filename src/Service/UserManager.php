@@ -8,8 +8,8 @@ use App\Form\RegisterForm;
 
 class UserManager
 {
-    private $userDAO;
-    private $encoder;
+    private UserDAO $userDAO;
+    private PasswordEncoder $encoder;
     
     public function __construct(
         UserDAO $userDAO,

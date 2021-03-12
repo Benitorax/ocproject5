@@ -12,14 +12,14 @@ class LoginForm extends AbstractForm
     public string $password;
     public bool $rememberme;
 
-    private $validation;
+    private LoginValidation $validation;
 
     public function __construct(LoginValidation $validation)
     {
         $this->validation = $validation;
     }
     
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request): void
     {
         if ($request->getMethod() == 'POST') {
             $this->hydrateForm($request->request);
@@ -27,7 +27,7 @@ class LoginForm extends AbstractForm
         }
     }
 
-    public function hydrateForm(Parameter $post)
+    public function hydrateForm(Parameter $post): void
     {
         $this->email = $post->get('email') ?: '';
         $this->password = $post->get('password') ?: '';

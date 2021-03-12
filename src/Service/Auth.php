@@ -10,15 +10,15 @@ use Config\Security\RememberMe\RememberMeManager;
 
 class Auth
 {
-    private $encoder;
-    private $session;
-    private $userDAO;
-    private $rememberMeManager;
+    private Session $session;
+    private UserDAO $userDAO;
+    private PasswordEncoder $encoder;
+    private RememberMeManager $rememberMeManager;
 
     public function __construct(
+        Session $session,
         UserDAO $userDAO,
         PasswordEncoder $encoder,
-        Session $session,
         RememberMeManager $rememberMeManager
     ) {
         $this->userDAO = $userDAO;
@@ -60,7 +60,7 @@ class Auth
         return $user;
     }
 
-    public function handleLogout(Request $request)
+    public function handleLogout(Request $request): void
     {
         if ($request->cookies->has(RememberMeManager::COOKIE_NAME)) {
             $this->rememberMeManager->deleteToken($request);

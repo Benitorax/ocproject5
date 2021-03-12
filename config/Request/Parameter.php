@@ -5,54 +5,76 @@ use ArrayIterator;
 
 class Parameter implements \IteratorAggregate, \Countable
 {
+    /** @var mixed[] */
     private $parameters;
 
-    public function __construct($parameters)
+    /**
+     * @param mixed[] $parameters
+     */
+    public function __construct(array $parameters)
     {
         $this->parameters = $parameters;
     }
 
+    /**
+     * @return mixed[]
+     */
     public function all()
     {
         return $this->parameters;
     }
 
+    /**
+     *  @return mixed[]
+     */
     public function keys()
     {
         return array_keys($this->parameters);
     }
 
-    public function replace(array $parameters = [])
+    /**
+     *  @param mixed[] $parameters
+     */
+    public function replace(array $parameters = []): void
     {
         $this->parameters = $parameters;
     }
 
-    public function add(array $parameters = [])
+    /**
+     *  @param mixed[] $parameters
+     */
+    public function add(array $parameters = []): void
     {
         $this->parameters = array_replace($this->parameters, $parameters);
     }
 
-    public function get($key, $default = null)
+    /**
+     * @return null|string|array|object
+     */
+    public function get(string $key, ?string $default = null)
     {
         return array_key_exists($key, $this->parameters) ? $this->parameters[$key] : $default;
     }
 
-    public function set($key, $value)
+    /**
+     * @param string|array|object $value
+     */
+    public function set(string $key, $value): void
     {
         $this->parameters[$key] = $value;
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         return array_key_exists($key, $this->parameters);
     }
 
-    public function remove($key)
+    public function remove(string $key): void
     {
         unset($this->parameters[$key]);
     }
 
-    public function count()
+    public function count(): int
     {
         return count($this->parameters);
     }

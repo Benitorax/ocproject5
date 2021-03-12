@@ -6,12 +6,12 @@ use Config\Request\Parameter;
 
 class Request
 {
-    public $query;
-    public $request;
-    public $cookies;
-    public $server;
-    private $session;
-    public $attributes;
+    public Parameter $query;
+    public Parameter $request;
+    public Parameter $cookies;
+    public Parameter $server;
+    private Session $session;
+    public Parameter $attributes;
 
     public function create(): self
     {
@@ -24,12 +24,12 @@ class Request
         return $this;
     }
 
-    public function getMethod()
+    public function getMethod(): string
     {
         return $this->server->get('REQUEST_METHOD', 'GET');
     }
 
-    public function getRequestUri()
+    public function getRequestUri(): string
     {
         $requestUri = '';
 
@@ -74,27 +74,25 @@ class Request
         return $requestUri;
     }
 
-    /** @return Session */
-    public function getSession()
+    public function getSession(): ?Session
     {
         if ($this->hasSession()) {
             return $this->session;
         }
-
         return null;
     }
 
-    public function setSession(Session $session)
+    public function setSession(Session $session): void
     {
         $this->session = $session;
     }
 
-    public function hasSession()
+    public function hasSession(): bool
     {
         return null !== $this->session;
     }
 
-    public function isSecure()
+    public function isSecure(): bool
     {
         $https = $this->server->get('HTTPS');
 

@@ -21,15 +21,15 @@ class Cookie
         'D M d H:i:s Y T',
     ];
 
-    protected $name;
-    protected $value;
-    protected $expires;
-    protected $path;
-    protected $domain;
-    protected $secure;
-    protected $httponly;
-    protected $rawValue;
-    private $samesite;
+    protected string $name;
+    protected ?string $value;
+    protected string $expires;
+    protected string $path;
+    protected string $domain;
+    protected bool $secure;
+    protected bool $httponly;
+    protected string $rawValue;
+    private ?string $samesite;
 
     /**
      * Sets a cookie.
@@ -140,7 +140,7 @@ class Cookie
         return $this->path;
     }
 
-    public function getDomain(): string
+    public function getDomain(): ?string
     {
         return $this->domain;
     }

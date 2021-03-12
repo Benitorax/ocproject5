@@ -26,27 +26,34 @@ class Session implements \IteratorAggregate, \Countable
         $this->loadSession();
     }
 
-    public function set($name, $value)
+    /**
+     * @param mixed $value
+     */
+    public function set(string $name, $value): void
     {
         $this->session[$name] = $value;
     }
 
-    public function get($name, $default = null)
+    /**
+     * @param mixed $default
+     * @return mixed
+     */
+    public function get(string $name, $default = null)
     {
         return \array_key_exists($name, $this->session) ? $this->session[$name] : $default;
     }
 
-    public function has($name)
+    public function has(string $name): bool
     {
         return \array_key_exists($name, $this->session);
     }
 
-    public function all()
+    public function all(): array
     {
         return $this->session;
     }
 
-    public function replace(array $session)
+    public function replace(array $session): void
     {
         $this->session = [];
         foreach ($session as $key => $value) {
@@ -54,7 +61,10 @@ class Session implements \IteratorAggregate, \Countable
         }
     }
 
-    public function remove($name)
+    /**
+     * @return mixed
+     */
+    public function remove(string $name)
     {
         $retval = null;
         if (\array_key_exists($name, $this->session)) {
@@ -65,9 +75,12 @@ class Session implements \IteratorAggregate, \Countable
         return $retval;
     }
 
-    public function clear()
+    public function clear(): array
     {
         $return = $this->session;
+        foreach (array_keys($this->session) as $key) {
+            unset($this->session[$key]);
+        }
         $this->session = [];
 
         return $return;
@@ -89,12 +102,12 @@ class Session implements \IteratorAggregate, \Countable
         return \count($this->session);
     }
 
-    public function start()
+    public function start(): void
     {
         session_start();
     }
     
-    public function stop()
+    public function stop(): void
     {
         session_destroy();
     }
@@ -104,10 +117,11 @@ class Session implements \IteratorAggregate, \Countable
         return $this->flashes;
     }
 
-    public function loadSession()
+    public function loadSession(): void
     {
         $session = &$_SESSION;
         $this->session = &$session;
+
         $this->flashes->initialize($session['flashes']);
     }
 }

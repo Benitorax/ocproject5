@@ -10,8 +10,8 @@ use Twig\Loader\FilesystemLoader;
 
 class View
 {
-    private $twig;
-    private $tokenStorage;
+    private Environment $twig;
+    private TokenStorage $tokenStorage;
 
     public function __construct(TokenStorage $tokenStorage, TwigExtension $twigExtension)
     {
@@ -22,7 +22,7 @@ class View
         $this->twig->addExtension($twigExtension);
     }
 
-    public function render($template, $parameters = [], Response $response = null): Response
+    public function render(string $template, ?array $parameters = [], ?Response $response = null): Response
     {
         $content = $this->twig->render($template, $parameters);
 
@@ -35,7 +35,7 @@ class View
         return $response;
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $app = new AppVariable();
         $app->setRequest($request);

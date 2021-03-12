@@ -9,9 +9,9 @@ class Headers
     public const COOKIES_ARRAY = 'array';
     protected const UPPER = '_ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     protected const LOWER = '-abcdefghijklmnopqrstuvwxyz';
-    protected $cookies = [];
-    protected $headers = [];
-    protected $headerNames = [];
+    protected array $cookies = [];
+    protected array $headers = [];
+    protected array $headerNames = [];
 
     public function __construct(array $headers = [])
     {
@@ -42,7 +42,7 @@ class Headers
     /**
      * @param string|null $key The name of the headers to return or null to get them all
      */
-    public function all(/*string $key = null*/)
+    public function all(?string $key = null): array
     {
         $headers = [];
         if (1 <= \func_num_args() && null !== $key = func_get_arg(0)) {
@@ -64,7 +64,10 @@ class Headers
         return $headers;
     }
 
-    public function set($key, $values, $replace = true)
+    /**
+     * @param string|array $values
+     */
+    public function set(string $key, $values, bool $replace = true): void
     {
         $uniqueKey = strtr($key, self::UPPER, self::LOWER);
 
@@ -99,12 +102,12 @@ class Headers
         }
     }
 
-    public function has($key)
+    public function has(string $key): bool
     {
         return \array_key_exists(strtr($key, self::UPPER, self::LOWER), $this->all());
     }
 
-    public function remove($key)
+    public function remove(string $key): void
     {
         $uniqueKey = strtr($key, self::UPPER, self::LOWER);
         unset($this->headerNames[$uniqueKey]);
@@ -125,7 +128,7 @@ class Headers
      *
      * @return array An array of headers
      */
-    public function allPreserveCase()
+    public function allPreserveCase(): array
     {
         $headers = [];
         foreach ($this->all() as $name => $value) {
@@ -135,7 +138,7 @@ class Headers
         return $headers;
     }
 
-    public function allPreserveCaseWithoutCookies()
+    public function allPreserveCaseWithoutCookies(): array
     {
         $headers = $this->allPreserveCase();
         if (isset($this->headerNames['set-cookie'])) {
@@ -145,13 +148,13 @@ class Headers
         return $headers;
     }
 
-    public function setCookie(Cookie $cookie)
+    public function setCookie(Cookie $cookie): void
     {
         $this->cookies[$cookie->getDomain()][$cookie->getPath()][$cookie->getName()] = $cookie;
         $this->headerNames['set-cookie'] = 'Set-Cookie';
     }
 
-    public function removeCookie($name, $path = '/', $domain = null)
+    public function removeCookie(string $name, ?string $path = '/', ?string $domain = null): void
     {
         if (null === $path) {
             $path = '/';
@@ -172,7 +175,7 @@ class Headers
         }
     }
 
-    public function getCookies($format = self::COOKIES_FLAT)
+    public function getCookies(string $format = self::COOKIES_FLAT): array
     {
         if (self::COOKIES_ARRAY === $format) {
             return $this->cookies;
@@ -191,14 +194,14 @@ class Headers
     }
 
     public function clearCookie(
-        $name,
-        $path = '/',
-        $domain = null,
-        $secure = false,
-        $httpOnly = true/*, $sameSite = null*/
-    ) {
+        string $name,
+        ?string $path = '/',
+        ?string $domain = null,
+        ?bool $secure = false,
+        ?bool $httpOnly = true/*, $sameSite = null*/
+    ): void {
         $sameSite = \func_num_args() > 5 ? func_get_arg(5) : null;
 
-        $this->setCookie(new Cookie($name, null, 1, $path, $domain, $secure, $httpOnly, false, $sameSite));
+        $this->setCookie(new Cookie($name, null, (string) 1, $path, $domain, $secure, $httpOnly, false, $sameSite));
     }
 }

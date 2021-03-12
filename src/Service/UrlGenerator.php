@@ -39,7 +39,6 @@ class UrlGenerator
                 $routePath = preg_replace('#\{'.$paramName.'\}#', $routeParams[$paramName], $routePath);
             } else {
                 throw new Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
-                break;
             }
         }
 

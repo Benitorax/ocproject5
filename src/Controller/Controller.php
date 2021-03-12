@@ -5,19 +5,20 @@ use Config\View\View;
 use Config\Request\Request;
 use Config\Session\Session;
 use App\Service\UrlGenerator;
+use Config\Request\Parameter;
 use Config\Response\Response;
 use Config\Container\Container;
 use Config\Security\Csrf\CsrfTokenManager;
 
 abstract class Controller
 {
-    protected $view;
-    protected $request;
-    protected $get;
-    protected $post;
-    /** @var Session */
-    protected $session;
-    protected $container;
+    protected View $view;
+    protected Request $request;
+    protected Parameter $query;
+    protected Parameter $get;
+    protected Parameter $post;
+    protected Session $session;
+    protected Container $container;
 
     public function __construct(View $view, Container $container)
     {
@@ -25,7 +26,7 @@ abstract class Controller
         $this->container = $container;
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
         $this->query = $this->request->query;
@@ -34,17 +35,17 @@ abstract class Controller
         $this->view->setRequest($request);
     }
 
-    public function get(string $name)
+    public function get(string $name): object
     {
         return $this->container->getService($name);
     }
 
-    public function render(string $viewPath, array $parameters = [], Response $response = null)
+    public function render(string $viewPath, array $parameters = [], Response $response = null): Response
     {
         return $this->view->render($viewPath, $parameters, $response);
     }
 
-    public function redirectToRoute(string $routeName, array $parameters = [])
+    public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
         $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
         $response = new Response('', 302);
@@ -56,7 +57,7 @@ abstract class Controller
         // exit();
     }
 
-    public function isCsrfTokenValid(?string $token)
+    public function isCsrfTokenValid(?string $token): bool
     {
         $isValid = $this->get(CsrfTokenManager::class)->isTokenValid($token);
 

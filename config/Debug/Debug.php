@@ -1,6 +1,10 @@
 <?php
 
-function dump($variable, ...$variables)
+/**
+ * @param mixed $variable
+ * @param mixed $variables
+ */
+function dump($variable, ...$variables): void
 {
     $data = [$variable];
 
@@ -17,14 +21,18 @@ function dump($variable, ...$variables)
     }
 }
 
-function dd($variable, ...$variables)
+/**
+ * @param mixed $variable
+ * @param mixed $variables
+ */
+function dd($variable, ...$variables): void
 {
     dump($variable, ...$variables);
 
     die();
 }
 
-function deleteTwigCacheFolder()
+function deleteTwigCacheFolder(): void
 {
     $dir = dirname(__DIR__, 2).'\var\\cache\\twig';
     if (is_dir($dir)) {
@@ -32,7 +40,7 @@ function deleteTwigCacheFolder()
     }
 }
 
-function deleteDir($dirPath)
+function deleteDir(string $dirPath): void
 {
     if (! is_dir($dirPath)) {
         throw new InvalidArgumentException("$dirPath must be a directory");

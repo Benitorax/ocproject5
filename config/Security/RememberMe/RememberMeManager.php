@@ -15,7 +15,7 @@ class RememberMeManager
     public const COOKIE_ATTR_NAME = 'remember_me_cookie';
     public const COOKIE_NAME = 'REMEMBERME';
 
-    protected $options = [
+    protected array $options = [
         'name' => 'REMEMBERME',
         'lifetime' => 31536000,
         'path' => '/',
@@ -25,9 +25,9 @@ class RememberMeManager
         'samesite' => null,
     ];
 
-    private $rememberMeDAO;
-    private $userDAO;
-    private $tokenStorage;
+    private RememberMeDAO $rememberMeDAO;
+    private UserDAO $userDAO;
+    private TokenStorage $tokenStorage;
 
     public function __construct(RememberMeDAO $rememberMeDAO, UserDAO $userDAO, TokenStorage $tokenStorage)
     {
@@ -36,7 +36,7 @@ class RememberMeManager
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function processAutoLoginCookie(array $cookieParts, Request $request)
+    public function processAutoLoginCookie(array $cookieParts, Request $request): ?User
     {
         $this->cancelCookie($request);
 
@@ -55,7 +55,7 @@ class RememberMeManager
             throw new Exception('This token was already used. The account is possibly compromised.');
         }
 
-        if ($persistentToken->getLastUsed()->getTimestamp() + $this->options['lifetime'] < time()) {
+        if ((int) $persistentToken->getLastUsed()->getTimestamp() + (int) $this->options['lifetime'] < time()) {
             throw new Exception('The cookie has expired.');
         }
 
@@ -66,7 +66,7 @@ class RememberMeManager
             new Cookie(
                 $this->options['name'],
                 $this->encodeCookie([$series, $tokenValue]),
-                time() + $this->options['lifetime'],
+                (string) (time() + $this->options['lifetime']),
                 $this->options['path'],
                 $this->options['domain'],
                 $this->options['secure'] ?? $request->isSecure(),
@@ -79,7 +79,7 @@ class RememberMeManager
         return $this->userDAO->getOneBy(['username' => $persistentToken->getUsername()]);
     }
 
-    public function autoLogin(Request $request)
+    public function autoLogin(Request $request): ?RememberMeToken
     {
         if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
             return null;
@@ -99,7 +99,7 @@ class RememberMeManager
         return new RememberMeToken($user);
     }
 
-    public function createNewToken(User $user, Request $request)
+    public function createNewToken(User $user, Request $request): void
     {
         $this->rememberMeDAO->deleteTokenByUsername($user->getUsername());
         
@@ -121,7 +121,7 @@ class RememberMeManager
             new Cookie(
                 $this->options['name'],
                 $this->encodeCookie([$series, $tokenValue]),
-                time() + $this->options['lifetime'],
+                (string) (time() + $this->options['lifetime']),
                 $this->options['path'],
                 $this->options['domain'],
                 $this->options['secure'] ?? $request->isSecure(),
@@ -132,13 +132,13 @@ class RememberMeManager
         );
     }
 
-    public function deleteToken(Request $request)
+    public function deleteToken(Request $request): void
     {
         $this->rememberMeDAO->deleteTokenByUsername($this->tokenStorage->getToken()->getUsername());
         $this->cancelCookie($request);
     }
 
-    protected function encodeCookie(array $cookieParts)
+    protected function encodeCookie(array $cookieParts): string
     {
         foreach ($cookieParts as $cookiePart) {
             if (false !== strpos($cookiePart, self::COOKIE_DELIMITER)) {
@@ -151,19 +151,19 @@ class RememberMeManager
         return base64_encode(implode(self::COOKIE_DELIMITER, $cookieParts));
     }
 
-    protected function decodeCookie($rawCookie)
+    protected function decodeCookie(string $rawCookie): array
     {
         return explode(self::COOKIE_DELIMITER, base64_decode($rawCookie));
     }
 
-    protected function cancelCookie(Request $request)
+    protected function cancelCookie(Request $request): void
     {
         $request->attributes->set(
             self::COOKIE_ATTR_NAME,
             new Cookie(
                 $this->options['name'],
                 null,
-                1,
+                (string) 1,
                 $this->options['path'],
                 $this->options['domain'],
                 $this->options['secure'] ?? $request->isSecure(),

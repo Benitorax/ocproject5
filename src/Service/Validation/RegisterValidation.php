@@ -27,7 +27,7 @@ class RegisterValidation extends Validation
         ['checkbox', true]
     ];
 
-    public function validate(RegisterForm $form)
+    public function validate(RegisterForm $form): void
     {
         $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
         $form->errors['password1'] = $this->check(self::PASSWORD1, $form->password1, 'password');

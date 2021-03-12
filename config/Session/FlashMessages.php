@@ -3,33 +3,29 @@ namespace Config\Session;
 
 class FlashMessages
 {
-    private $flashes = [];
+    private ?array $flashes = [];
 
-    public function __construct()
-    {
-    }
-
-    public function initialize(?array &$flashes)
+    public function initialize(?array &$flashes): void
     {
         $this->flashes = &$flashes;
     }
 
-    public function add($type, $message)
+    public function add(string $type, string $message): void
     {
         $this->flashes[$type][] = $message;
     }
 
-    public function peek($type, array $default = [])
+    public function peek(string $type, array $default = []): ?array
     {
         return $this->has($type) ? $this->flashes[$type] : $default;
     }
 
-    public function peekAll()
+    public function peekAll(): ?array
     {
         return $this->flashes;
     }
 
-    public function get($type, array $default = [])
+    public function get(string $type, array $default = []): ?array
     {
         if (!$this->has($type)) {
             return $default;
@@ -42,7 +38,7 @@ class FlashMessages
         return $return;
     }
 
-    public function all()
+    public function all(): ?array
     {
         $return = $this->peekAll();
         $this->flashes = [];
@@ -50,33 +46,31 @@ class FlashMessages
         return $return;
     }
 
-    public function set($type, $messages)
+    /**
+     * @param string|array $messages
+     */
+    public function set(string $type, $messages): void
     {
         $this->flashes[$type] = (array) $messages;
     }
 
-    public function setAll(array $messages)
+    public function setAll(array $messages): void
     {
         $this->flashes = $messages;
     }
 
-    public function has($type)
+    public function has(string $type): bool
     {
         return \array_key_exists($type, $this->flashes) && $this->flashes[$type];
     }
 
-    public function keys()
+    public function keys(): ?array
     {
         return array_keys($this->flashes);
     }
 
-    public function clear()
+    public function clear(): array
     {
         return $this->all();
-    }
-
-    public function getName()
-    {
-        return $this->name;
     }
 }

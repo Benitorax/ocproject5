@@ -40,7 +40,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
         return $this->selectAll(self::SQL_SELECT, $this);
     }
 
-    public function add(User $user)
+    public function add(User $user): void
     {
         $this->insert('user', [
             'id' => $user->getId(),

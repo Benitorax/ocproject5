@@ -3,6 +3,7 @@ namespace Config\DAO;
 
 use PDO;
 use Exception;
+use PDOStatement;
 use stdClass;
 
 abstract class AbstractDAO
@@ -14,9 +15,10 @@ abstract class AbstractDAO
     const DB_USER = 'root';
     const DB_PASS = '';
 
+    /** @var PDO */
     private $connection;
 
-    private function checkConnection()
+    private function checkConnection(): PDO
     {
         if ($this->connection === null) {
             return $this->getConnection();
@@ -25,7 +27,7 @@ abstract class AbstractDAO
         return $this->connection;
     }
 
-    private function getConnection()
+    private function getConnection(): PDO
     {
         try {
             $this->connection = new PDO(self::DB_HOST, self::DB_USER, self::DB_PASS);
@@ -37,7 +39,8 @@ abstract class AbstractDAO
         }
     }
 
-    protected function createQuery($sql, $parameters = null)
+    /** @param mixed[] $parameters */
+    protected function createQuery(string $sql, array $parameters = null): PDOStatement
     {
         if ($parameters) {
             $stmt = $this->checkConnection()->prepare($sql);
@@ -56,10 +59,10 @@ abstract class AbstractDAO
     }
 
     /**
-     * @param $parameters = [id => $id, username => $username]
-     * @return <object> A model object
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     * return object A model object
      */
-    public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
+    public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao): ?object
     {
         $stmt = $this->select($sqlPrefix, $parameters);
         $result = $stmt->fetchObject(stdClass::class);
@@ -73,8 +76,8 @@ abstract class AbstractDAO
     }
 
     /**
-     * @param $parameters = [id => $id, username => $username]
-     * @return <object> A model object
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     * @return ?object[]
      */
     public function selectResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -94,6 +97,9 @@ abstract class AbstractDAO
         return $objects;
     }
 
+    /**
+     * @return ?object[]
+     */
     public function selectAll(string $sqlPrefix, DAOInterface $dao)
     {
         $stmt = $this->select($sqlPrefix);
@@ -101,7 +107,7 @@ abstract class AbstractDAO
         $stmt->closeCursor();
 
         if ($result === false) {
-            throw new Exception(sprintf('No result for this SQL command: \'%s\'', $sqlPrefix));
+            return null;
         }
 
         $objects = [];
@@ -113,8 +119,9 @@ abstract class AbstractDAO
     }
 
     /**
-     * @param $parameters = [id => $id, username => $username]
-     * @return <object> A model object
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     * @param mixed[] $orderBy = ['updated_at' => DESC, 'created_at' => DESC]
+     * @return PDOStatement
      */
     public function select(string $sql, array $parameters = null, array $orderBy = null)
     {
@@ -126,22 +133,32 @@ abstract class AbstractDAO
         return $this->createQuery($sql, $parameters);
     }
 
-    public function insert(string $tableName, array $parameters)
+    /**
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     */
+    public function insert(string $tableName, array $parameters): PDOStatement
     {
         [$colNameString, $paramString] = $this->paramsToStrings($parameters);
 
         $sql = 'INSERT INTO '.$tableName.' ('.$colNameString.') VALUES ('.$paramString.')';
-        $this->createQuery($sql, $parameters);
+        return $this->createQuery($sql, $parameters);
     }
 
-    public function delete(string $tableName, array $parameters)
+    /**
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     */
+    public function delete(string $tableName, array $parameters): PDOStatement
     {
         $sql = 'DELETE FROM '.$tableName;
         $sql = $this->addWhere($sql, $parameters);
         return $this->createQuery($sql, $parameters);
     }
 
-    public function update(string $tableName, array $parameters, array $where)
+    /**
+     * @param mixed[] $parameters = ['password' => $password, 'username' => $username]
+     * @param mixed[] $where = ['id' => $id]
+     */
+    public function update(string $tableName, array $parameters, array $where): PDOStatement
     {
         $sql = 'UPDATE '.$tableName.' SET';
         
@@ -160,6 +177,10 @@ abstract class AbstractDAO
         return $this->createQuery($sql, $parameters);
     }
 
+    /**
+     * @param mixed[] $parameters = ['title' => $title, 'short_text' => $shortText]
+     * @return string[]
+     */
     private function paramsToStrings(array $parameters): array
     {
         $i = 1;
@@ -181,6 +202,9 @@ abstract class AbstractDAO
         return [$colNameString, $paramString];
     }
 
+    /**
+     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
+     */
     private function addWhere(string $sqlPrefix, array $parameters): string
     {
         $i = 1;
@@ -199,6 +223,9 @@ abstract class AbstractDAO
         return $sqlPrefix . $where;
     }
 
+    /**
+     * @param mixed[] $orderBy = ['updated_at' => DESC, 'created_at' => DESC]
+     */
     private function addOrderBy(string $sql, array $orderBy = null): string
     {
         if ($orderBy) {

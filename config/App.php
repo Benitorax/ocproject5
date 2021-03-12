@@ -2,6 +2,7 @@
 namespace Config;
 
 use App\Model\User;
+use Config\Cookie\Cookie;
 use Config\Request\Request;
 use Config\Session\Session;
 use Config\Response\Response;
@@ -12,17 +13,17 @@ use Config\Security\RememberMe\RememberMeManager;
 
 class App
 {
-    private $container;
+    private Container $container;
 
     public function handle(Request $request): Response
     {
         $this->boot($request);
-        $request->setSession($this->container->getService(Session::class));
         $router = $this->container->getRouter();
         $response = $router->run($request);
 
         // Add rememberme cookie into Response if exists
         if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
+            /** @var Cookie */
             $cookie = $request->attributes->get(RememberMeManager::COOKIE_ATTR_NAME);
             $response->headers->setCookie($cookie);
         }
@@ -30,14 +31,15 @@ class App
         return $response;
     }
 
-    public function boot(Request $request)
+    public function boot(Request $request): void
     {
         $this->container = new Container();
         $this->container->setService($this);
+        $request->setSession($this->container->getService(Session::class));
         $this->authenticate($request);
     }
 
-    public function authenticate(Request $request)
+    public function authenticate(Request $request): void
     {
         // check User from session
         $session = $this->container->getService(Session::class);
@@ -56,7 +58,7 @@ class App
         }
     }
 
-    public function terminate()
+    public function terminate(): void
     {
         // TODO: send email
     }

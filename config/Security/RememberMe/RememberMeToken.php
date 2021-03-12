@@ -9,6 +9,6 @@ class RememberMeToken extends AbstractToken
     public function __construct(User $user)
     {
         $this->setUser($user);
-        $this->setAuthenticated(false);
+        $this->setAuthenticated(true);
     }
 }
