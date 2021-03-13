@@ -52,6 +52,7 @@ class RememberMeManager
         }
 
         if (!hash_equals($persistentToken->getTokenValue(), $tokenValue)) {
+            $this->rememberMeDAO->deleteTokenByUsername($persistentToken->getUsername());
             throw new Exception('This token was already used. The account is possibly compromised.');
         }
 
@@ -102,8 +103,6 @@ class RememberMeManager
 
     public function createNewToken(User $user, Request $request): void
     {
-        $this->rememberMeDAO->deleteTokenByUsername($user->getUsername());
-        
         $series = base64_encode(random_bytes(64));
         $tokenValue = base64_encode(random_bytes(64));
 
@@ -137,6 +136,25 @@ class RememberMeManager
     {
         if (!empty($this->tokenStorage->getToken())) {
             $this->rememberMeDAO->deleteTokenByUsername((string) $this->tokenStorage->getToken()->getUsername());
+        }
+        $this->cancelCookie($request);
+    }
+
+    public function deleteTokenBySeries(Request $request): void
+    {
+        if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
+            return;
+        }
+
+        if (null === $cookie = $request->cookies->get($this->options['name'])) {
+            return;
+        }
+
+        $cookieParts = $this->decodeCookie($cookie);
+        [$series, $tokenValue] = $cookieParts;
+
+        if (!empty($this->tokenStorage->getToken())) {
+            $this->rememberMeDAO->deleteTokenBySeries($series);
         }
         $this->cancelCookie($request);
     }

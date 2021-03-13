@@ -10,6 +10,7 @@ use Config\Container\Container;
 use Config\Security\TokenStorage;
 use Config\Security\AbstractToken;
 use Config\Security\RememberMe\RememberMeManager;
+use Exception;
 
 class App
 {
@@ -59,7 +60,11 @@ class App
         // check rememberme cookie
         /** @var RememberMeManager */
         $rememberMeManager = $this->container->getService(RememberMeManager::class);
-        $token = $rememberMeManager->autoLogin($request);
+        try {
+            $token = $rememberMeManager->autoLogin($request);
+        } catch (Exception $e) {
+            $token = null;
+        }
 
         if ($token instanceof AbstractToken) {
             $tokenStorage->setToken($token);
