@@ -25,17 +25,26 @@ class UserDAO extends AbstractDAO implements DAOInterface
         return $user;
     }
 
-    public function getOneBy(array $parameters): ?User
+    /**
+     * @return null|object|User the object is instance of User class
+     */
+    public function getOneBy(array $parameters)
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getBy(array $parameters): array
+    /**
+     * @return null|object[]|User[] the object is instance of User class
+     */
+    public function getBy(array $parameters)
     {
         return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getAll(): array
+    /**
+     * @return null|object[]|User[] the object is instance of User class
+     */
+    public function getAll()
     {
         return $this->selectAll(self::SQL_SELECT, $this);
     }

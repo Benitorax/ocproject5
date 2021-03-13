@@ -2,9 +2,13 @@
 namespace Config\DAO;
 
 use PDO;
+use stdClass;
 use Exception;
 use PDOStatement;
-use stdClass;
+use App\Model\Post;
+use App\Model\User;
+use App\Model\Comment;
+use Config\Security\RememberMe\PersistentToken;
 
 abstract class AbstractDAO
 {
@@ -61,7 +65,7 @@ abstract class AbstractDAO
 
     /**
      * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
-     * @return ?object A model object
+     * @return null|User|Comment|Post|PersistentToken
      */
     public function selectOneResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -78,7 +82,7 @@ abstract class AbstractDAO
 
     /**
      * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
-     * @return ?object[]
+     * @return null|User[]|Comment[]|Post[]|PersistentToken[]
      */
     public function selectResultBy(string $sqlPrefix, array $parameters, DAOInterface $dao)
     {
@@ -99,7 +103,7 @@ abstract class AbstractDAO
     }
 
     /**
-     * @return ?object[]
+     * @return null|User[]|Comment[]|Post[]|PersistentToken[]
      */
     public function selectAll(string $sqlPrefix, DAOInterface $dao)
     {

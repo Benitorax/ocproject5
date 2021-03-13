@@ -29,6 +29,7 @@ class Auth
 
     public function authenticate(string $email, string $password): ?User
     {
+        /** @var User|null */
         $user = $this->userDAO->getOneBy(['email' => $email]);
 
         if ($user === null) {

@@ -47,7 +47,10 @@ abstract class Controller
 
     public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
-        $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
+        /** @var UrlGenerator */
+        $generator = $this->get(UrlGenerator::class);
+        $url = $generator->generate($routeName, $parameters);
+        
         $response = new Response('', 302);
         $response->headers->set('Location', $url);
 
@@ -59,7 +62,9 @@ abstract class Controller
 
     public function isCsrfTokenValid(?string $token): bool
     {
-        $isValid = $this->get(CsrfTokenManager::class)->isTokenValid($token);
+        /** @var CsrfTokenManager */
+        $tokenManager = $this->get(CsrfTokenManager::class);
+        $isValid = $tokenManager->isTokenValid($token);
 
         if ($isValid) {
             return true;

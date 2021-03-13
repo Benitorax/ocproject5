@@ -29,17 +29,26 @@ class PostDAO extends AbstractDAO implements DAOInterface
         return $post;
     }
 
-    public function getOneBy(array $parameters): User
+    /**
+     * @return null|object|Post the object is instance of Post class
+     */
+    public function getOneBy(array $parameters)
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getBy(array $parameters): array
+    /**
+     * @return null|object[]|Post[] the object is instance of Post class
+     */
+    public function getBy(array $parameters)
     {
         return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getAll(): array
+    /**
+     * @return null|object[]|Post[] the object is instance of Post class
+     */
+    public function getAll()
     {
         return $this->selectAll(self::SQL_SELECT, $this);
     }
@@ -71,7 +80,6 @@ class PostDAO extends AbstractDAO implements DAOInterface
         ]);
     }
 
-    // TODO Create a function to attach user to each post
     /**
      * @param string|int $userId
      */

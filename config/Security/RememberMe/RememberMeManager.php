@@ -76,6 +76,7 @@ class RememberMeManager
             )
         );
 
+        /** @var User */
         return $this->userDAO->getOneBy(['username' => $persistentToken->getUsername()]);
     }
 
