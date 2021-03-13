@@ -8,51 +8,29 @@ use App\DAO\PostDAO;
 use App\DAO\UserDAO;
 use App\Service\Auth;
 use App\Form\LoginForm;
+use App\Form\ContactForm;
 use App\Form\RegisterForm;
-use App\Service\PostManager;
 use App\Service\UserManager;
 use Config\Response\Response;
 use App\Controller\Controller;
 use Config\Security\TokenStorage;
 use App\Service\Validation\LoginValidation;
+use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;
 
 class AppController extends Controller
 {
     public function home(): Response
     {
-        $user = new User();
-        $userId = (string) rand(10000, 99999);
-        $user->setId($userId)
-            ->setEmail('name'.$userId)
-            ->setPassword('123456')
-            ->setUsername('Martouflette'.$userId.'@mail.com')
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
-        ;
-        $titles = [
-            "C'est la casse du siècle !",
-            "Pandémie ici et là-bas ?!",
-            "Word of the month",
-            "¿Qué tenemos en nuestro plato? "
-        ];
-        $post = new Post();
-        $postId = (string) rand(10000, 99999);
-        $post->setId($postId)
-            ->setTitle($titles[array_rand($titles)])
-            ->setShortText('Mon introduction')
-            ->setText('Le texte complètement vide')
-            ->setIsPublished(true)
-            ->setUser($user)
-        ;
+        $form = new ContactForm($this->get(ContactValidation::class));
+        $form->handleRequest($this->request);
 
-        $this->get(PostManager::class)->createAndSave($post);
-        $this->get(UserDAO::class)->add($user);
+        if ($form->isSubmitted && $form->isValid) {
+            $form->clear();
+            $this->session->getFlashes()->add('success', 'Your message has been sent with success!');
+        }
 
-        return $this->render('app/home.html.twig', [
-            'post' => $post,
-            'user' => $user
-        ]);
+        return $this->render('app/home.html.twig', ['form' => $form]);
     }
 
     public function post(string $slug, string $username): Response

@@ -1,16 +1,57 @@
 {% extends 'base.html.twig' %}
+{% import "form/_form.html.twig" as _form %}
 
-{% block title %}My profile{% endblock %}
+{% block title %}Vincent van Gogh{% endblock %}
 
 {% block body %}
-    <div>
-        <h2><a href="../public/index.php?route=post&postId={{ post.id }}">{{ post.title }}</a></h2>
-        <p>Slug : {{ post.slug }}</p>
-        <p>Intro : {{ post.shortText }}</p>
-        <p>Contenu : {{ post.text }}</p>
-        <p>Username : {{ post.user.username }}</p>
-        <p>UserId : {{ post.user.id }}</p>
-        <p>Créé le : {{ post.createdAt|date('Y-m-d H:i:s') }}</p>
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+            <div class="jumbotron text-center">
+                <h1 class="display-4">Vincent van Gogh</h1>
+                <p class="lead">Post-Impressionist Painter</p>
+                <div class="text-center mx-md-3">
+                    <img src="images/portrait-vvg.jpg" class="img-fluid rounded px-sm-5" alt="picture">
+                </div>
+                <p class="mt-3"><a href="files/resume-vvg.pdf" target="_blank">My resume</a> (pdf)</p>
+                <hr class="my-4">
+                <p><b>Social Media</b></p>
+                <p>
+                    <a href="https://en.wikipedia.org/wiki/Vincent_van_Gogh" target="_blank">Wikipedia</a><br/>
+                    <a href="https://github.com/lesleyrazz/Vincent-Van-Gogh-Tribute-Page" target="_blank">Github</a><br/>
+                    <a href="https://twitter.com/vangoghartist" target="_blank">Twitter</a>
+                </p>
+            </div>
+        </div>
+        {% if app.user is not null %}
+            <div class="col-12 col-md-10 col-lg-8 col-xl-6">
+                <div class="card">
+                    <div class="card-body">
+                        <h4 class="card-title text-center">Contact Me</h4>
+                        <form method="POST" action="{{ url('home') }}">
+                            {{ _form.message_csrf(form) }}
+                            <div class="form-group">
+                                <label for="subject">Subject</label>
+                                <input type="text" class="form-control" name="subject" id="subject" value="{{ form.subject }}" maxlength="50" required>
+                                {% if form.errors.subject is not null %}<div class="invalid-feedback">{{ form.errors.subject }}</div>{% endif %}
+                            </div>
+                            <div class="form-group">
+                                <label for="content">Content</label>
+                                <textarea class="form-control" name="content" id="content" maxlength="1500" rows="6" required>{{ form.content }}</textarea>
+                                {% if form.errors.content is not null %}<div class="invalid-feedback">{{ form.errors.content }}</div>{% endif %}
+                            </div>
+                            {{ _form.input_csrf(csrf_token()) }}
+                            <div class="text-center">
+                                <button type="submit" class="btn btn-primary">Submit</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>    
+            </div>
+        {% endif %}
     </div>
-    <br>
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+    <link rel="stylesheet" href="/css/form.css">
 {% endblock %}

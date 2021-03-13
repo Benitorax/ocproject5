@@ -34,6 +34,7 @@ return [
     ],
     '/' => [
         'name' => 'home',
+        'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::home'
     ]
 ];
