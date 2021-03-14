@@ -10,18 +10,17 @@ use Config\Security\RememberMe\RememberMeManager;
 
 class Auth
 {
-    private $encoder;
-    private $session;
-    private $userDAO;
-    private $rememberMeManager;
+    private Session $session;
+    private UserDAO $userDAO;
+    private PasswordEncoder $encoder;
+    private RememberMeManager $rememberMeManager;
 
     public function __construct(
-        UserDAO $userDAO, 
-        PasswordEncoder $encoder, 
         Session $session,
+        UserDAO $userDAO,
+        PasswordEncoder $encoder,
         RememberMeManager $rememberMeManager
-    )
-    {
+    ) {
         $this->userDAO = $userDAO;
         $this->encoder = $encoder;
         $this->session = $session;
@@ -30,6 +29,7 @@ class Auth
 
     public function authenticate(string $email, string $password): ?User
     {
+        /** @var User|null */
         $user = $this->userDAO->getOneBy(['email' => $email]);
 
         if ($user === null) {
@@ -50,7 +50,7 @@ class Auth
     {
         $user = $this->authenticate($form->email, $form->password);
 
-        if(!$user instanceof User) {
+        if (!$user instanceof User) {
             return null;
         }
 
@@ -61,7 +61,7 @@ class Auth
         return $user;
     }
 
-    public function handleLogout(Request $request)
+    public function handleLogout(Request $request): void
     {
         if ($request->cookies->has(RememberMeManager::COOKIE_NAME)) {
             $this->rememberMeManager->deleteToken($request);

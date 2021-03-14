@@ -1,31 +1,31 @@
 <?php
 namespace Config\Container;
 
+use ReflectionType;
 use ReflectionMethod;
 use Config\Router\Router;
 
 class Container
 {
-    private $services = [];
+    /** @var object[] $services */
+    private array $services = [];
 
-    public function getService(string $className): ?object
+    public function get(string $className): object
     {
-        if ($this->hasService($className)) {
+        if ($this->has($className)) {
             return $this->services[$className];
         } else {
-            return $this->createService($className);
+            return $this->create($className);
         }
-
-        return null;
     }
 
-    public function createService(string $className): object
+    public function create(string $className): object
     {
         if ($className === get_class($this)) {
             return $this;
         }
 
-        $arguments = $this->resolveServiceArguments($className);
+        $arguments = $this->resolveArguments($className);
 
         if (is_array($arguments)) {
             $service = new $className(...$arguments);
@@ -33,12 +33,12 @@ class Container
             $service = new $className($arguments);
         }
 
-        $this->setService($service);
+        $this->set($service);
         
         return $service;
     }
 
-    public function hasService(string $className): bool
+    public function has(string $className): bool
     {
         if (isset($this->services[$className])) {
             return true;
@@ -46,35 +46,46 @@ class Container
         return false;
     }
 
-    public function setService(object $service)
+    public function set(object $service): void
     {
         $this->services[get_class($service)] = $service;
     }
 
-    public function getRouter()
+    public function getRouter(): Router
     {
         $className = Router::class;
-        if ($this->hasService($className)) {
-            return $this->getService($className);
+        if ($this->has($className)) {
+            /** @var Router */
+            return $this->get($className);
         }
-
-        return $this->createService($className);
+        /** @var Router */
+        return $this->create($className);
     }
 
-    public function resolveServiceArguments(string $className): ?array
+    /**
+     * @return object[]
+     */
+    public function resolveArguments(string $className): ?array
     {
         if (method_exists($className, '__construct')) {
             $reflection = new ReflectionMethod($className, '__construct');
-
             $arguments = null;
+            
             foreach ($reflection->getParameters() as $param) {
-                $serviceClassName = $param->getType()->getName();
+                /** @var ReflectionType */
+                $reflectionType = $param->getType();
 
-                if ($this->hasService($serviceClassName)) {
-                    $arguments[] = $this->getService($serviceClassName);
-                } else {
-                    $service = $this->createService($serviceClassName);
-                    $arguments[] = $service;
+                if (method_exists($reflectionType, 'getName')) {
+                    $serviceClassName = $reflectionType->getName();
+                }
+
+                if (!empty($serviceClassName)) {
+                    if ($this->has($serviceClassName)) {
+                        $arguments[] = $this->get($serviceClassName);
+                    } else {
+                        $service = $this->create($serviceClassName);
+                        $arguments[] = $service;
+                    }
                 }
             }
             

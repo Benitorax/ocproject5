@@ -7,8 +7,8 @@ use Config\Security\Csrf\CsrfTokenManager;
 
 abstract class Validation
 {
-    private $constraint;
-    private $csrfTokenManager;
+    private Constraint $constraint;
+    private CsrfTokenManager $csrfTokenManager;
 
     public function __construct(Constraint $constraint, CsrfTokenManager $csrfTokenManager)
     {
@@ -16,7 +16,10 @@ abstract class Validation
         $this->csrfTokenManager = $csrfTokenManager;
     }
 
-    public function check(array $constraints, $value, string $name = null)
+    /**
+     * @param bool|string|int $value
+     */
+    public function check(array $constraints, $value, string $name = null): ?string
     {
         foreach ($constraints as $constraint) {
             $error = $this->constraint->validate($constraint, $value, $name);
@@ -29,7 +32,7 @@ abstract class Validation
         return null;
     }
 
-    public function checkIdentical(string $value1, string $value2, string $name = null)
+    public function checkIdentical(string $value1, string $value2, string $name = null): ?string
     {
         $error = $this->constraint->identical($value1, $value2, $name);
         
@@ -40,15 +43,15 @@ abstract class Validation
         return null;
     }
 
-    public function checkCsrfToken(string $token)
+    public function checkCsrfToken(string $token): ?string
     {
-        if(!$this->csrfTokenManager->isTokenValid($token)) {
+        if (!$this->csrfTokenManager->isTokenValid($token)) {
             return 'The CSRF token is invalid. Please try to resubmit the form.';
         }
         return null;
     }
 
-    public function hasErrorMessages(AbstractForm $form)
+    public function hasErrorMessages(AbstractForm $form): bool
     {
         foreach ($form->errors as $error) {
             if (!empty($error)) {

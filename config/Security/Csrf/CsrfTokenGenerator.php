@@ -8,7 +8,7 @@ class CsrfTokenGenerator
      */
     private $entropy = 256;
 
-    public function generate()
+    public function generate(): string
     {
         // Generate an URI safe base64 encoded string that does not contain "+",
         // "/" or "=" which need to be URL encoded and make URLs unnecessarily

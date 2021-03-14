@@ -8,8 +8,8 @@ use App\Form\RegisterForm;
 
 class UserManager
 {
-    private $userDAO;
-    private $encoder;
+    private UserDAO $userDAO;
+    private PasswordEncoder $encoder;
     
     public function __construct(
         UserDAO $userDAO,
@@ -25,7 +25,7 @@ class UserManager
 
         $user->setId(IdGenerator::generate())
             ->setEmail($form->email)
-            ->setPassword($this->encoder->encode($form->password1))
+            ->setPassword((string) $this->encoder->encode($form->password1))
             ->setUsername($form->username)
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime())

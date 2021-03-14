@@ -9,7 +9,10 @@ class PasswordEncoder
         'cost' => 12
     ];
     
-    public function encode(string $password): string
+    /**
+     * @return false|string
+     */
+    public function encode(string $password)
     {
         return password_hash($password, PASSWORD_BCRYPT, self::OPTIONS);
     }

@@ -3,7 +3,7 @@ namespace Config\Response;
 
 class Response
 {
-    public static $statusTexts = [
+    public static array $statusTexts = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',            // RFC2518
@@ -68,13 +68,13 @@ class Response
         511 => 'Network Authentication Required',                             // RFC6585
     ];
 
-    public $headers;
+    public Headers $headers;
     protected string $content;
     protected string $version;
     protected int $statusCode;
     protected string $statusText;
 
-    public function __construct($content = '', int $status = 200, array $headers = [])
+    public function __construct(string $content = '', int $status = 200, array $headers = [])
     {
         $this->headers = new Headers($headers);
         $this->setContent($content);
@@ -90,7 +90,7 @@ class Response
             $this->getContent();
     }
 
-    public function send()
+    public function send(): self
     {
         $this->sendHeaders();
         $this->sendContent();
@@ -98,19 +98,19 @@ class Response
         return $this;
     }
 
-    public function setContent($content)
+    public function setContent(string $content): self
     {
-        $this->content = (string) $content;
+        $this->content = $content;
 
         return $this;
     }
 
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }
 
-    public function setProtocolVersion(string $version)
+    public function setProtocolVersion(string $version): self
     {
         $this->version = $version;
 
@@ -122,7 +122,7 @@ class Response
         return $this->version;
     }
 
-    public function setStatusCode(int $code)
+    public function setStatusCode(int $code): self
     {
         $this->statusCode = $code;
         $this->statusText = self::$statusTexts[$code] ?? 'unknown status';
@@ -140,14 +140,14 @@ class Response
         return $this->statusCode;
     }
 
-    public function sendContent()
+    public function sendContent(): self
     {
         echo $this->content;
 
         return $this;
     }
 
-    public function sendHeaders()
+    public function sendHeaders(): self
     {
         // headers have already been sent by the developer
         if (headers_sent()) {

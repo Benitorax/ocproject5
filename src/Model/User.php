@@ -17,7 +17,7 @@ class User
         return $this->id;
     }
 
-    public function setId($id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -29,7 +29,7 @@ class User
         return $this->email;
     }
 
-    public function setEmail($email): self
+    public function setEmail(string $email): self
     {
         $this->email = $email;
 
@@ -41,7 +41,7 @@ class User
         return $this->password;
     }
 
-    public function setPassword($password): self
+    public function setPassword(string $password): self
     {
         $this->password = $password;
 
@@ -53,7 +53,7 @@ class User
         return $this->username;
     }
 
-    public function setUsername($username): self
+    public function setUsername(string $username): self
     {
         $this->username = $username;
 
@@ -65,9 +65,25 @@ class User
         return $this->roles;
     }
 
-    public function setRoles($roles): self
+    public function setRoles(array $roles): self
     {
         $this->roles = $roles;
+
+        return $this;
+    }
+
+    /**
+     * @param string|array $roles
+     */
+    public function addRoles($roles): self
+    {
+        if (is_string($roles)) {
+            $this->roles[] = $roles;
+        } else {
+            foreach ($roles as $role) {
+                $this->roles[] = $role;
+            }
+        }
 
         return $this;
     }
@@ -77,7 +93,7 @@ class User
         return $this->isBlocked;
     }
 
-    public function setIsBlocked($isBlocked): self
+    public function setIsBlocked(bool $isBlocked): self
     {
         $this->isBlocked = $isBlocked;
 

@@ -2,9 +2,9 @@
 namespace Config\Security\RememberMe;
 
 use DateTime;
-use Exception;
 use Config\DAO\AbstractDAO;
 use Config\DAO\DAOInterface;
+use Config\Security\RememberMe\PersistentToken;
 
 class RememberMeDAO extends AbstractDAO implements DAOInterface
 {
@@ -23,7 +23,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         );
     }
 
-    public function loadTokenBySeries($series)
+    public function loadTokenBySeries(string $series): ?PersistentToken
     {
         $params = ['series' => $series];
         $token = $this->selectOneResultBy(self::SQL_SELECT, $params, $this);
@@ -35,18 +35,19 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         return null;
     }
 
-    public function deleteTokenBySeries($series)
+    public function deleteTokenBySeries(string $series): void
     {
         $params = ['series' => $series];
         $this->delete(self::SQL_TABLE, $params);
     }
 
-    public function deleteTokenByUsername($username)
+    public function deleteTokenByUsername(string $username): void
     {
         $params = ['username' => $username];
         $this->delete(self::SQL_TABLE, $params);
     }
-    public function updateToken($series, $tokenValue, DateTime $lastUsed)
+
+    public function updateToken(string $series, string $tokenValue, DateTime $lastUsed): void
     {
         $params = [
             'value' => $tokenValue,
@@ -56,7 +57,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         $this->update(self::SQL_TABLE, $params, $where);
     }
 
-    public function insertToken(PersistentToken $token)
+    public function insertToken(PersistentToken $token): void
     {
         $this->insert(self::SQL_TABLE, [
             'class' => $token->getClass(),

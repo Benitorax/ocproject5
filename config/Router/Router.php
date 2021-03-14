@@ -6,14 +6,15 @@ use ReflectionMethod;
 use Config\Router\Route;
 use Config\Request\Request;
 use Config\Response\Response;
+use App\Controller\Controller;
 use Config\Container\Container;
 use App\Controller\ErrorController;
 
 class Router
 {
-    private $request;
-    private $routes;
-    private $container;
+    private Request $request;
+    private array $routes;
+    private Container $container;
 
     public function __construct(Container $container)
     {
@@ -28,7 +29,7 @@ class Router
         
         try {
             return $this->match($this->request->getRequestUri(), $this->request->getMethod());
-        } catch (\Exception $e) {
+        } catch (Exception $e) {
             return $this->errorServer($e);
             // if (substr($e->getCode(), 0, 1) == 5) {
             //     return $this->errorServer($e);
@@ -50,7 +51,7 @@ class Router
         }
     }
 
-    public function matchRoute(string $requestUri, string $requestMethod)
+    public function matchRoute(string $requestUri, string $requestMethod): ?Route
     {
         foreach ($this->routes as $route) {
             $routePath = $route->getPath();
@@ -65,10 +66,10 @@ class Router
             }
         }
 
-        return false;
+        return null;
     }
 
-    public function matchMethod($method, $requiredMethods)
+    public function matchMethod(string $method, array $requiredMethods): bool
     {
         if (in_array($method, $requiredMethods)) {
             return true;
@@ -77,20 +78,31 @@ class Router
         }
     }
 
-    public function errorNotFound($error = null)
+    /**
+     * @param Exception $error
+     */
+    public function errorNotFound($error = null): Response
     {
         return $this->executeController([ErrorController::class, 'notFound'], $error);
     }
 
-    public function errorServer($error = null)
+    /**
+     * @param Exception $error
+     */
+    public function errorServer($error = null): Response
     {
         return $this->executeController([ErrorController::class, 'server'], $error);
     }
 
-    public function executeController($callable, $arguments = null): Response
+    /**
+     * @param string|array|object $arguments
+     */
+    public function executeController(array $callable, $arguments = null): Response
     {
         [$classname, $method] = $callable;
-        $object = $this->container->createService($classname);
+
+        /** @var Controller abstract class of Controller */
+        $object = $this->container->create($classname);
         $object->setRequest($this->request);
         $controller = [$object, $method];
 
@@ -102,13 +114,13 @@ class Router
             }
         } else {
             throw new Exception(
-                sprintf('Can\'t execute controller %s.', $controller),
+                sprintf('Can\'t execute controller %s.', get_class($object)),
                 500
             );
         }
     }
 
-    public function resolveControllerArguments($callable, $routePath, $requestUri)
+    public function resolveControllerArguments(array $callable, string $routePath, string $requestUri): array
     {
         $pathElements = explode('/', $routePath);
         $uriElements = explode('/', $requestUri);
@@ -125,8 +137,10 @@ class Router
                     $value = $matches[1];
                 }
 
-                $routeParams[$paramName] = $value;
-                $this->request->attributes->set($paramName, $value);
+                if (!empty($value)) {
+                    $routeParams[$paramName] = $value;
+                    $this->request->attributes->set((string) $paramName, $value);
+                }
             }
         }
 
@@ -158,7 +172,7 @@ class Router
         return $arguments;
     }
 
-    public function initializeRoutes()
+    public function initializeRoutes(): void
     {
         $routes = require __DIR__.'/routes.php';
         foreach ($routes as $path => $data) {

@@ -6,10 +6,12 @@ use Config\Security\Csrf\CsrfTokenGenerator;
 
 class CsrfTokenManager
 {
-    private $session;
-    private $token = null;
     const NAMESPACE = 'csrf';
-private $generator;
+
+    private Session $session;
+    private ?string $token = null;
+    private CsrfTokenGenerator $generator;
+
     public function __construct(Session $session, CsrfTokenGenerator $generator)
     {
         $this->session = $session;
@@ -18,7 +20,7 @@ private $generator;
 
     public function generateToken(): string
     {
-        if($this->token !== null) {
+        if ($this->token !== null) {
             return $this->token;
         }
         $this->token = $this->generator->generate();
@@ -27,16 +29,16 @@ private $generator;
         return $this->token;
     }
 
-    public function removeToken()
+    public function removeToken(): void
     {
         $this->session->remove(self::NAMESPACE);
     }
 
     public function isTokenValid(?string $token): bool
     {
-        $sessionToken = $this->getToken(self::NAMESPACE);
+        $sessionToken = $this->getToken();
         
-        if(hash_equals($sessionToken, $token ?? '')) {
+        if (hash_equals((string) $sessionToken, $token ?? '')) {
             return true;
         }
 
@@ -45,7 +47,7 @@ private $generator;
 
     public function getToken(): ?string
     {
-        if($this->session->has(self::NAMESPACE)) {
+        if ($this->session->has(self::NAMESPACE)) {
             return $this->session->get(self::NAMESPACE);
         }
 

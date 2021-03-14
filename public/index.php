@@ -8,7 +8,9 @@ use Config\Request\Request;
 
 $request = (new Request)->create();
 $app = new App();
+$app->addEnvVariables(dirname(__DIR__).'/.env.local');
 
 $response = $app->handle($request);
 $response->send();
+
 // $app->terminate();

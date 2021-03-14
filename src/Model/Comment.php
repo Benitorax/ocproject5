@@ -20,7 +20,7 @@ class Comment
         return $this->id;
     }
 
-    public function setId($id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -32,7 +32,7 @@ class Comment
         return $this->text;
     }
 
-    public function setText($text): self
+    public function setText(string $text): self
     {
         $this->text = $text;
 
@@ -44,14 +44,14 @@ class Comment
         return $this->isValidated;
     }
 
-    public function setIsValidated($isValidated): self
+    public function setIsValidated(bool $isValidated): self
     {
         $this->isValidated = $isValidated;
 
         return $this;
     }
 
-    public function getUser(): ?User
+    public function getUser(): User
     {
         return $this->user;
     }
@@ -63,7 +63,7 @@ class Comment
         return $this;
     }
 
-    public function getPost(): ?Post
+    public function getPost(): Post
     {
         return $this->post;
     }

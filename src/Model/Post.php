@@ -11,8 +11,8 @@ class Post
     private string $id;
     private string $title;
     private string $slug;
-    private string $shortText;
-    private string $text;
+    private ?string $shortText;
+    private ?string $text;
     private bool $isPublished;
     private User $user;
 
@@ -21,7 +21,7 @@ class Post
         return $this->id;
     }
 
-    public function setId($id): self
+    public function setId(string $id): self
     {
         $this->id = $id;
 
@@ -33,7 +33,7 @@ class Post
         return $this->title;
     }
 
-    public function setTitle($title): self
+    public function setTitle(string $title): self
     {
         $this->title = $title;
 
@@ -45,7 +45,7 @@ class Post
         return $this->slug;
     }
 
-    public function setSlug($slug): self
+    public function setSlug(string $slug): self
     {
         $this->slug = $slug;
 
@@ -81,7 +81,7 @@ class Post
         return $this->isPublished;
     }
 
-    public function setIsPublished($isPublished): self
+    public function setIsPublished(bool $isPublished): self
     {
         $this->isPublished = $isPublished;
 

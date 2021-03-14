@@ -25,22 +25,31 @@ class CommentDAO extends AbstractDAO implements DAOInterface
         return $comment;
     }
 
-    public function getOneBy(array $parameters): User
+    /**
+     * @return null|object|Comment the object is instance of Comment class
+     */
+    public function getOneBy(array $parameters)
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getBy(array $parameters): array
+    /**
+     * @return null|object[]|Comment[] the object is instance of Comment class
+     */
+    public function getBy(array $parameters)
     {
         return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getAll(): array
+    /**
+     * @return null|object[]|Comment[] the object is instance of Comment class
+     */
+    public function getAll()
     {
         return $this->selectAll(self::SQL_SELECT, $this);
     }
 
-    public function add(Comment $comment)
+    public function add(Comment $comment): void
     {
         $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id)'
             .'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';

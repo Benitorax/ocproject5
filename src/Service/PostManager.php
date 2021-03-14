@@ -8,8 +8,8 @@ use App\DAO\PostDAO;
 
 class PostManager
 {
-    private $postDAO;
-    private $dao;
+    private PostDAO $postDAO;
+    private DAO $dao;
     
     public function __construct(PostDAO $postDAO, DAO $dao)
     {
@@ -29,19 +29,21 @@ class PostManager
         return $post;
     }
 
-    public function slugify($title)
+    public function slugify(string $title): string
     {
-        $slug = mb_strtolower(preg_replace(
-            array('/[^a-zA-Z0-9 \'-]/', '/[ -\']+/', '/^-|-$/'),
-            array('', '-', ''),
-            $this->removeAccent(trim($title))
-        ));
+        $slug = mb_strtolower(
+            (string) preg_replace(
+                array('/[^a-zA-Z0-9 \'-]/', '/[ -\']+/', '/^-|-$/'),
+                array('', '-', ''),
+                $this->removeAccent(trim($title))
+            )
+        );
         $count = $this->dao->getCountBy('post', 'slug', $slug.'%', 'LIKE');
 
         return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;
     }
 
-    public function removeAccent($str)
+    public function removeAccent(string $string): string
     {
         $a = array('À', 'Á', 'Â', 'Ã', 'Ä', 'Å', 'Æ', 'Ç', 'È', 'É', 'Ê', 'Ë', 'Ì', 'Í', 'Î', 'Ï', 'Ð',
                     'Ñ', 'Ò', 'Ó', 'Ô', 'Õ', 'Ö', 'Ø', 'Ù', 'Ú', 'Û', 'Ü', 'Ý', 'ß', 'à', 'á', 'â', 'ã',
@@ -68,6 +70,6 @@ class PostManager
                     'w', 'Y', 'y', 'Y', 'Z', 'z', 'Z', 'z', 'Z', 'z', 's', 'f', 'O', 'o', 'U', 'u', 'A', 'a', 'I', 'i',
                     'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o');
                         
-        return str_replace($a, $b, $str);
+        return str_replace($a, $b, $string);
     }
 }

@@ -6,12 +6,14 @@ use Config\Request\Parameter;
 
 class Request
 {
-    public $query;
-    public $request;
-    public $cookies;
-    public $server;
-    private $session;
-    public $attributes;
+    public Parameter $query;
+    public Parameter $request;
+    public Parameter $cookies;
+    public Parameter $server;
+    private ?Session $session;
+    public Parameter $attributes;
+    private ?string $requestUri = null;
+    private ?string $pathInfo = null;
 
     public function create(): self
     {
@@ -24,16 +26,26 @@ class Request
         return $this;
     }
 
-    public function getMethod()
+    public function getMethod(): string
     {
+        /** @var string */
         return $this->server->get('REQUEST_METHOD', 'GET');
     }
 
-    public function getRequestUri()
+    public function getRequestUri(): string
+    {
+        if (null === $this->requestUri) {
+            $this->requestUri = $this->prepareRequestUri();
+        }
+
+        return $this->requestUri;
+    }
+
+    public function prepareRequestUri(): string
     {
         $requestUri = '';
 
-        if ('1' == $this->server->get('IIS_WasUrlRewritten') && '' != $this->server->get('UNENCODED_URL')) {
+        if ('1' === $this->server->get('IIS_WasUrlRewritten') && '' !== $this->server->get('UNENCODED_URL')) {
             // IIS7 with URL Rewrite: make sure we get the unencoded URL (double slash problem)
             $requestUri = $this->server->get('UNENCODED_URL');
             $this->server->remove('UNENCODED_URL');
@@ -49,7 +61,7 @@ class Request
             } else {
                 // HTTP proxy reqs setup request URI with scheme and host [and port] + the URL path,
                 // only use URL path.
-                $uriComponents = parse_url($requestUri);
+                $uriComponents = (array) parse_url($requestUri);
 
                 if (isset($uriComponents['path'])) {
                     $requestUri = $uriComponents['path'];
@@ -74,30 +86,83 @@ class Request
         return $requestUri;
     }
 
-    /** @return Session */
-    public function getSession()
+    public function getPathInfo(): string
+    {
+        if (null === $this->pathInfo) {
+            $this->pathInfo = $this->preparePathInfo();
+        }
+
+        return $this->pathInfo;
+    }
+
+    protected function preparePathInfo(): string
+    {
+        $requestUri = $this->getRequestUri();
+
+        // Remove the query string from REQUEST_URI
+        if (false !== $pos = strpos($requestUri, '?')) {
+            $requestUri = substr($requestUri, 0, $pos);
+        }
+        if ('' !== $requestUri && '/' !== $requestUri[0]) {
+            $requestUri = '/'.$requestUri;
+        }
+
+        return (string) $requestUri;
+    }
+
+    public function getSession(): ?Session
     {
         if ($this->hasSession()) {
             return $this->session;
         }
-
         return null;
     }
 
-    public function setSession(Session $session)
+    public function setSession(Session $session): void
     {
         $this->session = $session;
     }
 
-    public function hasSession()
+    public function hasSession(): bool
     {
         return null !== $this->session;
     }
 
-    public function isSecure()
+    public function isSecure(): bool
     {
         $https = $this->server->get('HTTPS');
 
         return !empty($https) && 'off' !== strtolower($https);
+    }
+
+    public function getScheme(): string
+    {
+        return $this->isSecure() ? 'https' : 'http';
+    }
+
+    public function getHost(): string
+    {
+        return $this->server->get('HTTP_HOST');
+    }
+
+    public function getPort(): int
+    {
+        return $this->server->get('SERVER_PORT');
+    }
+
+    public function getQueryString(): string
+    {
+        $qs = $this->server->get('QUERY_STRING');
+
+        if ('' === ($qs ?? '')) {
+            return '';
+        }
+
+        parse_str($qs, $qs);
+        ksort($qs);
+
+        $qs = http_build_query($qs, '', '&', \PHP_QUERY_RFC3986);
+        
+        return $qs;
     }
 }

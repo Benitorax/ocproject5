@@ -13,22 +13,22 @@ class RegisterForm extends AbstractForm
     public string $username;
     public bool $terms;
 
-    private $validation;
+    private RegisterValidation $validation;
 
     public function __construct(RegisterValidation $validation)
     {
         $this->validation = $validation;
     }
 
-    public function handleRequest(Request $request)
+    public function handleRequest(Request $request): void
     {
-        if($request->getMethod() == 'POST') {
-            $this->hydrateForm($request->request);
-            $this->validation->validate($this);    
+        if ($request->getMethod() == 'POST') {
+            $this->hydrate($request->request);
+            $this->validation->validate($this);
         }
     }
 
-    public function hydrateForm(Parameter $post)
+    public function hydrate(Parameter $post): void
     {
         $this->email = $post->get('email') ?: '';
         $this->password1 = $post->get('password1') ?: '';

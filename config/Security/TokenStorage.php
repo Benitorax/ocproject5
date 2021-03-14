@@ -6,25 +6,24 @@ use Config\Session\Session;
 
 class TokenStorage
 {
-    private $token;
+    private ?AbstractToken $token = null;
 
-    public function getToken()
+    public function getToken(): ?AbstractToken
     {
         return $this->token;
     }
 
-    public function setToken(AbstractToken $token = null)
+    public function setToken(AbstractToken $token = null): void
     {
-        $this->initializer = null;
         $this->token = $token;
     }
 
-    public function reset()
+    public function reset(): void
     {
         $this->setToken(null);
     }
 
-    public function setUserFromSession(Session $session)
+    public function setUserFromSession(Session $session): void
     {
         $user = $session->get('user');
 

@@ -23,6 +23,10 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::register'
     ],
+    '/terms_of_use' => [
+        'name' => 'terms_of_use',
+        'callable' => 'App\Controller\AppController::termsOfUse'
+    ],
     '/post/{slug}/author/{username}' => [
         'name' => 'post',
         'method' => 'GET',
@@ -30,6 +34,7 @@ return [
     ],
     '/' => [
         'name' => 'home',
+        'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::home'
     ]
 ];

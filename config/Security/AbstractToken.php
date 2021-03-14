@@ -5,23 +5,28 @@ use App\Model\User;
 
 abstract class AbstractToken
 {
-    private $user;
+    private ?User $user = null;
+    private bool $authenticated = false;
 
-    public function getUsername()
+    public function getUsername(): ?string
     {
-        if ($this->user instanceof User) {
+        if (!empty($this->user)) {
             return $this->user->getUsername();
         }
 
-        return (string) $this->user;
+        return null;
     }
 
-    public function getUser()
+    public function getUser(): ?User
     {
-        return $this->user;
+        if (!empty($this->user)) {
+            return $this->user;
+        }
+
+        return null;
     }
 
-    public function setUser(?User $user)
+    public function setUser(?User $user): void
     {
         if (null === $this->user) {
             $changed = false;
@@ -36,13 +41,13 @@ abstract class AbstractToken
         $this->user = $user;
     }
 
-    public function isAuthenticated()
+    public function isAuthenticated(): bool
     {
         return $this->authenticated;
     }
 
-    public function setAuthenticated($authenticated)
+    public function setAuthenticated(bool $authenticated): void
     {
-        $this->authenticated = (bool) $authenticated;
+        $this->authenticated = $authenticated;
     }
 }

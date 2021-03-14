@@ -4,20 +4,20 @@ namespace App\Controller;
 use Config\View\View;
 use Config\Request\Request;
 use Config\Session\Session;
-use App\Service\UrlGenerator;
+use Config\Router\UrlGenerator;
+use Config\Request\Parameter;
 use Config\Response\Response;
 use Config\Container\Container;
 use Config\Security\Csrf\CsrfTokenManager;
 
 abstract class Controller
 {
-    protected $view;
-    protected $request;
-    protected $get;
-    protected $post;
-    /** @var Session */
-    protected $session;
-    protected $container;
+    protected View $view;
+    protected Container $container;
+
+    protected Request $request;
+    protected Parameter $query;
+    protected Parameter $post;
 
     public function __construct(View $view, Container $container)
     {
@@ -25,28 +25,30 @@ abstract class Controller
         $this->container = $container;
     }
 
-    public function setRequest(Request $request)
+    public function setRequest(Request $request): void
     {
         $this->request = $request;
         $this->query = $this->request->query;
         $this->post = $this->request->request;
-        $this->session = $this->container->getService(Session::class);
         $this->view->setRequest($request);
     }
 
-    public function get(string $name)
+    public function get(string $name): object
     {
-        return $this->container->getService($name);
+        return $this->container->get($name);
     }
 
-    public function render(string $viewPath, array $parameters = [], Response $response = null)
+    public function render(string $viewPath, array $parameters = [], Response $response = null): Response
     {
         return $this->view->render($viewPath, $parameters, $response);
     }
 
-    public function redirectToRoute(string $routeName, array $parameters = [])
+    public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
-        $url = $this->get(UrlGenerator::class)->generate($routeName, $parameters);
+        /** @var UrlGenerator */
+        $generator = $this->get(UrlGenerator::class);
+        $url = $generator->generate($routeName, $parameters);
+        
         $response = new Response('', 302);
         $response->headers->set('Location', $url);
 
@@ -56,13 +58,24 @@ abstract class Controller
         // exit();
     }
 
-    public function isCsrfTokenValid(?string $token)
+    public function isCsrfTokenValid(?string $token): bool
     {
-        $isValid = $this->get(CsrfTokenManager::class)->isTokenValid($token);
+        /** @var CsrfTokenManager */
+        $tokenManager = $this->get(CsrfTokenManager::class);
+        $isValid = $tokenManager->isTokenValid($token);
 
-        if($isValid) {
+        if ($isValid) {
             return true;
         }
         return false;
+    }
+
+    public function addFlash(string $type, string $message): void
+    {
+        if ($this->container->has(Session::class)) {
+            /** @var Session */
+            $session = $this->container->get(Session::class);
+            $session->getFlashes()->add($type, $message);
+        }
     }
 }

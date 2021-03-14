@@ -29,22 +29,31 @@ class PostDAO extends AbstractDAO implements DAOInterface
         return $post;
     }
 
-    public function getOneBy(array $parameters): User
+    /**
+     * @return null|object|Post the object is instance of Post class
+     */
+    public function getOneBy(array $parameters)
     {
         return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getBy(array $parameters): array
+    /**
+     * @return null|object[]|Post[] the object is instance of Post class
+     */
+    public function getBy(array $parameters)
     {
         return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
     }
 
-    public function getAll(): array
+    /**
+     * @return null|object[]|Post[] the object is instance of Post class
+     */
+    public function getAll()
     {
         return $this->selectAll(self::SQL_SELECT, $this);
     }
 
-    public function getCountBySlug($slug): int
+    public function getCountBySlug(string $slug): int
     {
         $sql = 'SELECT COUNT(*) AS count FROM post';
         $result = $this->createQuery($sql, ['slug' => $slug.'%']);
@@ -54,7 +63,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
         return $row['count'];
     }
 
-    public function add(Post $post)
+    public function add(Post $post): void
     {
         $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id)'
             .'VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
@@ -71,8 +80,10 @@ class PostDAO extends AbstractDAO implements DAOInterface
         ]);
     }
 
-    // TODO Create a function to attach user to each post
-    public function getUserById($userId)
+    /**
+     * @param string|int $userId
+     */
+    public function getUserById($userId): User
     {
         $sql = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked'
                 .'FROM user ORDER BY id DESC';
@@ -87,7 +98,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
             ->setUsername($row['username'])
             ->setCreatedAt($row['created_at'])
             ->setUpdatedAt($row['updated_at'])
-            ->setIsAdmin(json_decode($row['roles']))
+            ->setRoles(json_decode($row['roles']))
             ->setIsBlocked($row['is_blocked']);
 
         return $user;
