@@ -27,7 +27,7 @@
                 <div class="card">
                     <div class="card-body">
                         <h4 class="card-title text-center">Contact Me</h4>
-                        <form method="POST" action="{{ url('home') }}">
+                        <form method="POST" action="{{ path('home') }}">
                             {{ _form.message_csrf(form) }}
                             <div class="form-group">
                                 <label for="subject">Subject</label>

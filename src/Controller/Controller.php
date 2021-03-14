@@ -4,7 +4,7 @@ namespace App\Controller;
 use Config\View\View;
 use Config\Request\Request;
 use Config\Session\Session;
-use App\Service\UrlGenerator;
+use Config\Router\UrlGenerator;
 use Config\Request\Parameter;
 use Config\Response\Response;
 use Config\Container\Container;

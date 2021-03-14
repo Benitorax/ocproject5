@@ -1,9 +1,9 @@
 <?php
-namespace App\Service;
+namespace App\Service\Mailer;
 
 use App\Model\User;
 use App\DAO\UserDAO;
-use App\Service\Mailer;
+use App\Service\Mailer\Mailer;
 use App\Form\ContactForm;
 
 class Notification

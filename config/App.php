@@ -1,6 +1,7 @@
 <?php
 namespace Config;
 
+use Exception;
 use App\Model\User;
 use Config\Cookie\Cookie;
 use Config\Request\Request;
@@ -8,9 +9,9 @@ use Config\Session\Session;
 use Config\Response\Response;
 use Config\Container\Container;
 use Config\Security\TokenStorage;
+use Config\Router\RequestContext;
 use Config\Security\AbstractToken;
 use Config\Security\RememberMe\RememberMeManager;
-use Exception;
 
 class App
 {
@@ -37,7 +38,11 @@ class App
     {
         $this->container = new Container();
         $this->container->set($this);
-        
+
+        /** @var RequestContext */
+        $context = $this->container->get(RequestContext::class);
+        $context->fromRequest($request);
+
         /** @var Session */
         $session = $this->container->get(Session::class);
         $this->session = $session;

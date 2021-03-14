@@ -10,6 +10,6 @@
         <p>From <span style="color: #47476b; font-size: 110%;">{{ form.user.username }}</span> ({{ form.user.email }}), the {{ form.createdAt|date("Y-m-d \\a\\t H:i:s") }}.</p>
         
         <br>
-        <p style="font-style: italic;">Click <a href="">here</a> to go to MyWebsite page.</p>
+        <p style="font-style: italic;">Click <a href="{{ url('login') }}">here</a> to go to MyWebsite page.</p>
     </body>
 </html>

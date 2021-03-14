@@ -10,8 +10,10 @@ class Request
     public Parameter $request;
     public Parameter $cookies;
     public Parameter $server;
-    private Session $session;
+    private ?Session $session;
     public Parameter $attributes;
+    private ?string $requestUri = null;
+    private ?string $pathInfo = null;
 
     public function create(): self
     {
@@ -31,6 +33,15 @@ class Request
     }
 
     public function getRequestUri(): string
+    {
+        if (null === $this->requestUri) {
+            $this->requestUri = $this->prepareRequestUri();
+        }
+
+        return $this->requestUri;
+    }
+
+    public function prepareRequestUri(): string
     {
         $requestUri = '';
 
@@ -75,6 +86,30 @@ class Request
         return $requestUri;
     }
 
+    public function getPathInfo(): string
+    {
+        if (null === $this->pathInfo) {
+            $this->pathInfo = $this->preparePathInfo();
+        }
+
+        return $this->pathInfo;
+    }
+
+    protected function preparePathInfo(): string
+    {
+        $requestUri = $this->getRequestUri();
+
+        // Remove the query string from REQUEST_URI
+        if (false !== $pos = strpos($requestUri, '?')) {
+            $requestUri = substr($requestUri, 0, $pos);
+        }
+        if ('' !== $requestUri && '/' !== $requestUri[0]) {
+            $requestUri = '/'.$requestUri;
+        }
+
+        return (string) $requestUri;
+    }
+
     public function getSession(): ?Session
     {
         if ($this->hasSession()) {
@@ -98,5 +133,36 @@ class Request
         $https = $this->server->get('HTTPS');
 
         return !empty($https) && 'off' !== strtolower($https);
+    }
+
+    public function getScheme(): string
+    {
+        return $this->isSecure() ? 'https' : 'http';
+    }
+
+    public function getHost(): string
+    {
+        return $this->server->get('HTTP_HOST');
+    }
+
+    public function getPort(): int
+    {
+        return $this->server->get('SERVER_PORT');
+    }
+
+    public function getQueryString(): string
+    {
+        $qs = $this->server->get('QUERY_STRING');
+
+        if ('' === ($qs ?? '')) {
+            return '';
+        }
+
+        parse_str($qs, $qs);
+        ksort($qs);
+
+        $qs = http_build_query($qs, '', '&', \PHP_QUERY_RFC3986);
+        
+        return $qs;
     }
 }

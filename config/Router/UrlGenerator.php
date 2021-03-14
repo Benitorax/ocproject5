@@ -1,28 +1,45 @@
 <?php
-namespace App\Service;
+namespace Config\Router;
 
+use Config\Router\RequestContext;
 use Exception;
 use Config\Router\Router;
 
 class UrlGenerator
 {
+    const PATH_TYPE = 1;
+    const URL_TYPE = 2;
+
     private array $routes;
+    private RequestContext $context;
     
-    public function __construct(Router $router)
+    public function __construct(Router $router, RequestContext $context)
     {
         $this->routes = $router->getRoutes();
+        $this->context = $context;
     }
 
-    public function generate(string $routeName, array $routeParams = null): string
+    public function generate(string $routeName, array $routeParams = null, int $type = self::PATH_TYPE): string
     {
+        $url = '';
+
         foreach ($this->routes as $route) {
             if ($route->getName() === $routeName) {
                 if (count((array) $routeParams)) {
-                    return $this->hydrateRouteParams($route->getPath(), (array) $routeParams);
+                    $url = $this->hydrateRouteParams($route->getPath(), (array) $routeParams);
+                    break;
                 } else {
-                    return $route->getPath();
+                    $url = $route->getPath();
+                    break;
                 }
             }
+        }
+
+        if (strlen($url) > 0) {
+            if ($type === self::PATH_TYPE) {
+                return $url;
+            }
+            return $this->context->getSchemeAndHost().$url;
         }
 
         throw new Exception(sprintf("Route with name '%s' cannot be found.", $routeName), 500);

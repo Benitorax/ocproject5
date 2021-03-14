@@ -2,7 +2,7 @@
 namespace App\Service;
 
 use Twig\TwigFunction;
-use App\Service\UrlGenerator;
+use Config\Router\UrlGenerator;
 use Config\Security\Csrf\CsrfTokenManager;
 use Twig\Extension\AbstractExtension;
 
@@ -20,14 +20,20 @@ class TwigExtension extends AbstractExtension
     public function getFunctions(): array
     {
         return [
+            new TwigFunction('path', [$this, 'generatePath']),
             new TwigFunction('url', [$this, 'generateUrl']),
             new TwigFunction('csrf_token', [$this, 'generateCsrfToken']),
         ];
     }
 
-    public function generateUrl(string $routeName, array $routeParams = []): string
+    public function generatePath(string $routeName, array $routeParams = []): string
     {
         return $this->urlGenerator->generate($routeName, $routeParams);
+    }
+
+    public function generateUrl(string $routeName, array $routeParams = []): string
+    {
+        return $this->urlGenerator->generate($routeName, $routeParams, UrlGenerator::URL_TYPE);
     }
 
     public function generateCsrfToken(): string
