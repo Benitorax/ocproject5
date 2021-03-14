@@ -28,11 +28,12 @@ class AppController extends Controller
 
         if ($form->isSubmitted && $form->isValid) {
             $mailCount = $this->get(Notification::class)->notifyContact($form);
+            
             if ($mailCount === 0) {
-                $this->session->getFlashes()->add('danger', 'The messaging service has technical problems. Please try later.');
+                $this->addFlash('danger', 'The messaging service has technical problems. Please try later.');
             } else {
                 $form->clear();
-                $this->session->getFlashes()->add('success', 'Your message has been sent with success!');
+                $this->addFlash('success', 'Your message has been sent with success!');
             }
         }
 
@@ -83,10 +84,10 @@ class AppController extends Controller
             $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
             if (!empty($user)) {
-                $this->session->getFlashes()->add('success', 'Welcome, '.$user->getUsername().'!');
+                $this->addFlash('success', 'Welcome, '.$user->getUsername().'!');
                 return $this->redirectToRoute('home');
             }
-            $this->session->getFlashes()->add('danger', 'Email or password Invalid.');
+            $this->addFlash('danger', 'Email or password Invalid.');
         }
 
         return $this->render('app/login.html.twig', ['form' => $form]);
@@ -99,7 +100,7 @@ class AppController extends Controller
 
         if ($form->isSubmitted && $form->isValid) {
             $this->get(UserManager::class)->saveNewUser($form);
-            $this->session->getFlashes()->add('success', 'You register with success!');
+            $this->addFlash('success', 'You register with success!');
 
             return $this->redirectToRoute('login');
         }
@@ -111,7 +112,7 @@ class AppController extends Controller
     {
         if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
             $this->get(Auth::class)->handleLogout($this->request);
-            $this->session->getFlashes()->add('success', 'You logout with success!');
+            $this->addFlash('success', 'You logout with success!');
         }
 
         return $this->redirectToRoute('home');
