@@ -13,6 +13,7 @@ use App\Form\RegisterForm;
 use App\Service\UserManager;
 use Config\Response\Response;
 use App\Controller\Controller;
+use App\Service\Notification;
 use Config\Security\TokenStorage;
 use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
@@ -26,8 +27,13 @@ class AppController extends Controller
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted && $form->isValid) {
-            $form->clear();
-            $this->session->getFlashes()->add('success', 'Your message has been sent with success!');
+            $mailCount = $this->get(Notification::class)->notifyContact($form);
+            if ($mailCount === 0) {
+                $this->session->getFlashes()->add('danger', 'The messaging service has technical problems. Please try later.');
+            } else {
+                $form->clear();
+                $this->session->getFlashes()->add('success', 'Your message has been sent with success!');
+            }
         }
 
         return $this->render('app/home.html.twig', ['form' => $form]);

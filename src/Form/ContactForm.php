@@ -1,15 +1,20 @@
 <?php
 namespace App\Form;
 
+use DateTime;
+use App\Model\User;
 use App\Form\AbstractForm;
 use Config\Request\Request;
+use Config\Session\Session;
 use Config\Request\Parameter;
 use App\Service\Validation\ContactValidation;
 
 class ContactForm extends AbstractForm
 {
+    public User $user;
     public string $subject;
     public string $content;
+    public DateTime $createdAt;
 
     private ContactValidation $validation;
 
@@ -21,6 +26,9 @@ class ContactForm extends AbstractForm
     public function handleRequest(Request $request): void
     {
         if ($request->getMethod() == 'POST') {
+            /** @var Session */
+            $session = $request->getSession();
+            $this->user = $session->get('user');
             $this->hydrateForm($request->request);
             $this->validation->validate($this);
         }
@@ -29,7 +37,7 @@ class ContactForm extends AbstractForm
     public function hydrateForm(Parameter $post): void
     {
         $this->subject = $post->get('subject') ?: '';
-        $this->content = $post->get('content') ?: '';
+        $this->content = trim($post->get('content')) ?: '';
         $this->csrfToken = $post->get('csrf_token') ?: '';
         $this->isSubmitted = true;
     }

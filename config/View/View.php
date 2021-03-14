@@ -35,6 +35,11 @@ class View
         return $response;
     }
 
+    public function renderEmail(string $template, ?array $parameters = []): string
+    {
+        return $this->twig->render($template, (array) $parameters);
+    }
+
     public function setRequest(Request $request): void
     {
         $app = new AppVariable();

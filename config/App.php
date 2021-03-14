@@ -71,6 +71,16 @@ class App
         }
     }
 
+    public function addEnvVariables(string $path): void
+    {
+        $env = (string) file_get_contents($path);
+        $data = (array) json_decode($env);
+        foreach ($data as $key => $value) {
+            $_ENV[$key] = $value;
+            $_SERVER[$key] = $value;
+        }
+    }
+
     public function terminate(): void
     {
         // TODO: send email

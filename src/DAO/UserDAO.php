@@ -49,6 +49,14 @@ class UserDAO extends AbstractDAO implements DAOInterface
         return $this->selectAll(self::SQL_SELECT, $this);
     }
 
+    /**
+     * @return null|object[]|User[] the object is instance of User class
+     */
+    public function getAllAdmin()
+    {
+        return $this->selectAll(self::SQL_SELECT.' WHERE roles LIKE \'%admin%\'', $this);
+    }
+
     public function add(User $user): void
     {
         $this->insert('user', [
