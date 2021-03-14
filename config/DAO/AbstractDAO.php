@@ -12,13 +12,6 @@ use Config\Security\RememberMe\PersistentToken;
 
 abstract class AbstractDAO
 {
-    const HOST = 'localhost';
-    const DB_NAME = 'ocproject5';
-    const CHARSET = 'utf8';
-    const DB_HOST = 'mysql:host='.self::HOST.';dbname='.self::DB_NAME.';charset='.self::CHARSET;
-    const DB_USER = 'root';
-    const DB_PASS = '';
-
     /** @var PDO */
     private $connection;
 
@@ -34,7 +27,7 @@ abstract class AbstractDAO
     private function getConnection(): PDO
     {
         try {
-            $this->connection = new PDO(self::DB_HOST, self::DB_USER, self::DB_PASS);
+            $this->connection = new PDO($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
             $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
             return $this->connection;
