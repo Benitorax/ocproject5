@@ -13,11 +13,11 @@ use Config\Security\Csrf\CsrfTokenManager;
 abstract class Controller
 {
     protected View $view;
+    protected Container $container;
+
     protected Request $request;
     protected Parameter $query;
-    protected Parameter $get;
     protected Parameter $post;
-    protected Container $container;
 
     public function __construct(View $view, Container $container)
     {
@@ -35,7 +35,7 @@ abstract class Controller
 
     public function get(string $name): object
     {
-        return $this->container->getService($name);
+        return $this->container->get($name);
     }
 
     public function render(string $viewPath, array $parameters = [], Response $response = null): Response
@@ -72,9 +72,9 @@ abstract class Controller
 
     public function addFlash(string $type, string $message): void
     {
-        if ($this->container->hasService(Session::class)) {
+        if ($this->container->has(Session::class)) {
             /** @var Session */
-            $session = $this->container->getService(Session::class);
+            $session = $this->container->get(Session::class);
             $session->getFlashes()->add($type, $message);
         }
     }

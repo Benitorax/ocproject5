@@ -102,7 +102,7 @@ class Router
         [$classname, $method] = $callable;
 
         /** @var Controller abstract class of Controller */
-        $object = $this->container->createService($classname);
+        $object = $this->container->create($classname);
         $object->setRequest($this->request);
         $controller = [$object, $method];
 

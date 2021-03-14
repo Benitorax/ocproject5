@@ -25,11 +25,11 @@ class Mailer
         $this->view = $view;
     }
 
-    public function notifyContact(ContactForm $form, User $receiver): int
+    public function notifyContact(ContactForm $form, User $recipient): int
     {
         $message = (new \Swift_Message('You have receive a message'))
-            ->setFrom([$form->user->getEmail() => $form->user->getUsername()])
-            ->setTo([$receiver->getEmail() => $receiver->getUsername()])
+            ->setFrom(['example@mail.com' => 'MyWebsite'])
+            ->setTo([$recipient->getEmail() => $recipient->getUsername()])
             ->setBody($this->view->renderEmail('mail/contact.html.twig', ['form' => $form]), 'text/html')
         ;
 

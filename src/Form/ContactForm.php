@@ -29,12 +29,12 @@ class ContactForm extends AbstractForm
             /** @var Session */
             $session = $request->getSession();
             $this->user = $session->get('user');
-            $this->hydrateForm($request->request);
+            $this->hydrate($request->request);
             $this->validation->validate($this);
         }
     }
 
-    public function hydrateForm(Parameter $post): void
+    public function hydrate(Parameter $post): void
     {
         $this->subject = $post->get('subject') ?: '';
         $this->content = trim($post->get('content')) ?: '';

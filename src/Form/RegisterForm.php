@@ -23,12 +23,12 @@ class RegisterForm extends AbstractForm
     public function handleRequest(Request $request): void
     {
         if ($request->getMethod() == 'POST') {
-            $this->hydrateForm($request->request);
+            $this->hydrate($request->request);
             $this->validation->validate($this);
         }
     }
 
-    public function hydrateForm(Parameter $post): void
+    public function hydrate(Parameter $post): void
     {
         $this->email = $post->get('email') ?: '';
         $this->password1 = $post->get('password1') ?: '';

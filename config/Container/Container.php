@@ -10,22 +10,22 @@ class Container
     /** @var object[] $services */
     private array $services = [];
 
-    public function getService(string $className): object
+    public function get(string $className): object
     {
-        if ($this->hasService($className)) {
+        if ($this->has($className)) {
             return $this->services[$className];
         } else {
-            return $this->createService($className);
+            return $this->create($className);
         }
     }
 
-    public function createService(string $className): object
+    public function create(string $className): object
     {
         if ($className === get_class($this)) {
             return $this;
         }
 
-        $arguments = $this->resolveServiceArguments($className);
+        $arguments = $this->resolveArguments($className);
 
         if (is_array($arguments)) {
             $service = new $className(...$arguments);
@@ -33,12 +33,12 @@ class Container
             $service = new $className($arguments);
         }
 
-        $this->setService($service);
+        $this->set($service);
         
         return $service;
     }
 
-    public function hasService(string $className): bool
+    public function has(string $className): bool
     {
         if (isset($this->services[$className])) {
             return true;
@@ -46,7 +46,7 @@ class Container
         return false;
     }
 
-    public function setService(object $service): void
+    public function set(object $service): void
     {
         $this->services[get_class($service)] = $service;
     }
@@ -54,18 +54,18 @@ class Container
     public function getRouter(): Router
     {
         $className = Router::class;
-        if ($this->hasService($className)) {
+        if ($this->has($className)) {
             /** @var Router */
-            return $this->getService($className);
+            return $this->get($className);
         }
         /** @var Router */
-        return $this->createService($className);
+        return $this->create($className);
     }
 
     /**
      * @return object[]
      */
-    public function resolveServiceArguments(string $className): ?array
+    public function resolveArguments(string $className): ?array
     {
         if (method_exists($className, '__construct')) {
             $reflection = new ReflectionMethod($className, '__construct');
@@ -80,10 +80,10 @@ class Container
                 }
 
                 if (!empty($serviceClassName)) {
-                    if ($this->hasService($serviceClassName)) {
-                        $arguments[] = $this->getService($serviceClassName);
+                    if ($this->has($serviceClassName)) {
+                        $arguments[] = $this->get($serviceClassName);
                     } else {
-                        $service = $this->createService($serviceClassName);
+                        $service = $this->create($serviceClassName);
                         $arguments[] = $service;
                     }
                 }

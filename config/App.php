@@ -36,10 +36,10 @@ class App
     public function boot(Request $request): void
     {
         $this->container = new Container();
-        $this->container->setService($this);
+        $this->container->set($this);
         
         /** @var Session */
-        $session = $this->container->getService(Session::class);
+        $session = $this->container->get(Session::class);
         $this->session = $session;
         $request->setSession($this->session);
 
@@ -49,7 +49,7 @@ class App
     public function authenticate(Request $request): void
     {
         /** @var TokenStorage */
-        $tokenStorage = $this->container->getService(TokenStorage::class);
+        $tokenStorage = $this->container->get(TokenStorage::class);
 
         // check User from session
         if ($this->session->get('user') instanceof User) {
@@ -59,7 +59,7 @@ class App
 
         // check rememberme cookie
         /** @var RememberMeManager */
-        $rememberMeManager = $this->container->getService(RememberMeManager::class);
+        $rememberMeManager = $this->container->get(RememberMeManager::class);
         try {
             $token = $rememberMeManager->autoLogin($request);
         } catch (Exception $e) {
