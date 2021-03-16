@@ -5,7 +5,7 @@ namespace Config\View;
 use Twig\Environment;
 use Config\Request\Request;
 use Config\Response\Response;
-use App\Service\TwigExtension;
+use Config\View\TwigExtension;
 use Config\Security\TokenStorage;
 use Twig\Loader\FilesystemLoader;
 

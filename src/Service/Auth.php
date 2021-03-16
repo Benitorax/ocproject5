@@ -7,6 +7,7 @@ use App\DAO\UserDAO;
 use App\Form\LoginForm;
 use Config\Request\Request;
 use Config\Session\Session;
+use Config\Security\Encoder\PasswordEncoder;
 use Config\Security\RememberMe\RememberMeManager;
 
 class Auth

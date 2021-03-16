@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace Config\View;
 
 use Twig\TwigFunction;
 use Config\Router\UrlGenerator;
@@ -28,7 +28,7 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * Generates a url without the scheme and host.
+     * Generates an absolute path without the scheme and host.
      */
     public function generatePath(string $routeName, array $routeParams = []): string
     {
@@ -36,7 +36,7 @@ class TwigExtension extends AbstractExtension
     }
 
     /**
-     * Generates a url with the scheme and host.
+     * Generates an absolute url with the scheme and host.
      */
     public function generateUrl(string $routeName, array $routeParams = []): string
     {

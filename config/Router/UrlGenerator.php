@@ -24,7 +24,7 @@ class UrlGenerator
     /**
      * Generates the url from route name and route parameters.
      *
-     * @param int $type indicates if it should generate an absolute url or the path
+     * @param int $type indicates if it should generate an absolute url (with scheme and host) or absolute path
      */
     public function generate(string $routeName, array $routeParams = null, int $type = self::PATH_TYPE): string
     {

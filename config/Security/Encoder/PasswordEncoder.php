@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service;
+namespace Config\Security\Encoder;
 
 use App\Model\User;
 
