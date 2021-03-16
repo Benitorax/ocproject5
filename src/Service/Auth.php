@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use App\Model\User;
@@ -32,7 +33,7 @@ class Auth
         /** @var User|null */
         $user = $this->userDAO->getOneBy(['email' => $email]);
 
-        if ($user === null) {
+        if (null === $user) {
             return null;
         }
 
@@ -57,7 +58,7 @@ class Auth
         if ((bool) $form->rememberme) {
             $this->rememberMeManager->createNewToken($user, $request);
         }
-        
+
         return $user;
     }
 

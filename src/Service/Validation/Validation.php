@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Validation;
 
 use App\Form\AbstractForm;
@@ -35,7 +36,7 @@ abstract class Validation
     public function checkIdentical(string $value1, string $value2, string $name = null): ?string
     {
         $error = $this->constraint->identical($value1, $value2, $name);
-        
+
         if (!empty($error)) {
             return $error;
         }

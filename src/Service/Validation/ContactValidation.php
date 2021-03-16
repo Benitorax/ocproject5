@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Validation;
 
 use App\Form\ContactForm;
@@ -6,17 +7,17 @@ use App\Service\Validation\Validation;
 
 class ContactValidation extends Validation
 {
-    const SUBJECT = [
+    private const SUBJECT = [
         ['notBlank'],
         ['minLength', 5],
         ['maxLength', 50]
     ];
-    const CONTENT = [
+    private const CONTENT = [
         ['notBlank'],
         ['minLength', 20],
         ['maxLength', 1500],
     ];
-    const TERMS = [
+    private const TERMS = [
         ['checkbox', true]
     ];
 

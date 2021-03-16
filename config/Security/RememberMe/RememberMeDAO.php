@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Security\RememberMe;
 
 use DateTime;
@@ -8,9 +9,9 @@ use Config\Security\RememberMe\PersistentToken;
 
 class RememberMeDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_TABLE = 'rememberme_token';
-    const SQL_SELECT = 'SELECT class, username, series, value, last_used'
-        .' FROM rememberme_token';
+    private const SQL_TABLE = 'rememberme_token';
+    private const SQL_SELECT = 'SELECT class, username, series, value, last_used'
+                                . ' FROM rememberme_token';
 
     public function buildObject(\stdClass $object): PersistentToken
     {

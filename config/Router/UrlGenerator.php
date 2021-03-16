@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Router;
 
 use Config\Router\RequestContext;
@@ -7,12 +8,12 @@ use Config\Router\Router;
 
 class UrlGenerator
 {
-    const PATH_TYPE = 1;
-    const URL_TYPE = 2;
+    public const PATH_TYPE = 1;
+    public const URL_TYPE = 2;
 
     private array $routes;
     private RequestContext $context;
-    
+
     public function __construct(Router $router, RequestContext $context)
     {
         $this->routes = $router->getRoutes();
@@ -36,10 +37,11 @@ class UrlGenerator
         }
 
         if (strlen($url) > 0) {
-            if ($type === self::PATH_TYPE) {
+            if (self::PATH_TYPE === $type) {
                 return $url;
             }
-            return $this->context->getSchemeAndHost().$url;
+
+            return $this->context->getSchemeAndHost() . $url;
         }
 
         throw new Exception(sprintf("Route with name '%s' cannot be found.", $routeName), 500);
@@ -54,7 +56,7 @@ class UrlGenerator
 
             if (array_key_exists($paramName, $routeParams)) {
                 $routePath = (string) preg_replace(
-                    '#\{'.$paramName.'\}#',
+                    '#\{' . $paramName . '\}#',
                     $routeParams[$paramName],
                     (string) $routePath
                 );

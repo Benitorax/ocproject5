@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use DateTime;
@@ -22,10 +23,10 @@ class ContactForm extends AbstractForm
     {
         $this->validation = $validation;
     }
-    
+
     public function handleRequest(Request $request): void
     {
-        if ($request->getMethod() == 'POST') {
+        if ('POST' === $request->getMethod()) {
             /** @var Session */
             $session = $request->getSession();
             $this->user = $session->get('user');

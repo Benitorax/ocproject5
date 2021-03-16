@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use DateTime;
@@ -10,13 +11,13 @@ class PostManager
 {
     private PostDAO $postDAO;
     private DAO $dao;
-    
+
     public function __construct(PostDAO $postDAO, DAO $dao)
     {
         $this->postDAO = $postDAO;
         $this->dao = $dao;
     }
-    
+
     public function createAndSave(Post $post): Post
     {
         $post
@@ -25,7 +26,7 @@ class PostManager
         ->setUpdatedAt(new DateTime());
 
         $this->postDAO->add($post);
-        
+
         return $post;
     }
 
@@ -38,7 +39,7 @@ class PostManager
                 $this->removeAccent(trim($title))
             )
         );
-        $count = $this->dao->getCountBy('post', 'slug', $slug.'%', 'LIKE');
+        $count = $this->dao->getCountBy('post', 'slug', $slug . '%', 'LIKE');
 
         return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;
     }
@@ -57,7 +58,7 @@ class PostManager
                     'ť', 'Ŧ', 'ŧ', 'Ũ', 'ũ', 'Ū', 'ū', 'Ŭ', 'ŭ', 'Ů', 'ů', 'Ű', 'ű', 'Ų', 'ų', 'Ŵ', 'ŵ', 'Ŷ',
                     'ŷ', 'Ÿ', 'Ź', 'ź', 'Ż', 'ż', 'Ž', 'ž', 'ſ', 'ƒ', 'Ơ', 'ơ', 'Ư', 'ư', 'Ǎ', 'ǎ', 'Ǐ', 'ǐ',
                     'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ');
-        
+
         $b = array('A', 'A', 'A', 'A', 'A', 'A', 'AE', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'D', 'N', 'O',
                     'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y', 's', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'c',
                     'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u',
@@ -69,7 +70,7 @@ class PostManager
                     's', 'T', 't', 'T', 't', 'T', 't', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'W',
                     'w', 'Y', 'y', 'Y', 'Z', 'z', 'Z', 'z', 'Z', 'z', 's', 'f', 'O', 'o', 'U', 'u', 'A', 'a', 'I', 'i',
                     'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o');
-                        
+
         return str_replace($a, $b, $string);
     }
 }

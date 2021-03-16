@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use Config\Request\Request;
@@ -22,7 +23,7 @@ class RegisterForm extends AbstractForm
 
     public function handleRequest(Request $request): void
     {
-        if ($request->getMethod() == 'POST') {
+        if ('POST' === $request->getMethod()) {
             $this->hydrate($request->request);
             $this->validation->validate($this);
         }

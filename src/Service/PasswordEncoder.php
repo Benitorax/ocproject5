@@ -1,14 +1,15 @@
 <?php
+
 namespace App\Service;
 
 use App\Model\User;
 
 class PasswordEncoder
 {
-    const OPTIONS = [
+    private const OPTIONS = [
         'cost' => 12
     ];
-    
+
     /**
      * @return false|string
      */

@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Session;
 
 class FlashMessages
@@ -38,7 +39,7 @@ class FlashMessages
         if (!empty($this->flashes)) {
             $return = $this->flashes[$type];
             unset($this->flashes[$type]);
-    
+
             return $return;
         }
 

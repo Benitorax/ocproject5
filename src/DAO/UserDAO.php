@@ -1,4 +1,5 @@
 <?php
+
 namespace App\DAO;
 
 use DateTime;
@@ -8,7 +9,8 @@ use Config\DAO\DAOInterface;
 
 class UserDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked FROM user';
+    private const SQL_SELECT = 'SELECT id, email, password, username, created_at,'
+                                . ' updated_at, roles, is_blocked FROM user';
 
     public function buildObject(\stdClass $object): User
     {
@@ -54,7 +56,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
      */
     public function getAllAdmin()
     {
-        return $this->selectAll(self::SQL_SELECT.' WHERE roles LIKE \'%admin%\'', $this);
+        return $this->selectAll(self::SQL_SELECT . ' WHERE roles LIKE \'%admin%\'', $this);
     }
 
     public function add(User $user): void

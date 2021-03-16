@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use DateTime;
@@ -28,8 +29,8 @@ class AppController extends Controller
 
         if ($form->isSubmitted && $form->isValid) {
             $mailCount = $this->get(Notification::class)->notifyContact($form);
-            
-            if ($mailCount === 0) {
+
+            if (0 === $mailCount) {
                 $this->addFlash('danger', 'The messaging service has technical problems. Please try later.');
             } else {
                 $form->clear();
@@ -45,17 +46,17 @@ class AppController extends Controller
         $user = new User();
         $userId = (string) rand(10000, 99999);
         $user->setId($userId)
-            ->setEmail($username.$userId.'@mail.com')
+            ->setEmail($username . $userId . '@mail.com')
             ->setPassword('123456')
-            ->setUsername($username.$userId)
+            ->setUsername($username . $userId)
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime());
-            
+
         $post = new Post();
         $postId = (string) rand(10000, 99999);
         $post->setId($postId)
         ->setTitle($slug)
-        ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
+        ->setSlug('mon-titre-de-la-mort' . rand(100, 999))
         ->setShortText('Mon introduction')
         ->setText('Le texte complètement vide')
         ->setCreatedAt(new DateTime())
@@ -65,7 +66,7 @@ class AppController extends Controller
 
         $this->get(PostDAO::class)->add($post);
         $this->get(UserDAO::class)->add($user);
-        
+
         return $this->render('post/show.html.twig', [
             'post' => $post
         ]);
@@ -73,7 +74,7 @@ class AppController extends Controller
 
     public function login(): Response
     {
-        if (!empty($this->get(TokenStorage::class)->getToken())) {
+        if ($this->isGranted(['user'])) {
             return $this->redirectToRoute('home');
         }
 
@@ -84,9 +85,11 @@ class AppController extends Controller
             $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
             if (!empty($user)) {
-                $this->addFlash('success', 'Welcome, '.$user->getUsername().'!');
+                $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
+
                 return $this->redirectToRoute('home');
             }
+
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 

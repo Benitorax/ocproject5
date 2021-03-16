@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\View;
 
 use Twig\Environment;
@@ -17,7 +18,7 @@ class View
     {
         $this->tokenStorage = $tokenStorage;
 
-        $loader = new FilesystemLoader(\dirname(__DIR__, 2).'\templates');
+        $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '\templates');
         $this->twig = new Environment($loader, /*['cache' => \dirname(__DIR__, 2).'\var\cache\twig']*/);
         $this->twig->addExtension($twigExtension);
     }
@@ -29,7 +30,7 @@ class View
         if (null === $response) {
             $response = new Response();
         }
-        
+
         $response->setContent($content);
 
         return $response;

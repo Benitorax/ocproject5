@@ -1,15 +1,15 @@
 <?php
+
 namespace App\DAO;
 
 use DateTime;
-use App\Model\User;
 use App\Model\Comment;
 use Config\DAO\AbstractDAO;
 use Config\DAO\DAOInterface;
 
 class CommentDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
+    private const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
 
     public function buildObject(\stdClass $object): Comment
     {
@@ -52,7 +52,7 @@ class CommentDAO extends AbstractDAO implements DAOInterface
     public function add(Comment $comment): void
     {
         $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id)'
-            .'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
+            . 'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
         $this->createQuery($sql, [
             'id' => $comment->getId(),
             'text' => $comment->getText(),

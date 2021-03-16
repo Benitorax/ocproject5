@@ -1,14 +1,15 @@
 <?php
-require dirname(__DIR__).'/vendor/autoload.php';
+
+require dirname(__DIR__) . '/vendor/autoload.php';
 // Comment or delete the line below for production
-require_once dirname(__DIR__).'/config/Debug/Debug.php';
+require_once dirname(__DIR__) . '/config/Debug/Debug.php';
 
 use Config\App;
 use Config\Request\Request;
 
-$request = (new Request)->create();
+$request = (new Request())->create();
 $app = new App();
-$app->addEnvVariables(dirname(__DIR__).'/.env.local');
+$app->addEnvVariables(dirname(__DIR__) . '/.env.local');
 
 $response = $app->handle($request);
 $response->send();

@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Cookie;
 
 use DateTime;
@@ -90,15 +91,15 @@ class Cookie
         if (null !== $this->expires) {
             /** @var DateTime */
             $dateTime = DateTime::createFromFormat('U', $this->expires, new DateTimeZone('GMT'));
-            $cookie .= '; expires='.str_replace('+0000', '', $dateTime->format(self::DATE_FORMATS[0]));
+            $cookie .= '; expires=' . str_replace('+0000', '', $dateTime->format(self::DATE_FORMATS[0]));
         }
 
         if ('' !== $this->domain) {
-            $cookie .= '; domain='.$this->domain;
+            $cookie .= '; domain=' . $this->domain;
         }
 
         if ($this->path) {
-            $cookie .= '; path='.$this->path;
+            $cookie .= '; path=' . $this->path;
         }
 
         if ($this->secure) {
@@ -110,7 +111,7 @@ class Cookie
         }
 
         if (null !== $this->samesite) {
-            $cookie .= '; samesite='.$this->samesite;
+            $cookie .= '; samesite=' . $this->samesite;
         }
 
         return $cookie;
@@ -158,7 +159,7 @@ class Cookie
 
     public function isExpired(): bool
     {
-        return null !== $this->expires && 0 != $this->expires && $this->expires <= time();
+        return null !== $this->expires && '0' !== $this->expires && $this->expires <= time();
     }
 
     public function getSameSite(): ?string

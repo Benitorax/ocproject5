@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Validation;
 
 use App\Form\LoginForm;
@@ -6,13 +7,13 @@ use App\Service\Validation\Validation;
 
 class LoginValidation extends Validation
 {
-    const EMAIL = [
+    private const EMAIL = [
         ['notBlank'],
         ['minLength', 8],
         ['maxLength', 50],
         ['email']
     ];
-    const PASSWORD = [
+    private const PASSWORD = [
         ['notBlank'],
         ['minLength', 6],
         ['maxLength', 50]

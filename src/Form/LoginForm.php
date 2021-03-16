@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use App\Form\AbstractForm;
@@ -18,10 +19,10 @@ class LoginForm extends AbstractForm
     {
         $this->validation = $validation;
     }
-    
+
     public function handleRequest(Request $request): void
     {
-        if ($request->getMethod() == 'POST') {
+        if ('POST' === $request->getMethod()) {
             $this->hydrate($request->request);
             $this->validation->validate($this);
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Validation;
 
 use App\Form\RegisterForm;
@@ -6,25 +7,25 @@ use App\Service\Validation\Validation;
 
 class RegisterValidation extends Validation
 {
-    const EMAIL = [
+    private const EMAIL = [
         ['notBlank'],
         ['minLength', 8],
         ['maxLength', 50],
         ['email'],
         ['unique', 'user:email']
     ];
-    const PASSWORD1 = [
+    private const PASSWORD1 = [
         ['notBlank'],
         ['minLength', 6],
         ['maxLength', 50]
     ];
-    const USERNAME = [
+    private const USERNAME = [
         ['notBlank'],
         ['minLength', 3],
         ['maxLength', 50],
         ['unique', 'user:username']
     ];
-    const TERMS = [
+    private const TERMS = [
         ['checkbox', true]
     ];
 

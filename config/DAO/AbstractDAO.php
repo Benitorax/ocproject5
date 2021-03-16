@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\DAO;
 
 use PDO;
@@ -17,7 +18,7 @@ abstract class AbstractDAO
 
     private function checkConnection(): PDO
     {
-        if ($this->connection === null) {
+        if (null === $this->connection) {
             return $this->getConnection();
         }
 
@@ -32,7 +33,7 @@ abstract class AbstractDAO
 
             return $this->connection;
         } catch (Exception $connectionError) {
-            die('Connection error:'.$connectionError->getMessage());
+            die('Connection error:' . $connectionError->getMessage());
         }
     }
 
@@ -43,7 +44,7 @@ abstract class AbstractDAO
             $stmt = $this->checkConnection()->prepare($sql);
 
             foreach ($parameters as $key => $value) {
-                $stmt->bindValue(':'.$key, $value);
+                $stmt->bindValue(':' . $key, $value);
             }
             $stmt->execute($parameters);
 
@@ -66,7 +67,7 @@ abstract class AbstractDAO
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
 
-        if ($result === false) {
+        if (false === $result) {
             return null;
         }
 
@@ -83,7 +84,7 @@ abstract class AbstractDAO
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
 
-        if ($result === false) {
+        if (false === $result) {
             return null;
         }
 
@@ -104,7 +105,7 @@ abstract class AbstractDAO
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
 
-        if ($result === false) {
+        if (false === $result) {
             return null;
         }
 
@@ -127,7 +128,7 @@ abstract class AbstractDAO
             $sql = $this->addWhere($sql, $parameters);
         }
         $sql = $this->addOrderBy($sql, $orderBy);
-        
+
         return $this->createQuery($sql, $parameters);
     }
 
@@ -138,7 +139,7 @@ abstract class AbstractDAO
     {
         [$colNameString, $paramString] = $this->paramsToStrings($parameters);
 
-        $sql = 'INSERT INTO '.$tableName.' ('.$colNameString.') VALUES ('.$paramString.')';
+        $sql = 'INSERT INTO ' . $tableName . ' (' . $colNameString . ') VALUES (' . $paramString . ')';
         return $this->createQuery($sql, $parameters);
     }
 
@@ -147,7 +148,7 @@ abstract class AbstractDAO
      */
     public function delete(string $tableName, array $parameters): PDOStatement
     {
-        $sql = 'DELETE FROM '.$tableName;
+        $sql = 'DELETE FROM ' . $tableName;
         $sql = $this->addWhere($sql, $parameters);
         return $this->createQuery($sql, $parameters);
     }
@@ -158,11 +159,11 @@ abstract class AbstractDAO
      */
     public function update(string $tableName, array $parameters, array $where): PDOStatement
     {
-        $sql = 'UPDATE '.$tableName.' SET';
-        
+        $sql = 'UPDATE ' . $tableName . ' SET';
+
         $i = 1;
         foreach (array_keys($parameters) as $colName) {
-            $sql .= ' '.$colName.'=:'.$colName;
+            $sql .= ' ' . $colName . '=:' . $colName;
             if ($i < count($parameters)) {
                 $sql .= ', ';
             }
@@ -188,11 +189,11 @@ abstract class AbstractDAO
         // TO DO replace $parameters with array_keys($parameters) to delete $value
         foreach ($parameters as $key => $value) {
             if ($i < count($parameters)) {
-                $colNameString .= $key.', ';
-                $paramString .= ':'.$key.', ';
+                $colNameString .= $key . ', ';
+                $paramString .= ':' . $key . ', ';
             } else {
                 $colNameString .= $key;
-                $paramString .= ':'.$key;
+                $paramString .= ':' . $key;
             }
             $i++;
         }
@@ -211,9 +212,9 @@ abstract class AbstractDAO
         // TO DO replace $parameters with array_keys($parameters) to delete $value
         foreach (array_keys($parameters) as $key) {
             if ($i < count($parameters)) {
-                $where .= $key.' = :'.$key.' AND ';
+                $where .= $key . ' = :' . $key . ' AND ';
             } else {
-                $where .= $key.' = :'.$key;
+                $where .= $key . ' = :' . $key;
             }
             $i++;
         }
@@ -232,14 +233,14 @@ abstract class AbstractDAO
 
             foreach ($orderBy as $key => $value) {
                 if ($i < count($orderBy)) {
-                    $order .= $key.' '.$value.', ';
+                    $order .= $key . ' ' . $value . ', ';
                 } else {
-                    $order .= $key.' '.$value;
+                    $order .= $key . ' ' . $value;
                 }
                 $i++;
             }
-    
-            return $sql.$order;
+
+            return $sql . $order;
         } else {
             return $sql;
         }

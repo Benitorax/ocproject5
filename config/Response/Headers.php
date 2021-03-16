@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Response;
 
 use Config\Cookie\Cookie;
@@ -32,7 +33,7 @@ class Headers
         foreach ($headers as $name => $values) {
             $name = ucwords($name, '-');
             foreach ($values as $value) {
-                $content .= sprintf("%-{$max}s %s\r\n", $name.':', $value);
+                $content .= sprintf("%-{$max}s %s\r\n", $name . ':', $value);
             }
         }
 

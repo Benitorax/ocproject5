@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Request;
 
 use Config\Session\Session;
@@ -68,14 +69,14 @@ class Request
                 }
 
                 if (isset($uriComponents['query'])) {
-                    $requestUri .= '?'.$uriComponents['query'];
+                    $requestUri .= '?' . $uriComponents['query'];
                 }
             }
         } elseif ($this->server->has('ORIG_PATH_INFO')) {
             // IIS 5.0, PHP as CGI
             $requestUri = $this->server->get('ORIG_PATH_INFO');
-            if ('' != $this->server->get('QUERY_STRING')) {
-                $requestUri .= '?'.$this->server->get('QUERY_STRING');
+            if ('' !== $this->server->get('QUERY_STRING')) {
+                $requestUri .= '?' . $this->server->get('QUERY_STRING');
             }
             $this->server->remove('ORIG_PATH_INFO');
         }
@@ -104,7 +105,7 @@ class Request
             $requestUri = substr($requestUri, 0, $pos);
         }
         if ('' !== $requestUri && '/' !== $requestUri[0]) {
-            $requestUri = '/'.$requestUri;
+            $requestUri = '/' . $requestUri;
         }
 
         return (string) $requestUri;
@@ -162,7 +163,7 @@ class Request
         ksort($qs);
 
         $qs = http_build_query($qs, '', '&', \PHP_QUERY_RFC3986);
-        
+
         return $qs;
     }
 }

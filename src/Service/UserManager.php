@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service;
 
 use DateTime;
@@ -10,7 +11,7 @@ class UserManager
 {
     private UserDAO $userDAO;
     private PasswordEncoder $encoder;
-    
+
     public function __construct(
         UserDAO $userDAO,
         PasswordEncoder $encoder

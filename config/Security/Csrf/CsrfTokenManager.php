@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Security\Csrf;
 
 use Config\Session\Session;
@@ -6,7 +7,7 @@ use Config\Security\Csrf\CsrfTokenGenerator;
 
 class CsrfTokenManager
 {
-    const NAMESPACE = 'csrf';
+    public const NAMESPACE = 'csrf';
 
     private Session $session;
     private ?string $token = null;
@@ -37,7 +38,7 @@ class CsrfTokenManager
     public function isTokenValid(?string $token): bool
     {
         $sessionToken = $this->getToken();
-        
+
         if (hash_equals((string) $sessionToken, $token ?? '')) {
             return true;
         }

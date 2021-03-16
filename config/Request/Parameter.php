@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Request;
 
 use ArrayIterator;

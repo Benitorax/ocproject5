@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Mailer;
 
 use App\Model\User;
@@ -26,7 +27,7 @@ class Notification
         foreach ($admins as $admin) {
             $count += $this->mailer->notifyContact($form, $admin);
         }
-        
+
         return $count;
     }
 }

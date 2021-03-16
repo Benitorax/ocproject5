@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Router;
 
 use Exception;
@@ -26,12 +27,12 @@ class Router
     public function run(Request $request): Response
     {
         $this->request = $request;
-        
+
         try {
             return $this->match($this->request->getRequestUri(), $this->request->getMethod());
         } catch (Exception $e) {
             return $this->errorServer($e);
-            // if (substr($e->getCode(), 0, 1) == 5) {
+            // if (5 === (int) substr($e->getCode(), 0, 1)) {
             //     return $this->errorServer($e);
             // } else {
             //     return $this->errorNotFound();
@@ -57,9 +58,9 @@ class Router
             $routePath = $route->getPath();
             $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
-            if (preg_match('#^'.$pattern.'$#', $requestUri, $matches)) {
+            if (preg_match('#^' . $pattern . '$#', $requestUri, $matches)) {
                 $isMethodValid = $this->matchMethod($requestMethod, $route->getMethods());
-                
+
                 if ($isMethodValid) {
                     return $route;
                 }
@@ -124,14 +125,14 @@ class Router
     {
         $pathElements = explode('/', $routePath);
         $uriElements = explode('/', $requestUri);
-        
+
         // find every route params in url and make them variables
         foreach ($pathElements as $key => $element) {
             if (preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
                 $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);
                 $start = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$1', $element);
                 $end = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$3', $element);
-                preg_match('#^'.$start.'([-\w]+)'.$end.'$#', $uriElements[$key], $matches);
+                preg_match('#^' . $start . '([-\w]+)' . $end . '$#', $uriElements[$key], $matches);
 
                 if (count($matches)) {
                     $value = $matches[1];
@@ -149,7 +150,7 @@ class Router
         } else {
             $routeParams = [];
         }
-        
+
         $reflection = new ReflectionMethod($callable[0], $callable[1]);
 
         $arguments = [];
@@ -174,7 +175,7 @@ class Router
 
     public function initializeRoutes(): void
     {
-        $routes = require __DIR__.'/routes.php';
+        $routes = require __DIR__ . '/routes.php';
         foreach ($routes as $path => $data) {
             $this->routes[] = new Route($path, $data['callable'], $data['method'] ?? null, $data['name']);
         }

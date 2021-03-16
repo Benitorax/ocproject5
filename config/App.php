@@ -1,4 +1,5 @@
 <?php
+
 namespace Config;
 
 use Exception;
@@ -73,6 +74,7 @@ class App
 
         if ($token instanceof AbstractToken) {
             $tokenStorage->setToken($token);
+            $this->session->set('user', $token->getUser());
         }
     }
 

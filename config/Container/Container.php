@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Container;
 
 use ReflectionType;
@@ -21,7 +22,7 @@ class Container
 
     public function create(string $className): object
     {
-        if ($className === get_class($this)) {
+        if (get_class($this) === $className) {
             return $this;
         }
 
@@ -34,7 +35,7 @@ class Container
         }
 
         $this->set($service);
-        
+
         return $service;
     }
 
@@ -70,7 +71,7 @@ class Container
         if (method_exists($className, '__construct')) {
             $reflection = new ReflectionMethod($className, '__construct');
             $arguments = null;
-            
+
             foreach ($reflection->getParameters() as $param) {
                 /** @var ReflectionType */
                 $reflectionType = $param->getType();
@@ -88,7 +89,7 @@ class Container
                     }
                 }
             }
-            
+
             return $arguments;
         }
 

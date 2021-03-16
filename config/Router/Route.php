@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Router;
 
 class Route
@@ -33,7 +34,7 @@ class Route
     {
         return $this->callable;
     }
-    
+
     /**
      * @return string|array
      */

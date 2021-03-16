@@ -1,13 +1,15 @@
 <?php
+
 namespace App\Controller;
 
 use Config\View\View;
 use Config\Request\Request;
 use Config\Session\Session;
-use Config\Router\UrlGenerator;
 use Config\Request\Parameter;
 use Config\Response\Response;
 use Config\Container\Container;
+use Config\Router\UrlGenerator;
+use Config\Security\TokenStorage;
 use Config\Security\Csrf\CsrfTokenManager;
 
 abstract class Controller
@@ -48,12 +50,12 @@ abstract class Controller
         /** @var UrlGenerator */
         $generator = $this->get(UrlGenerator::class);
         $url = $generator->generate($routeName, $parameters);
-        
+
         $response = new Response('', 302);
         $response->headers->set('Location', $url);
 
         return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
-        
+
         // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
         // exit();
     }
@@ -77,5 +79,31 @@ abstract class Controller
             $session = $this->container->get(Session::class);
             $session->getFlashes()->add($type, $message);
         }
+    }
+
+    /**
+     * Check is the user has a role
+     * e.g. isGrand(['user']) or isGranted(['user', 'admin'])
+     */
+    public function isGranted(array $roles): bool
+    {
+        /** @var TokenStorage */
+        $tokenStorage = $this->get(TokenStorage::class);
+
+        if (!$token = $tokenStorage->getToken()) {
+            return false;
+        }
+
+        if (!$user = $token->getUser()) {
+            return false;
+        }
+
+        foreach ($roles as $role) {
+            if (in_array($role, $user->getRoles())) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

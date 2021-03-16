@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\View;
 
 use Exception;

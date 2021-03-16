@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Router;
 
 use Config\Request\Request;
@@ -66,6 +67,6 @@ class RequestContext
 
     public function getSchemeAndHost(): string
     {
-        return $this->scheme.'://'.$this->host;
+        return $this->scheme . '://' . $this->host;
     }
 }

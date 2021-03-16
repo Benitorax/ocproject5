@@ -1,4 +1,5 @@
 <?php
+
 namespace Config\Session;
 
 use Exception;
@@ -106,7 +107,7 @@ class Session implements \IteratorAggregate, \Countable
     {
         session_start();
     }
-    
+
     public function stop(): void
     {
         session_destroy();

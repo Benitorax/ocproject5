@@ -1,4 +1,5 @@
 <?php
+
 namespace App\DAO;
 
 use PDO;
@@ -10,9 +11,9 @@ use Config\DAO\DAOInterface;
 
 class PostDAO extends AbstractDAO implements DAOInterface
 {
-    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id 
+    private const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id 
                         FROM post';
-    
+
     public function buildObject(\stdClass $object): Post
     {
         $post = new Post();
@@ -25,7 +26,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
             ->setUpdatedAt(new DateTime($object->updated_at))
             ->setIsPublished($object->is_published)
             ->setUser($this->getUserById($object->user_id));
-            
+
         return $post;
     }
 
@@ -56,7 +57,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     public function getCountBySlug(string $slug): int
     {
         $sql = 'SELECT COUNT(*) AS count FROM post';
-        $result = $this->createQuery($sql, ['slug' => $slug.'%']);
+        $result = $this->createQuery($sql, ['slug' => $slug . '%']);
         $row = $result->fetch(PDO::FETCH_ASSOC);
         $result->closeCursor();
 
@@ -66,7 +67,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     public function add(Post $post): void
     {
         $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id)'
-            .'VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
+            . 'VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
         $this->createQuery($sql, [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
@@ -86,7 +87,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     public function getUserById($userId): User
     {
         $sql = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked'
-                .'FROM user ORDER BY id DESC';
+                . 'FROM user ORDER BY id DESC';
         $result = $this->createQuery($sql, [$userId]);
         $row = $result->fetch();
         $result->closeCursor();

@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @return Route[]
  * /uri-path => [
@@ -7,6 +8,7 @@
  *  'callable' => 'Class::method'
  * ]
  */
+
 return [
     '/logout' => [
         'name' => 'logout',

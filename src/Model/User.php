@@ -1,10 +1,11 @@
 <?php
+
 namespace App\Model;
 
 class User
 {
     use TimestampTrait;
-    
+
     private string $id;
     private string $email;
     private string $password;
