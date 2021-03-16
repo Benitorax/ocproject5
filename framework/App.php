@@ -3,7 +3,6 @@
 namespace Framework;
 
 use Exception;
-use App\Model\User;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;
@@ -13,6 +12,7 @@ use Framework\Security\TokenStorage;
 use Framework\Router\RequestContext;
 use Framework\Security\AbstractToken;
 use Framework\Security\RememberMe\RememberMeManager;
+use Framework\Security\User\UserInterface;
 
 class App
 {
@@ -64,7 +64,7 @@ class App
         $tokenStorage = $this->container->get(TokenStorage::class);
 
         // check User from session
-        if ($this->session->get('user') instanceof User) {
+        if ($this->session->get('user') instanceof UserInterface) {
             $tokenStorage->setUserFromSession($this->session);
             return;
         }

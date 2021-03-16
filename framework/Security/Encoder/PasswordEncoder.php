@@ -2,7 +2,7 @@
 
 namespace Framework\Security\Encoder;
 
-use App\Model\User;
+use Framework\Security\User\UserInterface;
 
 class PasswordEncoder
 {
@@ -20,7 +20,7 @@ class PasswordEncoder
         return password_hash($password, PASSWORD_BCRYPT, self::OPTIONS);
     }
 
-    public function isPasswordValid(User $user, string $password): bool
+    public function isPasswordValid(UserInterface $user, string $password): bool
     {
         return password_verify($password, $user->getPassword());
     }

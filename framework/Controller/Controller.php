@@ -2,7 +2,6 @@
 
 namespace Framework\Controller;
 
-use App\Model\User;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
@@ -12,6 +11,7 @@ use Framework\Container\Container;
 use Framework\Router\UrlGenerator;
 use Framework\Security\TokenStorage;
 use Framework\Security\Csrf\CsrfTokenManager;
+use Framework\Security\User\UserInterface;
 
 abstract class Controller
 {
@@ -129,7 +129,7 @@ abstract class Controller
     /**
      * Returns a user object if authenticated, otherwise null.
      */
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         /** @var TokenStorage */
         $tokenStorage = $this->get(TokenStorage::class);

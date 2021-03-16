@@ -2,7 +2,9 @@
 
 namespace App\Model;
 
-class User
+use Framework\Security\User\UserInterface;
+
+class User implements UserInterface
 {
     use TimestampTrait;
 

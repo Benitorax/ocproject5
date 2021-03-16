@@ -2,15 +2,15 @@
 
 namespace Framework\Security\RememberMe;
 
-use App\Model\User;
 use Framework\Security\AbstractToken;
+use Framework\Security\User\UserInterface;
 
 /**
  * This token is generated from the remember me cookie.
  */
 class RememberMeToken extends AbstractToken
 {
-    public function __construct(User $user)
+    public function __construct(UserInterface $user)
     {
         $this->setUser($user);
         $this->setAuthenticated(true);

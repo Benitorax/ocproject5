@@ -2,11 +2,11 @@
 
 namespace Framework\Security;
 
-use App\Model\User;
+use Framework\Security\User\UserInterface;
 
 abstract class AbstractToken
 {
-    private ?User $user = null;
+    private ?UserInterface $user = null;
     private bool $authenticated = false;
 
     public function getUsername(): ?string
@@ -18,7 +18,7 @@ abstract class AbstractToken
         return null;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         if (!empty($this->user)) {
             return $this->user;
@@ -27,7 +27,7 @@ abstract class AbstractToken
         return null;
     }
 
-    public function setUser(?User $user): void
+    public function setUser(?UserInterface $user): void
     {
         if (null === $this->user) {
             $changed = false;

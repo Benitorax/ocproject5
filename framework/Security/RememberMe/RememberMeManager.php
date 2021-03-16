@@ -4,11 +4,11 @@ namespace Framework\Security\RememberMe;
 
 use DateTime;
 use Exception;
-use App\Model\User;
 use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Security\TokenStorage;
+use Framework\Security\User\UserInterface;
 
 class RememberMeManager
 {
@@ -40,7 +40,7 @@ class RememberMeManager
     /**
      * Processes the auto login with cookie remember me.
      */
-    public function processAutoLoginCookie(array $cookieParts, Request $request): ?User
+    public function processAutoLoginCookie(array $cookieParts, Request $request): ?UserInterface
     {
         $this->cancelCookie($request);
 
@@ -83,7 +83,7 @@ class RememberMeManager
             )
         );
 
-        /** @var User */
+        /** @var UserInterface */
         return $this->userDAO->getOneBy(['username' => $persistentToken->getUsername()]);
     }
 
@@ -100,14 +100,14 @@ class RememberMeManager
         $cookieParts = $this->decodeCookie($cookie);
         $user = $this->processAutoLoginCookie($cookieParts, $request);
 
-        if (!$user instanceof User) {
+        if (!$user instanceof UserInterface) {
             throw new Exception('processAutoLoginCookie() must return a User class.');
         }
 
         return new RememberMeToken($user);
     }
 
-    public function createNewToken(User $user, Request $request): void
+    public function createNewToken(UserInterface $user, Request $request): void
     {
         $series = base64_encode(random_bytes(64));
         $tokenValue = base64_encode(random_bytes(64));

@@ -2,7 +2,7 @@
 
 namespace Framework\Security;
 
-use App\Model\User;
+use Framework\Security\User\UserInterface;
 use Framework\Session\Session;
 
 /**
@@ -31,7 +31,7 @@ class TokenStorage
     {
         $user = $session->get('user');
 
-        if ($user instanceof User) {
+        if ($user instanceof UserInterface) {
             $token = new PreAuthenticatedToken($user);
             $this->setToken($token);
         }

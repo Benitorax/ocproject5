@@ -3,10 +3,10 @@
 namespace Framework\View;
 
 use Exception;
-use App\Model\User;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Security\TokenStorage;
+use Framework\Security\User\UserInterface;
 
 /**
  * This class is used as variable in twig template.
@@ -21,7 +21,7 @@ class AppVariable
         $this->tokenStorage = $tokenStorage;
     }
 
-    public function getUser(): ?User
+    public function getUser(): ?UserInterface
     {
         if (null === $tokenStorage = $this->tokenStorage) {
             throw new Exception('The "app.user" variable is not available.');
