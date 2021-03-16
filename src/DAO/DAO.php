@@ -2,7 +2,7 @@
 
 namespace App\DAO;
 
-use Config\DAO\AbstractDAO;
+use Framework\DAO\AbstractDAO;
 
 class DAO extends AbstractDAO
 {

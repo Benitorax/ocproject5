@@ -4,8 +4,8 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\User;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\DAOInterface;
 
 class UserDAO extends AbstractDAO implements DAOInterface
 {

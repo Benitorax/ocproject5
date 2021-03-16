@@ -6,7 +6,7 @@ use DateTime;
 use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\RegisterForm;
-use Config\Security\Encoder\PasswordEncoder;
+use Framework\Security\Encoder\PasswordEncoder;
 
 class UserManager
 {

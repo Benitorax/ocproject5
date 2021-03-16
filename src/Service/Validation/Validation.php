@@ -4,7 +4,7 @@ namespace App\Service\Validation;
 
 use App\Form\AbstractForm;
 use App\Service\Validation\Constraint;
-use Config\Security\Csrf\CsrfTokenManager;
+use Framework\Security\Csrf\CsrfTokenManager;
 
 abstract class Validation
 {

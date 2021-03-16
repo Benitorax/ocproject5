@@ -4,8 +4,8 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\Comment;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\DAOInterface;
 
 class CommentDAO extends AbstractDAO implements DAOInterface
 {

@@ -3,8 +3,8 @@
 namespace App\Form;
 
 use App\Form\AbstractForm;
-use Config\Request\Request;
-use Config\Request\Parameter;
+use Framework\Request\Request;
+use Framework\Request\Parameter;
 use App\Service\Validation\LoginValidation;
 
 class LoginForm extends AbstractForm

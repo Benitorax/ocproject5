@@ -5,7 +5,7 @@ namespace App\Service\Mailer;
 use Swift_Mailer;
 use Swift_Message;
 use App\Model\User;
-use Config\View\View;
+use Framework\View\View;
 use App\Form\ContactForm;
 
 class Mailer

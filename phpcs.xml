@@ -5,9 +5,9 @@
     <arg name="colors"/>
     <arg value="p"/>
 
+    <file>framework</file>
     <file>public/index.php</file>
     <file>src</file>
-    <file>config</file>
     
     <rule ref="PSR1"></rule>
     <rule ref="PSR12"></rule>

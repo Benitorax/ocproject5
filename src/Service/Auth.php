@@ -5,10 +5,10 @@ namespace App\Service;
 use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\LoginForm;
-use Config\Request\Request;
-use Config\Session\Session;
-use Config\Security\Encoder\PasswordEncoder;
-use Config\Security\RememberMe\RememberMeManager;
+use Framework\Request\Request;
+use Framework\Session\Session;
+use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\RememberMe\RememberMeManager;
 
 class Auth
 {

@@ -2,10 +2,10 @@
 
 require dirname(__DIR__) . '/vendor/autoload.php';
 // Comment or delete the line below for production
-require_once dirname(__DIR__) . '/config/Debug/Debug.php';
+require_once dirname(__DIR__) . '/framework/Debug/Debug.php';
 
-use Config\App;
-use Config\Request\Request;
+use Framework\App;
+use Framework\Request\Request;
 
 $request = (new Request())->create();
 $app = new App();

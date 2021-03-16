@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
-use Config\Request\Request;
-use Config\Request\Parameter;
+use Framework\Request\Request;
+use Framework\Request\Parameter;
 use App\Service\Validation\RegisterValidation;
 
 class RegisterForm extends AbstractForm

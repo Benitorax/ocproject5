@@ -5,9 +5,9 @@ namespace App\Form;
 use DateTime;
 use App\Model\User;
 use App\Form\AbstractForm;
-use Config\Request\Request;
-use Config\Session\Session;
-use Config\Request\Parameter;
+use Framework\Request\Request;
+use Framework\Session\Session;
+use Framework\Request\Parameter;
 use App\Service\Validation\ContactValidation;
 
 class ContactForm extends AbstractForm

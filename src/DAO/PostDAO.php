@@ -6,8 +6,8 @@ use PDO;
 use DateTime;
 use App\Model\Post;
 use App\Model\User;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\DAOInterface;
 
 class PostDAO extends AbstractDAO implements DAOInterface
 {
