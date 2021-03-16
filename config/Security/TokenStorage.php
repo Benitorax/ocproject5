@@ -5,6 +5,9 @@ namespace Config\Security;
 use App\Model\User;
 use Config\Session\Session;
 
+/**
+ * Contains an user object if the user is authenticated
+ */
 class TokenStorage
 {
     private ?AbstractToken $token = null;

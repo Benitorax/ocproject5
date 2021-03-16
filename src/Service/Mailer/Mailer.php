@@ -3,6 +3,7 @@
 namespace App\Service\Mailer;
 
 use Swift_Mailer;
+use Swift_Message;
 use App\Model\User;
 use Config\View\View;
 use App\Form\ContactForm;
@@ -26,9 +27,12 @@ class Mailer
         $this->view = $view;
     }
 
+    /**
+     * Send email when a contact form is submitted.
+     */
     public function notifyContact(ContactForm $form, User $recipient): int
     {
-        $message = (new \Swift_Message('You have receive a message'))
+        $message = (new Swift_Message('You have receive a message'))
             ->setFrom(['example@mail.com' => 'MyWebsite'])
             ->setTo([$recipient->getEmail() => $recipient->getUsername()])
             ->setBody(

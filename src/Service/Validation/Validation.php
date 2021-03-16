@@ -18,6 +18,8 @@ abstract class Validation
     }
 
     /**
+     * Validates a value by calling the Constraint's methods.
+     *
      * @param bool|string|int $value
      */
     public function check(array $constraints, $value, string $name = null): ?string

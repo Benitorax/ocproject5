@@ -7,6 +7,8 @@ use Config\DAO\AbstractDAO;
 class DAO extends AbstractDAO
 {
     /**
+     * returns the count of a SQL command.
+     *
      * @param int|string $value
      */
     public function getCountBy(string $table, string $colName, $value, string $mode = null): int

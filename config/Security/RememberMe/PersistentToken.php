@@ -5,6 +5,9 @@ namespace Config\Security\RememberMe;
 use DateTime;
 use Exception;
 
+/**
+ * This class is persisted in database and allow to check if a remember me cookie is valid.
+ */
 class PersistentToken
 {
     private string $class;

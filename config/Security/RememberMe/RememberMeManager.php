@@ -37,6 +37,9 @@ class RememberMeManager
         $this->tokenStorage = $tokenStorage;
     }
 
+    /**
+     * Processes the auto login with cookie remember me.
+     */
     public function processAutoLoginCookie(array $cookieParts, Request $request): ?User
     {
         $this->cancelCookie($request);
@@ -62,7 +65,9 @@ class RememberMeManager
         }
 
         $tokenValue = base64_encode(random_bytes(64));
+
         $this->rememberMeDAO->updateToken($series, $tokenValue, new DateTime());
+
         $request->attributes->set(
             self::COOKIE_ATTR_NAME,
             new Cookie(

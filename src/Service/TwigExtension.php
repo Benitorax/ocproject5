@@ -27,11 +27,17 @@ class TwigExtension extends AbstractExtension
         ];
     }
 
+    /**
+     * Generates a url without the scheme and host.
+     */
     public function generatePath(string $routeName, array $routeParams = []): string
     {
         return $this->urlGenerator->generate($routeName, $routeParams);
     }
 
+    /**
+     * Generates a url with the scheme and host.
+     */
     public function generateUrl(string $routeName, array $routeParams = []): string
     {
         return $this->urlGenerator->generate($routeName, $routeParams, UrlGenerator::URL_TYPE);

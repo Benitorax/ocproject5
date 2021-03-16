@@ -8,6 +8,9 @@ use Config\Request\Request;
 use Config\Session\Session;
 use Config\Security\TokenStorage;
 
+/**
+ * This class is used as variable in twig template.
+ */
 class AppVariable
 {
     private ?Request $request = null;

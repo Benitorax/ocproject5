@@ -18,6 +18,9 @@ class Notification
         $this->mailer = $mailer;
     }
 
+    /**
+     * Send email to every admin users when a contact form is submitted.
+     */
     public function notifyContact(ContactForm $form): int
     {
         /** @var User[] */

@@ -64,6 +64,7 @@ class Container
     }
 
     /**
+     * Retrieve parameters of the class's constructor, instantiate them and return them inside an array
      * @return object[]
      */
     public function resolveArguments(string $className): ?array

@@ -41,7 +41,7 @@ class Headers
     }
 
     /**
-     * @param string|null $key The name of the headers to return or null to get them all
+     * @param string|null $key The name of the headers to return or null to get all of them
      */
     public function all(?string $key = null): array
     {

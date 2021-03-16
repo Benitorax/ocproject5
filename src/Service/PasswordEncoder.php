@@ -11,6 +11,8 @@ class PasswordEncoder
     ];
 
     /**
+     * Hash the password.
+     *
      * @return false|string
      */
     public function encode(string $password)

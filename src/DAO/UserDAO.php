@@ -36,7 +36,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|User[] the object is instance of User class
+     * @return null|object[]|User[] Array of users
      */
     public function getBy(array $parameters)
     {
@@ -44,7 +44,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|User[] the object is instance of User class
+     * @return null|object[]|User[] Array of all users
      */
     public function getAll()
     {
@@ -52,7 +52,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|User[] the object is instance of User class
+     * @return null|object[]|User[] Array of users who have role admin
      */
     public function getAllAdmin()
     {

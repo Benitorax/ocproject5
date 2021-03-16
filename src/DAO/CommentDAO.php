@@ -34,7 +34,7 @@ class CommentDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|Comment[] the object is instance of Comment class
+     * @return null|object[]|Comment[] Array of comments
      */
     public function getBy(array $parameters)
     {
@@ -42,7 +42,7 @@ class CommentDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|Comment[] the object is instance of Comment class
+     * @return null|object[]|Comment[] Array of all comments
      */
     public function getAll()
     {

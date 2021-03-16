@@ -21,9 +21,10 @@ class PostManager
     public function createAndSave(Post $post): Post
     {
         $post
-        ->setSlug($this->slugify($post->getTitle()))
-        ->setCreatedAt(new DateTime())
-        ->setUpdatedAt(new DateTime());
+            ->setSlug($this->slugify($post->getTitle()))
+            ->setCreatedAt(new DateTime())
+            ->setUpdatedAt(new DateTime())
+        ;
 
         $this->postDAO->add($post);
 

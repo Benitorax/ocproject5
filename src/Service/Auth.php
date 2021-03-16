@@ -37,16 +37,18 @@ class Auth
             return null;
         }
 
-        $isPasswordValid = $this->encoder->isPasswordValid($user, $password);
-
-        if (!$isPasswordValid) {
+        if (!$this->encoder->isPasswordValid($user, $password)) {
             return null;
         }
 
         $this->session->set('user', $user);
+
         return $user;
     }
 
+    /**
+     * Authenticate from login form.
+     */
     public function authenticateLoginForm(LoginForm $form, Request $request): ?User
     {
         $user = $this->authenticate($form->email, $form->password);
@@ -55,6 +57,7 @@ class Auth
             return null;
         }
 
+        // if rememberme is checked then create a rememberme token
         if ((bool) $form->rememberme) {
             $this->rememberMeManager->createNewToken($user, $request);
         }
@@ -64,6 +67,7 @@ class Auth
 
     public function handleLogout(Request $request): void
     {
+        // if there is a rememberme cookie then delete the rememberme token
         if ($request->cookies->has(RememberMeManager::COOKIE_NAME)) {
             $this->rememberMeManager->deleteToken($request);
         }

@@ -10,8 +10,8 @@ class CsrfTokenManager
     public const NAMESPACE = 'csrf';
 
     private Session $session;
-    private ?string $token = null;
     private CsrfTokenGenerator $generator;
+    private ?string $token = null;
 
     public function __construct(Session $session, CsrfTokenGenerator $generator)
     {

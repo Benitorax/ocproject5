@@ -2,6 +2,7 @@
 
 /**
  * @return Route[]
+ *
  * /uri-path => [
  *  'name' => 'page_name',
  *  'method' => 'GET', # it can be a table like ['GET', POST], a string like 'PUT'. If nothing it will be only 'GET'.

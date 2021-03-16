@@ -5,6 +5,9 @@ namespace App\Service\Validation;
 use Exception;
 use App\DAO\DAO;
 
+/**
+ * This class helps Validation to return error messages.
+ */
 class Constraint
 {
     private DAO $dao;
@@ -15,6 +18,8 @@ class Constraint
     }
 
     /**
+     * Calls one of the Constraint's method. The callable is a method of this Constraint.
+     *
      * @param bool|string|int $value
      */
     public function validate(array $constraint, $value, ?string $name = null): ?string
@@ -71,6 +76,9 @@ class Constraint
         return null;
     }
 
+    /**
+     * Checks if the value is a valid email format.
+     */
     public function email(array $constraint, string $value, string $name = null): ?string
     {
         if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
@@ -83,6 +91,9 @@ class Constraint
         return null;
     }
 
+    /**
+     * Checks if the value is unique in the database.
+     */
     public function unique(array $constraint, string $value, string $name = null): ?string
     {
         [$table, $colName] = explode(':', $constraint[1], 2);
@@ -98,6 +109,9 @@ class Constraint
         return null;
     }
 
+    /**
+     * Checks if two values are identical.
+     */
     public function identical(string $value1, string $value2, string $name = null): ?string
     {
         if (strtolower($value1) !== strtolower($value2)) {
@@ -110,6 +124,9 @@ class Constraint
         return null;
     }
 
+    /**
+     * Checks if the checkbox is checked or unchecked.
+     */
     public function checkbox(array $constraint, string $value, string $name = null): ?string
     {
         if ((bool) $constraint[1] !== (bool) $value) {

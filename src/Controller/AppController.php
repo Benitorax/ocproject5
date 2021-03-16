@@ -15,13 +15,15 @@ use App\Service\UserManager;
 use App\Service\Mailer\Notification;
 use Config\Response\Response;
 use App\Controller\Controller;
-use Config\Security\TokenStorage;
 use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;
 
 class AppController extends Controller
 {
+    /**
+     * Displays the home page with contact form visible only by logged users.
+     */
     public function home(): Response
     {
         $form = new ContactForm($this->get(ContactValidation::class));
@@ -72,6 +74,9 @@ class AppController extends Controller
         ]);
     }
 
+    /**
+     * Displays the login page.
+     */
     public function login(): Response
     {
         if ($this->isGranted(['user'])) {
@@ -84,18 +89,23 @@ class AppController extends Controller
         if ($form->isSubmitted && $form->isValid) {
             $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
+            // if user exists then redirect to homepage
             if (!empty($user)) {
                 $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
 
                 return $this->redirectToRoute('home');
             }
 
+            // if user not exists then display invalid credentials
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 
         return $this->render('app/login.html.twig', ['form' => $form]);
     }
 
+    /**
+     * Displays the register page.
+     */
     public function register(): Response
     {
         $form = new RegisterForm($this->get(RegisterValidation::class));
@@ -111,6 +121,9 @@ class AppController extends Controller
         return $this->render('app/register.html.twig', ['form' => $form]);
     }
 
+    /**
+     * Logs out the user and redirect to homepage.
+     */
     public function logout(): Response
     {
         if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
@@ -121,6 +134,9 @@ class AppController extends Controller
         return $this->redirectToRoute('home');
     }
 
+    /**
+     * Displays the Terms of use page.
+     */
     public function termsOfUse(): Response
     {
         return $this->render('app/terms_of_use.html.twig');

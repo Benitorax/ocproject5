@@ -4,6 +4,9 @@ namespace Config\Router;
 
 use Config\Request\Request;
 
+/**
+ * This class is useful for UrlGenerator to generate url.
+ */
 class RequestContext
 {
     private string $method;

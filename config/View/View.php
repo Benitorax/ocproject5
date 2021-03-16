@@ -9,6 +9,9 @@ use App\Service\TwigExtension;
 use Config\Security\TokenStorage;
 use Twig\Loader\FilesystemLoader;
 
+/**
+ * This is the renderer class for controller template and email template
+ */
 class View
 {
     private Environment $twig;
@@ -41,6 +44,9 @@ class View
         return $this->twig->render($template, (array) $parameters);
     }
 
+    /**
+     * Hydrates the AppVariable for Twig template.
+     */
     public function setRequest(Request $request): void
     {
         $app = new AppVariable();

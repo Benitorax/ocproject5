@@ -37,7 +37,7 @@ abstract class AbstractDAO
         }
     }
 
-    /** @param mixed[] $parameters */
+    /** @param mixed[] $parameters for bindValue() method*/
     protected function createQuery(string $sql, array $parameters = null): PDOStatement
     {
         if ($parameters) {

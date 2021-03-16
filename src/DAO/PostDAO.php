@@ -39,7 +39,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|Post[] the object is instance of Post class
+     * @return null|object[]|Post[] Array of posts
      */
     public function getBy(array $parameters)
     {
@@ -47,7 +47,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|object[]|Post[] the object is instance of Post class
+     * @return null|object[]|Post[] Array of all posts
      */
     public function getAll()
     {

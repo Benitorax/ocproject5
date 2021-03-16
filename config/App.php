@@ -22,8 +22,7 @@ class App
     public function handle(Request $request): Response
     {
         $this->boot($request);
-        $router = $this->container->getRouter();
-        $response = $router->run($request);
+        $response = $this->container->getRouter()->run($request);
 
         // Add rememberme cookie into Response if exists
         if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
@@ -40,11 +39,15 @@ class App
         $this->container = new Container();
         $this->container->set($this);
 
-        /** @var RequestContext */
+        /**
+         * @var RequestContext it hydrates the RequestContext from the request
+         */
         $context = $this->container->get(RequestContext::class);
         $context->fromRequest($request);
 
-        /** @var Session */
+        /**
+         * @var Session it add the session in the request
+         */
         $session = $this->container->get(Session::class);
         $this->session = $session;
         $request->setSession($this->session);
@@ -52,6 +55,9 @@ class App
         $this->authenticate($request);
     }
 
+    /**
+     * Tries to authenticate from the session or a remember me cookie
+     */
     public function authenticate(Request $request): void
     {
         /** @var TokenStorage */
@@ -63,7 +69,7 @@ class App
             return;
         }
 
-        // check rememberme cookie
+        // check remember me cookie
         /** @var RememberMeManager */
         $rememberMeManager = $this->container->get(RememberMeManager::class);
         try {
@@ -78,10 +84,14 @@ class App
         }
     }
 
+    /**
+     * Add environment variables from env file
+     */
     public function addEnvVariables(string $path): void
     {
         $env = (string) file_get_contents($path);
         $data = (array) json_decode($env);
+
         foreach ($data as $key => $value) {
             $_ENV[$key] = $value;
             $_SERVER[$key] = $value;

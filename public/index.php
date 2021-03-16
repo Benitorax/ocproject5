@@ -9,7 +9,12 @@ use Config\Request\Request;
 
 $request = (new Request())->create();
 $app = new App();
-$app->addEnvVariables(dirname(__DIR__) . '/.env.local');
+
+if (file_exists(dirname(__DIR__) . '/.env.local')) {
+    $app->addEnvVariables(dirname(__DIR__) . '/.env.local');
+} else {
+    $app->addEnvVariables(dirname(__DIR__) . '/.env');
+}
 
 $response = $app->handle($request);
 $response->send();

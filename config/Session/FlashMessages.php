@@ -2,6 +2,13 @@
 
 namespace Config\Session;
 
+/**
+ * This class contains every flash messages.
+ *
+ * Removes the message by returning it,
+ * but it can return a message without deleting it
+ * with method peek() and peekAll()
+ */
 class FlashMessages
 {
     private ?array $flashes = [];

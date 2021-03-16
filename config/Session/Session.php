@@ -9,7 +9,6 @@ use Config\Session\FlashMessages;
 class Session implements \IteratorAggregate, \Countable
 {
     private array $session;
-    //private $flashName = 'flashes';
     private FlashMessages $flashes;
 
     public function __construct()

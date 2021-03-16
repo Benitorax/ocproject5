@@ -11,15 +11,21 @@ class UrlGenerator
     public const PATH_TYPE = 1;
     public const URL_TYPE = 2;
 
-    private array $routes;
     private RequestContext $context;
+    private array $routes;
 
-    public function __construct(Router $router, RequestContext $context)
+    public function __construct(RequestContext $context, Router $router)
     {
-        $this->routes = $router->getRoutes();
+
         $this->context = $context;
+        $this->routes = $router->getRoutes();
     }
 
+    /**
+     * Generates the url from route name and route parameters.
+     *
+     * @param int $type indicates if it should generate an absolute url or the path
+     */
     public function generate(string $routeName, array $routeParams = null, int $type = self::PATH_TYPE): string
     {
         $url = '';
