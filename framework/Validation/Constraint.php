@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Validation;
+namespace Framework\Validation;
 
 use Exception;
 use App\DAO\DAO;

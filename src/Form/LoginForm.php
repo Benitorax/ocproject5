@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Form\AbstractForm;
+use Framework\Form\AbstractForm;
 use App\Service\Validation\LoginValidation;
 
 class LoginForm extends AbstractForm

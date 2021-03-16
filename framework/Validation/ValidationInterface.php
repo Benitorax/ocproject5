@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Service\Validation;
+namespace Framework\Validation;
 
-use App\Form\AbstractForm;
+use Framework\Form\AbstractForm;
 
 /**
  * All validation classes must implement this interface.

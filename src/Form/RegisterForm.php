@@ -2,8 +2,8 @@
 
 namespace App\Form;
 
+use Framework\Form\AbstractForm;
 use App\Service\Validation\RegisterValidation;
-use App\Service\Validation\ValidationInterface;
 
 class RegisterForm extends AbstractForm
 {
@@ -20,7 +20,7 @@ class RegisterForm extends AbstractForm
         $this->validation = $validation;
     }
 
-    public function getValidation(): ValidationInterface
+    public function getValidation(): RegisterValidation
     {
         return $this->validation;
     }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Form;
+namespace Framework\Form;
 
 use Framework\Request\Request;
 
@@ -11,11 +11,16 @@ abstract class AbstractForm implements FormInterface
     private bool $isValid = false;
     private bool $isSubmitted = false;
 
+    /**
+     * If request method is POST, then hydrate the form and validate it.
+     */
     public function handleRequest(Request $request): void
     {
         if ('POST' === $request->getMethod()) {
             $this->hydrate($this, $request);
+            $this->isSubmitted = true;
 
+            //reinitiate the errors before validation
             $this->errors = [];
             $this->isValid = true;
             $this->getValidation()->validate($this);
@@ -23,11 +28,15 @@ abstract class AbstractForm implements FormInterface
             foreach ($this->getErrors() as $error) {
                 if (!empty($error)) {
                     $this->isValid = false;
+                    break;
                 }
             }
         }
     }
 
+    /**
+     * Hydrates the form with the request.
+     */
     public function hydrate(AbstractForm $form, Request $request): void
     {
         foreach ($request->request as $name => $value) {
@@ -38,7 +47,6 @@ abstract class AbstractForm implements FormInterface
                 $form->$method($value);
             }
         }
-        $this->isSubmitted = true;
     }
 
     public function snakeCaseToCamelCase(string $string): string

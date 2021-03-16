@@ -2,9 +2,9 @@
 
 namespace App\Service\Validation;
 
-use App\Form\AbstractForm;
 use App\Form\RegisterForm;
-use App\Service\Validation\Validation;
+use Framework\Form\AbstractForm;
+use Framework\Validation\Validation;
 
 class RegisterValidation extends Validation
 {

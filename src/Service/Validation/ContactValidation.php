@@ -3,8 +3,8 @@
 namespace App\Service\Validation;
 
 use App\Form\ContactForm;
-use App\Form\AbstractForm;
-use App\Service\Validation\Validation;
+use Framework\Form\AbstractForm;
+use Framework\Validation\Validation;
 
 class ContactValidation extends Validation
 {

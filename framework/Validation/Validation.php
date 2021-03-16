@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Service\Validation;
+namespace Framework\Validation;
 
-use App\Service\Validation\Constraint;
+use Framework\Validation\Constraint;
 use Framework\Security\Csrf\CsrfTokenManager;
-use App\Service\Validation\ValidationInterface;
+use Framework\Validation\ValidationInterface;
 
 abstract class Validation implements ValidationInterface
 {

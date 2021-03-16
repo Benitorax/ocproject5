@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Form;
+namespace Framework\Form;
 
-use App\Service\Validation\ValidationInterface;
+use Framework\Validation\ValidationInterface;
 
 /**
  * All forms must implement this interface which returns a validation class which implements ValidationInterface.

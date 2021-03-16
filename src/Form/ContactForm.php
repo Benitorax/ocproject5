@@ -4,7 +4,7 @@ namespace App\Form;
 
 use DateTime;
 use App\Model\User;
-use App\Form\AbstractForm;
+use Framework\Form\AbstractForm;
 use App\Service\Validation\ContactValidation;
 
 class ContactForm extends AbstractForm
