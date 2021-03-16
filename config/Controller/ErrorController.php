@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace Config\Controller;
 
 use Exception;
 use Config\Response\Response;

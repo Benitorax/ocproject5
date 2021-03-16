@@ -14,7 +14,7 @@ use App\Form\RegisterForm;
 use App\Service\UserManager;
 use App\Service\Mailer\Notification;
 use Config\Response\Response;
-use App\Controller\Controller;
+use Config\Controller\Controller;
 use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;

@@ -7,9 +7,9 @@ use ReflectionMethod;
 use Config\Router\Route;
 use Config\Request\Request;
 use Config\Response\Response;
-use App\Controller\Controller;
 use Config\Container\Container;
-use App\Controller\ErrorController;
+use Config\Controller\Controller;
+use Config\Controller\ErrorController;
 
 class Router
 {
