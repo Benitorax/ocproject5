@@ -5,51 +5,69 @@ namespace App\Form;
 use DateTime;
 use App\Model\User;
 use App\Form\AbstractForm;
-use Framework\Request\Request;
-use Framework\Session\Session;
-use Framework\Request\Parameter;
 use App\Service\Validation\ContactValidation;
 
 class ContactForm extends AbstractForm
 {
-    public User $user;
-    public string $subject;
-    public string $content;
-    public DateTime $createdAt;
+    private User $user;
+    private string $subject = '';
+    private string $content = '';
+    private DateTime $createdAt;
 
     private ContactValidation $validation;
 
-    public function __construct(ContactValidation $validation)
+    public function __construct(ContactValidation $validation, ?User $user)
     {
         $this->validation = $validation;
-    }
+        $this->createdAt = new DateTime('now');
 
-    public function handleRequest(Request $request): void
-    {
-        if ('POST' === $request->getMethod()) {
-            /** @var Session */
-            $session = $request->getSession();
-            $this->user = $session->get('user');
-            $this->hydrate($request->request);
-            $this->validation->validate($this);
+        if (null !== $user) {
+            $this->user = $user;
         }
     }
 
-    public function hydrate(Parameter $post): void
+    public function getValidation(): ContactValidation
     {
-        $this->subject = $post->get('subject') ?: '';
-        $this->content = trim($post->get('content')) ?: '';
-        $this->csrfToken = $post->get('csrf_token') ?: '';
-        $this->isSubmitted = true;
+        return $this->validation;
     }
 
     public function clear(): void
     {
         $this->subject = '';
         $this->content = '';
-        $this->errors = [];
-        $this->csrfToken = '';
-        $this->isSubmitted = false;
-        $this->isValid =  false;
+    }
+
+    public function getSubject(): string
+    {
+        return $this->subject;
+    }
+
+    public function setSubject(string $subject): self
+    {
+        $this->subject = $subject;
+
+        return $this;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
+    }
+
+    public function setContent(string $content): self
+    {
+        $this->content = $content;
+
+        return $this;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    public function getCreatedAt(): DateTime
+    {
+        return $this->createdAt;
     }
 }

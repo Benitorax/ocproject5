@@ -2,6 +2,7 @@
 
 namespace App\Service\Validation;
 
+use App\Form\AbstractForm;
 use App\Form\RegisterForm;
 use App\Service\Validation\Validation;
 
@@ -29,20 +30,17 @@ class RegisterValidation extends Validation
         ['checkbox', true]
     ];
 
-    public function validate(RegisterForm $form): void
+    public function validate(AbstractForm $form): void
     {
-        $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
-        $form->errors['password1'] = $this->check(self::PASSWORD1, $form->password1, 'password');
-        $form->errors['username'] = $this->check(self::USERNAME, $form->username, 'username');
-        $form->errors['terms'] = $this->check(self::TERMS, $form->terms, 'terms of use');
-        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
+        /** @var RegisterForm $form */
+        $form->addError('email', $this->check(self::EMAIL, $form->getEmail(), 'email'));
+        $form->addError('password1', $this->check(self::PASSWORD1, $form->getPassword1(), 'password'));
+        $form->addError('username', $this->check(self::USERNAME, $form->getUsername(), 'username'));
+        $form->addError('terms', $this->check(self::TERMS, $form->getTerms(), 'terms of use'));
+        $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
 
-        if (!$form->errors['password1']) {
-            $form->errors['password2'] = $this->checkIdentical($form->password1, $form->password2, 'password');
-        }
-
-        if (!$this->hasErrorMessages($form)) {
-            $form->isValid = true;
+        if (!$form->getErrors()['password1']) {
+            $form->addError('password2', $this->checkIdentical($form->password1, $form->password2, 'password'));
         }
     }
 }

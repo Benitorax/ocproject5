@@ -6,7 +6,7 @@ use Exception;
 use App\DAO\DAO;
 
 /**
- * This class helps Validation to return error messages.
+ * This class helps Validation to validate specific constraints and return error messages.
  */
 class Constraint
 {

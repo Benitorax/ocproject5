@@ -3,6 +3,7 @@
 namespace App\Service\Validation;
 
 use App\Form\LoginForm;
+use App\Form\AbstractForm;
 use App\Service\Validation\Validation;
 
 class LoginValidation extends Validation
@@ -19,14 +20,11 @@ class LoginValidation extends Validation
         ['maxLength', 50]
     ];
 
-    public function validate(LoginForm $form): void
+    public function validate(AbstractForm $form): void
     {
-        $form->errors['email'] = $this->check(self::EMAIL, $form->email, 'email');
-        $form->errors['password'] = $this->check(self::PASSWORD, $form->password, 'password');
-        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
-
-        if (!$this->hasErrorMessages($form)) {
-            $form->isValid = true;
-        }
+        /** @var LoginForm $form */
+        $form->addError('email', $this->check(self::EMAIL, $form->getEmail(), 'email'));
+        $form->addError('password', $this->check(self::PASSWORD, $form->getPassword(), 'password'));
+        $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
     }
 }

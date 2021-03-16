@@ -3,6 +3,7 @@
 namespace App\Service\Validation;
 
 use App\Form\ContactForm;
+use App\Form\AbstractForm;
 use App\Service\Validation\Validation;
 
 class ContactValidation extends Validation
@@ -17,18 +18,12 @@ class ContactValidation extends Validation
         ['minLength', 20],
         ['maxLength', 1500],
     ];
-    private const TERMS = [
-        ['checkbox', true]
-    ];
 
-    public function validate(ContactForm $form): void
+    public function validate(AbstractForm $form): void
     {
-        $form->errors['subject'] = $this->check(self::SUBJECT, $form->subject, 'subject');
-        $form->errors['content'] = $this->check(self::CONTENT, $form->content, 'content');
-        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
-
-        if (!$this->hasErrorMessages($form)) {
-            $form->isValid = true;
-        }
+        /** @var ContactForm $form */
+        $form->addError('subject', $this->check(self::SUBJECT, $form->getSubject(), 'subject'));
+        $form->addError('content', $this->check(self::CONTENT, $form->getContent(), 'content'));
+        $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
     }
 }

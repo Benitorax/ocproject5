@@ -52,14 +52,14 @@ class Auth
      */
     public function authenticateLoginForm(LoginForm $form, Request $request): ?User
     {
-        $user = $this->authenticate($form->email, $form->password);
+        $user = $this->authenticate($form->getEmail(), $form->getPassword());
 
         if (!$user instanceof User) {
             return null;
         }
 
         // if rememberme is checked then create a rememberme token
-        if ((bool) $form->rememberme) {
+        if ((bool) $form->getRememberme()) {
             $this->rememberMeManager->createNewToken($user, $request);
         }
 

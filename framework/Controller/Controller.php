@@ -2,6 +2,7 @@
 
 namespace Framework\Controller;
 
+use App\Model\User;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
@@ -108,11 +109,11 @@ abstract class Controller
         /** @var TokenStorage */
         $tokenStorage = $this->get(TokenStorage::class);
 
-        if (!$token = $tokenStorage->getToken()) {
+        if (null === $token = $tokenStorage->getToken()) {
             return false;
         }
 
-        if (!$user = $token->getUser()) {
+        if (null === $user = $token->getUser()) {
             return false;
         }
 
@@ -123,5 +124,24 @@ abstract class Controller
         }
 
         return false;
+    }
+
+    /**
+     * Returns a user object if authenticated, otherwise null.
+     */
+    public function getUser(): ?User
+    {
+        /** @var TokenStorage */
+        $tokenStorage = $this->get(TokenStorage::class);
+
+        if (null === $token = $tokenStorage->getToken()) {
+            return null;
+        }
+
+        if (null === $user = $token->getUser()) {
+            return null;
+        }
+
+        return $user;
     }
 }

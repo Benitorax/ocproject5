@@ -26,10 +26,10 @@ class AppController extends Controller
      */
     public function home(): Response
     {
-        $form = new ContactForm($this->get(ContactValidation::class));
+        $form = new ContactForm($this->get(ContactValidation::class), $this->getUser());
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $mailCount = $this->get(Notification::class)->notifyContact($form);
 
             if (0 === $mailCount) {
@@ -86,7 +86,7 @@ class AppController extends Controller
         $form = new LoginForm($this->get(LoginValidation::class));
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
 
             // if user exists then redirect to homepage
@@ -111,7 +111,7 @@ class AppController extends Controller
         $form = new RegisterForm($this->get(RegisterValidation::class));
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
+        if ($form->isSubmitted() && $form->isValid()) {
             $this->get(UserManager::class)->saveNewUser($form);
             $this->addFlash('success', 'You register with success!');
 

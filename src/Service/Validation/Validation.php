@@ -2,11 +2,11 @@
 
 namespace App\Service\Validation;
 
-use App\Form\AbstractForm;
 use App\Service\Validation\Constraint;
 use Framework\Security\Csrf\CsrfTokenManager;
+use App\Service\Validation\ValidationInterface;
 
-abstract class Validation
+abstract class Validation implements ValidationInterface
 {
     private Constraint $constraint;
     private CsrfTokenManager $csrfTokenManager;
@@ -52,16 +52,5 @@ abstract class Validation
             return 'The CSRF token is invalid. Please try to resubmit the form.';
         }
         return null;
-    }
-
-    public function hasErrorMessages(AbstractForm $form): bool
-    {
-        foreach ($form->errors as $error) {
-            if (!empty($error)) {
-                return true;
-            }
-        }
-
-        return false;
     }
 }
