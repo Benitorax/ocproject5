@@ -10,20 +10,19 @@ use App\DAO\PostDAO;
 class PostManager
 {
     private PostDAO $postDAO;
-    private DAO $dao;
 
-    public function __construct(PostDAO $postDAO, DAO $dao)
+    public function __construct(PostDAO $postDAO)
     {
         $this->postDAO = $postDAO;
-        $this->dao = $dao;
     }
 
     public function createAndSave(Post $post): Post
     {
+        $dateTime = new DateTime();
         $post
             ->setSlug($this->slugify($post->getTitle()))
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
+            ->setCreatedAt($dateTime)
+            ->setUpdatedAt($dateTime)
         ;
 
         $this->postDAO->add($post);
@@ -40,9 +39,23 @@ class PostManager
                 $this->removeAccent(trim($title))
             )
         );
-        $count = $this->dao->getCountBy('post', 'slug', $slug . '%', 'LIKE');
 
-        return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;
+        // retrieves identical slugs from database
+        $slugs = (array) $this->postDAO->getSlugsBy($slug);
+
+        if (count($slugs) === 0) {
+            return $slug;
+        }
+
+        // get only the index character of the slugs and sort them in ascending
+        $slugs = array_map(function ($element) use ($title) {
+            return substr($element['slug'], strlen($title) + 1);
+        }, $slugs);
+
+        asort($slugs, SORT_NUMERIC);
+
+        // attach the last index + 1 to the slug
+        return $slug . '-' . ((int) $slugs[array_key_last($slugs)] + 1);
     }
 
     public function removeAccent(string $string): string

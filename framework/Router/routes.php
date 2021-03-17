@@ -30,6 +30,16 @@ return [
         'name' => 'terms_of_use',
         'callable' => 'App\Controller\AppController::termsOfUse'
     ],
+    '/post/{slug}' => [
+        'name' => 'post_show',
+        'method' => 'GET',
+        'callable' => 'App\Controller\PostController::show'
+    ],
+    '/fixtures' => [
+        'name' => 'fixtures',
+        'method' => 'GET',
+        'callable' => 'App\Controller\FixturesController::load'
+    ],
     '/' => [
         'name' => 'home',
         'method' => ['GET', 'POST'],

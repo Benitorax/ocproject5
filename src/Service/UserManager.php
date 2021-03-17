@@ -23,14 +23,14 @@ class UserManager
 
     public function saveNewUser(RegisterForm $form): User
     {
+        $dateTime = new DateTime();
         $user = new User();
-
         $user->setId(IdGenerator::generate())
             ->setEmail($form->getEmail())
             ->setPassword((string) $this->encoder->encode($form->getPassword1()))
             ->setUsername($form->getUsername())
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
+            ->setCreatedAt($dateTime)
+            ->setUpdatedAt($dateTime)
         ;
 
         $this->userDAO->add($user);

@@ -1,16 +1,48 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Le post{% endblock %}
+{% block title %}{{ post.title }}{% endblock %}
 
 {% block body %}
-    <h1>Ceci est un post</h1>
-    <div>
-        <h2><a href="../public/index.php?route=post&postId={{ post.id }}">{{ post.title }}</a></h2>
-        <p>Intro : {{ post.shortText }}</p>
-        <p>Contenu : {{ post.text }}</p>
-        <p>Publié par : {{ post.user.username }}</p>
-        <p>Email : {{ post.user.email }}</p>
-        <p>Créé le : {{ post.createdAt|date('Y-m-d H:i:s') }}</p>
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-9">
+            <h1>{{ post.title }}</h1>
+            <hr>
+            <p class="lead my-5">{{ post.lead }}</p>
+            <p>{{ post.content|nl2br }}</p>
+            <hr class="mt-5">
+            <p>By {{ post.user.username }}</p>
+            <p>
+                {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
+                    Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}
+                {% else %}
+                    Updated the {{ post.updatedAt|date('Y-m-d \\a\\t H:i:s') }}
+                {% endif %}
+            </p>
+        </div>
     </div>
-    <br>
+    <div class="row justify-content-center">
+        <div class="col-12 col-sm-7">
+            <div class="card my-4">
+                <h5 class="card-header">Leave a comment</h5>
+                <div class="card-body">
+                    <form>
+                        <div class="form-group">
+                        <textarea class="form-control" rows="3"></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary float-right">Submit</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-sm-7">
+            <div class="media">
+                <div class="media-body">
+                <h5>Commenter Name</h5>
+                <p>
+                    Cras sit amet nibh libero, in gravida nulla. Nulla vel metus scelerisque ante sollicitudin. Cras purus odio, vestibulum in vulputate at, tempus viverra turpis. Fusce condimentum nunc ac nisi vulputate fringilla. Donec lacinia congue felis in faucibus.
+                </p>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

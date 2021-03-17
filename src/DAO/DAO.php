@@ -2,6 +2,7 @@
 
 namespace App\DAO;
 
+use PDO;
 use Framework\DAO\AbstractDAO;
 
 class DAO extends AbstractDAO
@@ -22,7 +23,7 @@ class DAO extends AbstractDAO
         $count = 0;
         $stmt = $this->createQuery($sql, [$colName => $value]);
         $stmt->bindColumn(1, $count);
-        $stmt->fetchAll(\PDO::FETCH_BOUND);
+        $stmt->fetchAll(PDO::FETCH_BOUND);
         $stmt->closeCursor();
 
         return $count;

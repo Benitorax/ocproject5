@@ -135,29 +135,31 @@ abstract class AbstractDAO
     /**
      * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
      */
-    public function insert(string $tableName, array $parameters): PDOStatement
+    public function insert(string $tableName, array $parameters): void
     {
         [$colNameString, $paramString] = $this->paramsToStrings($parameters);
 
         $sql = 'INSERT INTO ' . $tableName . ' (' . $colNameString . ') VALUES (' . $paramString . ')';
-        return $this->createQuery($sql, $parameters);
+        $stmt = $this->createQuery($sql, $parameters);
+        $stmt->closeCursor();
     }
 
     /**
      * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
      */
-    public function delete(string $tableName, array $parameters): PDOStatement
+    public function delete(string $tableName, array $parameters): void
     {
         $sql = 'DELETE FROM ' . $tableName;
         $sql = $this->addWhere($sql, $parameters);
-        return $this->createQuery($sql, $parameters);
+        $stmt = $this->createQuery($sql, $parameters);
+        $stmt->closeCursor();
     }
 
     /**
      * @param mixed[] $parameters = ['password' => $password, 'username' => $username]
      * @param mixed[] $where = ['id' => $id]
      */
-    public function update(string $tableName, array $parameters, array $where): PDOStatement
+    public function update(string $tableName, array $parameters, array $where): void
     {
         $sql = 'UPDATE ' . $tableName . ' SET';
 
@@ -173,7 +175,8 @@ abstract class AbstractDAO
         $sql = $this->addWhere($sql, $where);
         $parameters = array_merge($parameters, $where);
 
-        return $this->createQuery($sql, $parameters);
+        $stmt = $this->createQuery($sql, $parameters);
+        $stmt->closeCursor();
     }
 
     /**
