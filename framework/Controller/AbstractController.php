@@ -13,7 +13,7 @@ use Framework\Security\TokenStorage;
 use Framework\Security\Csrf\CsrfTokenManager;
 use Framework\Security\User\UserInterface;
 
-abstract class Controller
+abstract class AbstractController
 {
     protected View $view;
     protected Container $container;
@@ -80,11 +80,11 @@ abstract class Controller
     {
         /** @var CsrfTokenManager */
         $tokenManager = $this->get(CsrfTokenManager::class);
-        $isValid = $tokenManager->isTokenValid($token);
 
-        if ($isValid) {
+        if ($tokenManager->isTokenValid($token)) {
             return true;
         }
+
         return false;
     }
 
@@ -106,14 +106,7 @@ abstract class Controller
      */
     public function isGranted(array $roles): bool
     {
-        /** @var TokenStorage */
-        $tokenStorage = $this->get(TokenStorage::class);
-
-        if (null === $token = $tokenStorage->getToken()) {
-            return false;
-        }
-
-        if (null === $user = $token->getUser()) {
+        if (null === $user = $this->getUser()) {
             return false;
         }
 

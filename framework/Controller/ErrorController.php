@@ -5,7 +5,7 @@ namespace Framework\Controller;
 use Exception;
 use Framework\Response\Response;
 
-class ErrorController extends Controller
+class ErrorController extends AbstractController
 {
     /**
      * Displays error 404 page.

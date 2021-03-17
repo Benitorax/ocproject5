@@ -30,11 +30,6 @@ return [
         'name' => 'terms_of_use',
         'callable' => 'App\Controller\AppController::termsOfUse'
     ],
-    '/post/{slug}/author/{username}' => [
-        'name' => 'post',
-        'method' => 'GET',
-        'callable' => 'App\Controller\AppController::post'
-    ],
     '/' => [
         'name' => 'home',
         'method' => ['GET', 'POST'],

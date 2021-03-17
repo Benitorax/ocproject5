@@ -2,11 +2,6 @@
 
 namespace App\Controller;
 
-use DateTime;
-use App\Model\Post;
-use App\Model\User;
-use App\DAO\PostDAO;
-use App\DAO\UserDAO;
 use App\Service\Auth;
 use App\Form\LoginForm;
 use App\Form\ContactForm;
@@ -14,12 +9,12 @@ use App\Form\RegisterForm;
 use App\Service\UserManager;
 use App\Service\Mailer\Notification;
 use Framework\Response\Response;
-use Framework\Controller\Controller;
+use Framework\Controller\AbstractController;
 use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;
 
-class AppController extends Controller
+class AppController extends AbstractController
 {
     /**
      * Displays the home page with contact form visible only by logged users.
@@ -32,6 +27,7 @@ class AppController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $mailCount = $this->get(Notification::class)->notifyContact($form);
 
+            // checks if at least one mail has been sent
             if (0 === $mailCount) {
                 $this->addFlash('danger', 'The messaging service has technical problems. Please try later.');
             } else {
@@ -41,37 +37,6 @@ class AppController extends Controller
         }
 
         return $this->render('app/home.html.twig', ['form' => $form]);
-    }
-
-    public function post(string $slug, string $username): Response
-    {
-        $user = new User();
-        $userId = (string) rand(10000, 99999);
-        $user->setId($userId)
-            ->setEmail($username . $userId . '@mail.com')
-            ->setPassword('123456')
-            ->setUsername($username . $userId)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime());
-
-        $post = new Post();
-        $postId = (string) rand(10000, 99999);
-        $post->setId($postId)
-        ->setTitle($slug)
-        ->setSlug('mon-titre-de-la-mort' . rand(100, 999))
-        ->setShortText('Mon introduction')
-        ->setText('Le texte complètement vide')
-        ->setCreatedAt(new DateTime())
-        ->setUpdatedAt(new DateTime())
-        ->setIsPublished(true)
-        ->setUser($user);
-
-        $this->get(PostDAO::class)->add($post);
-        $this->get(UserDAO::class)->add($user);
-
-        return $this->render('post/show.html.twig', [
-            'post' => $post
-        ]);
     }
 
     /**
@@ -96,7 +61,7 @@ class AppController extends Controller
                 return $this->redirectToRoute('home');
             }
 
-            // if user not exists then display invalid credentials
+            // if user does not exist then display invalid credentials
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 

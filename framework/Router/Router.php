@@ -8,7 +8,7 @@ use Framework\Router\Route;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Controller\Controller;
+use Framework\Controller\AbstractController;
 use Framework\Controller\ErrorController;
 
 class Router
@@ -105,7 +105,7 @@ class Router
     {
         [$classname, $method] = $callable;
 
-        /** @var Controller abstract class of Controller */
+        /** @var AbstractController abstract class of Controller */
         $object = $this->container->create($classname);
         $object->setRequest($this->request);
         $controller = [$object, $method];
