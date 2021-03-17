@@ -27,11 +27,11 @@ class Router
     public function run(Request $request): Response
     {
         $this->request = $request;
-        $requestUri = $this->request->getRequestUri();
+        $pathInfo = $this->request->getPathInfo();
 
         try {
-            $route = $this->match($requestUri, $this->request->getMethod());
-            $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
+            $route = $this->match($pathInfo, $this->request->getMethod());
+            $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $pathInfo);
             $this->request->attributes->set('route', $route->getName());
 
             return $this->executeController($route->getCallable(), $arguments);
@@ -46,17 +46,21 @@ class Router
     }
 
     /**
-     * Returns a Route from the uri and the method
+     * Returns a Route from the path info and the method
      */
-    public function match(string $requestUri, string $requestMethod): Route
+    public function match(string $pathInfo, string $requestMethod): Route
     {
         $matchedRoute = null;
 
         foreach ($this->routes as $route) {
             $routePath = $route->getPath();
+
+            // creates a pattern for the preg_match
             $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
-            if (preg_match('#^' . $pattern . '$#', $requestUri, $matches)) {
+            // checks if the path info matches with the pattern of the route
+            if (preg_match('#^' . $pattern . '$#', $pathInfo, $matches)) {
+                // checks if the method matches with a method of the route
                 if ($this->isMethodValid($requestMethod, $route->getMethods())) {
                     $matchedRoute = $route;
                 }
@@ -129,40 +133,44 @@ class Router
      * Retrieves the route parameters of the Controller, hydrate them and return them in a array.
      * e.g. for 'showPost($slug)' it returns '[$slug]' from '/post/{slug}'
      */
-    public function resolveControllerArguments(array $callable, string $routePath, string $requestUri): array
+    public function resolveControllerArguments(array $callable, string $routePath, string $pathInfo): array
     {
         $pathElements = explode('/', $routePath);
-        $uriElements = explode('/', $requestUri);
+        $urlElements = explode('/', $pathInfo);
+        $routeParams = [];
 
-        // Find every route params in url and make them variables
+        // retrieves every route's params and hydrates them with values of the url
         foreach ($pathElements as $key => $element) {
             if (preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
+                // get the name of the param
                 $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);
+
+                // prepares the pattern for the preg_match
                 $start = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$1', $element);
                 $end = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$3', $element);
-                preg_match('#^' . $start . '([-\w]+)' . $end . '$#', $uriElements[$key], $matches);
+                preg_match('#^' . $start . '([-\w]+)' . $end . '$#', $urlElements[$key], $matches);
 
                 if (count($matches)) {
                     $value = $matches[1];
                 }
 
                 if (!empty($value)) {
+                    // add the value to the param
                     $routeParams[$paramName] = $value;
                     $this->request->attributes->set((string) $paramName, $value);
                 }
             }
         }
 
+        // add $routeParams in the attributes
         if (isset($routeParams)) {
             $this->request->attributes->set('route_params', $routeParams);
-        } else {
-            $routeParams = [];
         }
 
+        // Hydrates the parameters of the controller with the params of the route
         $reflection = new ReflectionMethod($callable[0], $callable[1]);
-
-        // Hydrates all the parameters
         $arguments = [];
+
         foreach ($reflection->getParameters() as $param) {
             if (array_key_exists($param->name, $routeParams)) {
                 $arguments[] = $routeParams[$param->name];

@@ -2,10 +2,26 @@
 
 <p>The project is developed with PHP but without any framework.</p>
 
-<p>It's a blog where administrators can publish, edit and delete posts. Besides, they validate or invalidate comments before it were published. They can also block, unblock or delete users. Every pages for all these actions are only accessible by administrators.<br/>
-Only logged in users can comment inside each post page, but an administrator has to validate them before it can be published. Logged in users can fill out and send a contact form: thus an email is sent to administrators.</p>
+<p>
+  It's a blog where administrators can: 
+  <ul>
+    <li>publish, edit and delete posts.</li>
+    <li>validate or invalidate a comment for publication.</li>
+    <li>block, unblock or delete users</li>
+  </ul>
+  All these pages are only accessible by administrators.
+</p>
 
-<p>There are a login page and a register page as well.</p>
+<p>
+  Only logged users can:
+  <ul>
+    <li>submit a comment below each post.</li>
+    <li>can see the contact form on the home page.</li>
+    <li>fill out and submit the contact form, then an email is sent to administrators.</li>
+  </ul>
+</p>
+
+<p>There are a register page and a login page as well.</p>
 <br/>
 
 <h2>Librairies</h2>
@@ -34,5 +50,5 @@ Only logged in users can comment inside each post page, but an administrator has
       <li>comment: id, content, is_validated, user_id, post_id</li>
     </ul>
   </li>
-  <li>Go to path "/fixtures" to load fixtures</li>
+  <li>Go to path "/fixtures" to load fixtures.</li>
  </ul>
