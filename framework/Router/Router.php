@@ -32,6 +32,7 @@ class Router
         try {
             $route = $this->match($requestUri, $this->request->getMethod());
             $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $requestUri);
+            $this->request->attributes->set('route', $route->getName());
 
             return $this->executeController($route->getCallable(), $arguments);
         } catch (Exception $e) {
