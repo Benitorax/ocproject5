@@ -38,8 +38,8 @@ class FixturesController extends AbstractController
             for ($j = 0; $j < 8; $j++) {
                 $post = new Post();
                 $post->setId(IdGenerator::generate())
-                    ->setTitle($faker->sentence(5))
-                    ->setLead($faker->sentences(3, true))
+                    ->setTitle($faker->realText(70, 5))
+                    ->setLead($faker->realText(255, 3))
                     ->setContent($faker->paragraphs(3, true))
                     ->setIsPublished(true)
                     ->setUser($user);

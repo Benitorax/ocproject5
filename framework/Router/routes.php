@@ -35,6 +35,11 @@ return [
         'method' => 'GET',
         'callable' => 'App\Controller\PostController::show'
     ],
+    '/post' => [
+        'name' => 'post_index',
+        'method' => 'GET',
+        'callable' => 'App\Controller\PostController::index'
+    ],
     '/fixtures' => [
         'name' => 'fixtures',
         'method' => 'GET',

@@ -9,6 +9,18 @@ use Framework\Controller\AbstractController;
 class PostController extends AbstractController
 {
     /**
+     * Displays a list of posts.
+     */
+    public function index(): Response
+    {
+        $posts = $this->get(PostDAO::class)->getAll();
+
+        return $this->render('post/index.html.twig', [
+            'posts' => $posts
+        ]);
+    }
+
+    /**
      * Displays a single post.
      */
     public function show(string $slug): Response
