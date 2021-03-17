@@ -3,7 +3,6 @@
 namespace App\Service;
 
 use DateTime;
-use App\DAO\DAO;
 use App\Model\Post;
 use App\DAO\PostDAO;
 

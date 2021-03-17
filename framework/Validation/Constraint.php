@@ -3,7 +3,7 @@
 namespace Framework\Validation;
 
 use Exception;
-use App\DAO\DAO;
+use Framework\DAO\DAO;
 
 /**
  * This class helps Validation to validate specific constraints and return error messages.

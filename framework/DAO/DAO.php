@@ -1,6 +1,6 @@
 <?php
 
-namespace App\DAO;
+namespace Framework\DAO;
 
 use PDO;
 use Framework\DAO\AbstractDAO;
