@@ -163,7 +163,7 @@ class Router
         }
 
         // add $routeParams in the attributes
-        if (isset($routeParams)) {
+        if (!empty($routeParams)) {
             $this->request->attributes->set('route_params', $routeParams);
         }
 

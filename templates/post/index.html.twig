@@ -5,15 +5,23 @@
 {% block body %}
     <div class="row justify-content-center">
         <div class="col-12 col-md-9">
-            {% for post in posts %}
+            {% for post in pagination %}
                 <div class="media">
                     <div class="media-body">
                         <h4><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.title }}</a></h4>
                         <p>{{ post.lead }}</p>
+                        <small class="form-text text-muted">
+                            {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
+                                Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}
+                            {% else %}
+                                Updated the {{ post.updatedAt|date('Y-m-d \\a\\t H:i:s') }}
+                            {% endif %}
+                        </small>
                     </div>
                 </div>
                 <hr>
             {% endfor %}
+            {% include 'pagination/pagination.html.twig' %}
         </div>
     </div>
 {% endblock %}

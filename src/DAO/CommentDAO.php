@@ -4,10 +4,10 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\Comment;
+use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
-use Framework\DAO\DAOInterface;
 
-class CommentDAO extends AbstractDAO implements DAOInterface
+class CommentDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
 
@@ -30,15 +30,15 @@ class CommentDAO extends AbstractDAO implements DAOInterface
      */
     public function getOneBy(array $parameters)
     {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
+        return $this->selectOneResultBy($this, self::SQL_SELECT, $parameters);
     }
 
     /**
      * @return null|object[]|Comment[] Array of comments
      */
-    public function getBy(array $parameters)
+    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
     {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+        return $this->selectResultBy($this, self::SQL_SELECT, $parameters);
     }
 
     /**
@@ -46,7 +46,7 @@ class CommentDAO extends AbstractDAO implements DAOInterface
      */
     public function getAll()
     {
-        return $this->selectAll(self::SQL_SELECT, $this);
+        return $this->selectAll($this, self::SQL_SELECT);
     }
 
     public function add(Comment $comment): void
@@ -62,5 +62,18 @@ class CommentDAO extends AbstractDAO implements DAOInterface
             'user_id' => $comment->getUser()->getId(),
             'post_id' => $comment->getPost()->getId()
         ]);
+    }
+
+    /**
+     * Returns the total count of comments.
+     */
+    public function getCountBy(array $parameters): int
+    {
+        $sql = 'SELECT COUNT(*) FROM comment';
+        $stmt = $this->createQuery($sql, $parameters);
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
     }
 }

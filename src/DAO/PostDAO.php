@@ -6,10 +6,10 @@ use PDO;
 use DateTime;
 use App\Model\Post;
 use App\Model\User;
+use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
-use Framework\DAO\DAOInterface;
 
-class PostDAO extends AbstractDAO implements DAOInterface
+class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private const SQL_SELECT = 'SELECT'
         . ' p.id p_id, p.title p_title, p.slug p_slug, p.lead p_lead, p.content p_content,'
@@ -50,23 +50,31 @@ class PostDAO extends AbstractDAO implements DAOInterface
      */
     public function getOneBy(array $parameters)
     {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
+        return $this->selectOneResultBy($this, self::SQL_SELECT, $parameters);
     }
 
     /**
      * @return null|object[]|Post[] Array of posts
      */
-    public function getBy(array $parameters)
+    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
     {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+        if (empty($orderBy)) {
+            $orderBy = ['p.updated_at' => 'DESC'];
+        }
+
+        return $this->selectResultBy($this, self::SQL_SELECT, $parameters, $orderBy, $limit);
     }
 
     /**
      * @return null|object[]|Post[] Array of all posts
      */
-    public function getAll()
+    public function getAll(array $orderBy = [], array $limit = [])
     {
-        return $this->selectAll(self::SQL_SELECT, $this);
+        if (empty($orderBy)) {
+            $orderBy = ['p.updated_at' => 'DESC'];
+        }
+
+        return $this->selectAll($this, self::SQL_SELECT, $orderBy, $limit);
     }
 
     public function getCountBySlug(string $slug): int
@@ -105,31 +113,7 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @param string|int $userId
-     */
-    public function getUserById($userId): User
-    {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked'
-                . 'FROM user ORDER BY id DESC';
-        $result = $this->createQuery($sql, [$userId]);
-        $row = $result->fetch();
-        $result->closeCursor();
-
-        $user = new User();
-        $user->setId($row['id'])
-            ->setEmail($row['email'])
-            ->setPassword($row['password'])
-            ->setUsername($row['username'])
-            ->setCreatedAt($row['created_at'])
-            ->setUpdatedAt($row['updated_at'])
-            ->setRoles(json_decode($row['roles']))
-            ->setIsBlocked($row['is_blocked']);
-
-        return $user;
-    }
-
-    /**
-     * returns the list of slugs by slug of a SQL command.
+     * Returns the list of slugs by slug of a SQL command.
      */
     public function getSlugsBy(string $value): ?array
     {
@@ -143,5 +127,18 @@ class PostDAO extends AbstractDAO implements DAOInterface
         }
 
         return $result;
+    }
+
+    /**
+     * Returns the total count of posts.
+     */
+    public function getCountBy(array $parameters): int
+    {
+        $sql = 'SELECT COUNT(*) FROM post';
+        $stmt = $this->createQuery($sql, $parameters);
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
     }
 }

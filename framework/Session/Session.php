@@ -2,11 +2,13 @@
 
 namespace Framework\Session;
 
+use Countable;
 use Exception;
 use ArrayIterator;
+use IteratorAggregate;
 use Framework\Session\FlashMessages;
 
-class Session implements \IteratorAggregate, \Countable
+class Session implements IteratorAggregate, Countable
 {
     private array $session;
     private FlashMessages $flashes;

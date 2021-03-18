@@ -4,9 +4,15 @@ namespace Framework\DAO;
 
 use PDO;
 use Framework\DAO\AbstractDAO;
+use stdClass;
 
 class DAO extends AbstractDAO
 {
+    public function buildObject(stdClass $class): stdClass
+    {
+        return $class;
+    }
+
     /**
      * returns the count of a SQL command.
      *

@@ -27,7 +27,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
     public function loadTokenBySeries(string $series): ?PersistentToken
     {
         $params = ['series' => $series];
-        $token = $this->selectOneResultBy(self::SQL_SELECT, $params, $this);
+        $token = $this->selectOneResultBy($this, self::SQL_SELECT, $params);
 
         if ($token instanceof PersistentToken) {
             return $token;

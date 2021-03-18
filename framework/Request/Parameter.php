@@ -2,9 +2,11 @@
 
 namespace Framework\Request;
 
+use Countable;
 use ArrayIterator;
+use IteratorAggregate;
 
-class Parameter implements \IteratorAggregate, \Countable
+class Parameter implements IteratorAggregate, Countable
 {
     /** @var mixed[] */
     private $parameters;

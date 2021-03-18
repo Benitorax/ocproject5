@@ -4,10 +4,10 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\User;
+use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
-use Framework\DAO\DAOInterface;
 
-class UserDAO extends AbstractDAO implements DAOInterface
+class UserDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private const SQL_SELECT = 'SELECT id, email, password, username, created_at,'
                                 . ' updated_at, roles, is_blocked FROM user';
@@ -32,15 +32,15 @@ class UserDAO extends AbstractDAO implements DAOInterface
      */
     public function getOneBy(array $parameters)
     {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
+        return $this->selectOneResultBy($this, self::SQL_SELECT, $parameters);
     }
 
     /**
      * @return null|object[]|User[] Array of users
      */
-    public function getBy(array $parameters)
+    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
     {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+        return $this->selectResultBy($this, self::SQL_SELECT, $parameters);
     }
 
     /**
@@ -48,7 +48,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
      */
     public function getAll()
     {
-        return $this->selectAll(self::SQL_SELECT, $this);
+        return $this->selectAll($this, self::SQL_SELECT);
     }
 
     /**
@@ -56,7 +56,7 @@ class UserDAO extends AbstractDAO implements DAOInterface
      */
     public function getAllAdmin()
     {
-        return $this->selectAll(self::SQL_SELECT . ' WHERE roles LIKE \'%admin%\'', $this);
+        return $this->selectAll($this, self::SQL_SELECT . ' WHERE roles LIKE \'%admin%\'');
     }
 
     public function add(User $user): void
@@ -71,5 +71,18 @@ class UserDAO extends AbstractDAO implements DAOInterface
             'roles' => json_encode($user->getRoles()),
             'is_blocked' => intval($user->getIsBlocked())
         ]);
+    }
+
+    /**
+     * Returns the total count of users.
+     */
+    public function getCountBy(array $parameters): int
+    {
+        $sql = 'SELECT COUNT(*) FROM user';
+        $stmt = $this->createQuery($sql, $parameters);
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
     }
 }

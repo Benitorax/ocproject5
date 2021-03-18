@@ -21,7 +21,7 @@ class CsrfTokenManager
 
     public function generateToken(): string
     {
-        if ($this->token !== null) {
+        if (null !== $this->token) {
             return $this->token;
         }
         $this->token = $this->generator->generate();

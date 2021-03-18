@@ -17,7 +17,7 @@ interface DAOInterface
      * Returns a model object from stdClass provided by the PDOStatement.
      *
      * @param stdClass $class from database with PDOStatement fetch
-     * @return User|Comment|Post|PersistentToken A model object
+     * @return mixed|User|Comment|Post|PersistentToken A model object
      */
     public function buildObject(stdClass $class);
 }
