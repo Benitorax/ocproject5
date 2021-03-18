@@ -19,7 +19,7 @@ class Paginator implements IteratorAggregate, Countable
     private int $pageNumber;
     private float $pagesTotal;
     private int $offset;
-    private int $limitPerPage = 6;
+    private int $limitPerPage = 5;
     private Container $container;
     private DAOInterface $dao;
     private array $parameters = [];
@@ -61,6 +61,10 @@ class Paginator implements IteratorAggregate, Countable
      */
     public function paginate(int $pageNumber, string $className, array $parameters): self
     {
+        if ($pageNumber <= 0) {
+            return $this;
+        }
+
         $this->pageNumber = $pageNumber;
         $this->offset = ($pageNumber - 1) * $this->limitPerPage;
         $this->parameters = $parameters;

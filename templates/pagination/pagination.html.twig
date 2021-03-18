@@ -1,9 +1,9 @@
-{% set pageNumber = pagination.pageNumber %}
-{% set pagesTotal = pagination.pagesTotal %}
-{% if pageNumber is not null and pagesTotal is not null and pagination.items is not null %}
+{% if pagination.items is not same as([]) %}
+    {% set pageNumber = pagination.pageNumber ?: null %}
+    {% set pagesTotal = pagination.pagesTotal ?: null %}
     <nav>
         <ul class="pagination justify-content-center">
-            <li class="page-item{% if pageNumber is same as(1) %} disabled{% endif %}">
+            <li class="page-item{% if pageNumber <= 1 %} disabled{% endif %}">
                 <a class="page-link" href="?page=1">First</a>
             </li>
             {% if pageNumber > 1 %}
@@ -23,7 +23,7 @@
                     </a>
                 </li>
             {% endif %}
-            <li class="page-item{% if pageNumber is same as(pagesTotal) %} disabled{% endif %}">
+            <li class="page-item{% if pageNumber >= pagesTotal %} disabled{% endif %}">
                 <a class="page-link" href="?page={{ pagesTotal }}">Last</a>
             </li>
         </ul>
