@@ -31,19 +31,19 @@
             </button>
 
             <div class="collapse navbar-collapse" id="headerNav">
-                <ul class="navbar-nav">
+                <ul class="navbar-nav ml-auto">
                     {% if app.user is not null %}
                         <form method="POST" action="{{ path('logout') }}">
                             {% import "form/_form.html.twig" as _form %}
                             {{ _form.input_csrf(csrf_token()) }}
-                            <button type="submit" class="btn btn-dark text-danger my-2 my-sm-0">Logout</button>
+                            <button type="submit" class="float-right btn btn-dark text-danger my-2 my-sm-0">Logout</button>
                         </form>
                     {% else %}
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('login') }}">Login</a>
+                            <a class="nav-link text-right" href="{{ path('login') }}">Login</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{{ path('register') }}">Register</a>
+                            <a class="nav-link text-right" href="{{ path('register') }}">Register</a>
                         </li>
                     {% endif %}
                 </ul>
