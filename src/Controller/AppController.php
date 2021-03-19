@@ -21,11 +21,19 @@ class AppController extends AbstractController
      */
     public function home(): Response
     {
-        $form = new ContactForm($this->get(ContactValidation::class), $this->getUser());
+        // creates the form and handles the request
+        /** @var ContactValidation */
+        $validation = $this->get(ContactValidation::class);
+
+        $form = new ContactForm($validation, $this->getUser());
         $form->handleRequest($this->request);
 
+        // if the form is valid, then send email
         if ($form->isSubmitted() && $form->isValid()) {
-            $mailCount = $this->get(Notification::class)->notifyContact($form);
+
+            /** @var Notification */
+            $notification = $this->get(Notification::class);
+            $mailCount = $notification->notifyContact($form);
 
             // checks if at least one mail has been sent
             if (0 === $mailCount) {
@@ -44,15 +52,22 @@ class AppController extends AbstractController
      */
     public function login(): Response
     {
+        // if the user is already authenticated, then redirects to home page
         if ($this->isGranted(['user'])) {
             return $this->redirectToRoute('home');
         }
 
-        $form = new LoginForm($this->get(LoginValidation::class));
+        /** @var LoginValidation */
+        $validation = $this->get(LoginValidation::class);
+
+        $form = new LoginForm($validation);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
+
+            /** @var Auth */
+            $auth = $this->get(Auth::class);
+            $user = $auth->authenticateLoginForm($form, $this->request);
 
             // if user exists then redirect to homepage
             if (!empty($user)) {
@@ -61,7 +76,7 @@ class AppController extends AbstractController
                 return $this->redirectToRoute('home');
             }
 
-            // if user does not exist then display invalid credentials
+            // if user does not exist then displays invalid credentials
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 
@@ -73,11 +88,19 @@ class AppController extends AbstractController
      */
     public function register(): Response
     {
-        $form = new RegisterForm($this->get(RegisterValidation::class));
+        /** @var RegisterValidation */
+        $validation = $this->get(RegisterValidation::class);
+
+        $form = new RegisterForm($validation);
         $form->handleRequest($this->request);
 
+        // if the form is valid, then persists the user in the database
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get(UserManager::class)->saveNewUser($form);
+
+            /** @var UserManager */
+            $manager = $this->get(UserManager::class);
+            $manager->saveNewUser($form);
+
             $this->addFlash('success', 'You register with success!');
 
             return $this->redirectToRoute('login');
@@ -91,8 +114,13 @@ class AppController extends AbstractController
      */
     public function logout(): Response
     {
+        // checks if the csrf token is valid to execute the logout
         if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
-            $this->get(Auth::class)->handleLogout($this->request);
+
+            /** @var Auth */
+            $auth = $this->get(Auth::class);
+            $auth->handleLogout($this->request);
+
             $this->addFlash('success', 'You logout with success!');
         }
 

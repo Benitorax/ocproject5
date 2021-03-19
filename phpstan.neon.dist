@@ -4,7 +4,5 @@ parameters:
         - framework
         - public
         - src
-    excludes_analyse:
-        - 'src/Controller'
     checkGenericClassInNonGenericObjectType: false
     checkMissingIterableValueType: false

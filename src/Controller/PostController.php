@@ -14,9 +14,15 @@ class PostController extends AbstractController
      */
     public function index(): Response
     {
+        // retrieves the page number of the query string
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
-        /** @var PostDAO */ $postDAO = $this->get(PostDAO::class);
-        /** @var Paginator */ $paginator = $this->get(Paginator::class);
+
+        /** @var PostDAO */
+        $postDAO = $this->get(PostDAO::class);
+
+        // creates a pagination for the template
+        /** @var Paginator */
+        $paginator = $this->get(Paginator::class);
 
         $pagination = $paginator->paginate(
             $pageNumber,
@@ -34,7 +40,9 @@ class PostController extends AbstractController
      */
     public function show(string $slug): Response
     {
-        /** @var PostDAO */ $postDAO = $this->get(PostDAO::class);
+        /** @var PostDAO */
+        $postDAO = $this->get(PostDAO::class);
+
         $post = $postDAO->getOneBy(['slug' => $slug]);
 
         return $this->render('post/show.html.twig', [

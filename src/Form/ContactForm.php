@@ -3,20 +3,20 @@
 namespace App\Form;
 
 use DateTime;
-use App\Model\User;
 use Framework\Form\AbstractForm;
 use App\Service\Validation\ContactValidation;
+use Framework\Security\User\UserInterface;
 
 class ContactForm extends AbstractForm
 {
-    private User $user;
+    private UserInterface $user;
     private string $subject = '';
     private string $content = '';
     private DateTime $createdAt;
 
     private ContactValidation $validation;
 
-    public function __construct(ContactValidation $validation, ?User $user)
+    public function __construct(ContactValidation $validation, ?UserInterface $user)
     {
         $this->validation = $validation;
         $this->createdAt = new DateTime('now');
@@ -61,7 +61,7 @@ class ContactForm extends AbstractForm
         return $this;
     }
 
-    public function getUser(): User
+    public function getUser(): UserInterface
     {
         return $this->user;
     }
