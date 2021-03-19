@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Model\Post;
 use App\DAO\PostDAO;
 use Framework\Response\Response;
 use App\Service\Pagination\Paginator;
@@ -16,12 +15,13 @@ class PostController extends AbstractController
     public function index(): Response
     {
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
+        /** @var PostDAO */ $postDAO = $this->get(PostDAO::class);
+        /** @var Paginator */ $paginator = $this->get(Paginator::class);
 
-        $paginator = $this->get(Paginator::class);
         $pagination = $paginator->paginate(
-            $pageNumber, // page number
-            Post::class, // class to query
-            ['p_isPublished' => true] // parameters
+            $pageNumber,
+            $postDAO,
+            ['p_isPublished' => true]
         );
 
         return $this->render('post/index.html.twig', [
@@ -34,7 +34,8 @@ class PostController extends AbstractController
      */
     public function show(string $slug): Response
     {
-        $post = $this->get(PostDAO::class)->getOneBy(['slug' => $slug]);
+        /** @var PostDAO */ $postDAO = $this->get(PostDAO::class);
+        $post = $postDAO->getOneBy(['slug' => $slug]);
 
         return $this->render('post/show.html.twig', [
             'post' => $post
