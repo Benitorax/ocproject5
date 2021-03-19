@@ -27,7 +27,7 @@ class PostController extends AbstractController
         $pagination = $paginator->paginate(
             $pageNumber,
             $postDAO,
-            ['p_isPublished' => true]
+            ['is_published' => true]
         );
 
         return $this->render('post/index.html.twig', [

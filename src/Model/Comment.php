@@ -10,8 +10,10 @@ class Comment
 {
     use TimestampTrait;
 
+    public const SQL_COLUMNS = ['id', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
+
     private string $id;
-    private string $text;
+    private string $content;
     private bool $isValidated;
     private User $user;
     private Post $post;
@@ -28,14 +30,14 @@ class Comment
         return $this;
     }
 
-    public function getText(): string
+    public function getContent(): string
     {
-        return $this->text;
+        return $this->content;
     }
 
-    public function setText(string $text): self
+    public function setContent(string $content): self
     {
-        $this->text = $text;
+        $this->content = $content;
 
         return $this;
     }

@@ -9,18 +9,24 @@ use Framework\DAO\AbstractDAO;
 
 class CommentDAO extends AbstractDAO implements PaginationDAOInterface
 {
-    private const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
+    private string $sqlSelect;
 
-    public function buildObject(\stdClass $object): Comment
+    public function __construct(SQLGenerator $sqlGenerator)
+    {
+        $this->sqlSelect =  'SELECT ' . $sqlGenerator->generateStringWithAlias('c', Comment::SQL_COLUMNS)
+                            . ' From Comment c';
+    }
+
+    public function buildObject(\stdClass $o): Comment
     {
         $comment = new Comment();
-        $comment->setId($object->id)
-            ->setText($object->text)
-            ->setCreatedAt(new DateTime($object->created_at))
-            ->setUpdatedAt(new DateTime($object->updated_at))
-            ->setIsValidated($object->is_validated)
-            ->setUser($object->user_id)
-            ->setPost($object->post_id);
+        $comment->setId($o->c_id)
+            ->setContent($o->c_content)
+            ->setCreatedAt(new DateTime($o->c_created_at))
+            ->setUpdatedAt(new DateTime($o->c_updated_at))
+            ->setIsValidated($o->c_is_validated)
+            ->setUser($o->c_user_id)
+            ->setPost($o->c_post_id);
 
         return $comment;
     }
@@ -30,7 +36,7 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function getOneBy(array $parameters)
     {
-        return $this->selectOneResultBy($this, self::SQL_SELECT, $parameters);
+        return $this->selectOneResultBy($this, $this->sqlSelect, $parameters);
     }
 
     /**
@@ -38,7 +44,7 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function getBy(array $parameters, array $orderBy = [], array $limit = [])
     {
-        return $this->selectResultBy($this, self::SQL_SELECT, $parameters);
+        return $this->selectResultBy($this, $this->sqlSelect, $parameters);
     }
 
     /**
@@ -46,16 +52,14 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function getAll()
     {
-        return $this->selectAll($this, self::SQL_SELECT);
+        return $this->selectAll($this, $this->sqlSelect);
     }
 
     public function add(Comment $comment): void
     {
-        $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id)'
-            . 'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
-        $this->createQuery($sql, [
+        $this->insert('comment', [
             'id' => $comment->getId(),
-            'text' => $comment->getText(),
+            'content' => $comment->getContent(),
             'created_at' => ($comment->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($comment->getUpdatedAt())->format('Y-m-d H:i:s'),
             'is_validated' => intval($comment->getIsValidated()),

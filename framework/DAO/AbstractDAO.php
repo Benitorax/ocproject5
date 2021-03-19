@@ -47,6 +47,7 @@ abstract class AbstractDAO implements DAOInterface
             foreach ($parameters as $key => $value) {
                 $stmt->bindValue(':' . $key, $value);
             }
+
             $stmt->execute($parameters);
 
             /** @var PDOStatement */
@@ -220,7 +221,7 @@ abstract class AbstractDAO implements DAOInterface
      */
     private function addWhere(string $sql, ?array $parameters): string
     {
-        if (empty($orderBy)) {
+        if (empty($parameters)) {
             return $sql;
         }
 

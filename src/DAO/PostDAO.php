@@ -11,13 +11,16 @@ use Framework\DAO\AbstractDAO;
 
 class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
-    private const SQL_SELECT = 'SELECT'
-        . ' p.id p_id, p.title p_title, p.slug p_slug, p.lead p_lead, p.content p_content,'
-        . ' p.created_at p_createdAt, p.updated_at p_updatedAt, p.is_published p_isPublished,'
-        . ' u.id u_id, u.email u_email, u.password u_password, u.username u_username,'
-        . ' u.created_at u_createdAt, u.updated_at u_updatedAt, u.roles u_roles, u.is_blocked u_isBlocked'
-        . ' FROM post p'
-        . ' LEFT OUTER JOIN user u ON user_id = u.id';
+    private string $sqlSelect;
+
+    public function __construct(SQLGenerator $sqlGenerator)
+    {
+        $this->sqlSelect =  'SELECT ' . $sqlGenerator->generateStringWithAlias('p', Post::SQL_COLUMNS)
+                            . ', '
+                            . $sqlGenerator->generateStringWithAlias('u', User::SQL_COLUMNS)
+                            . ' From Post p'
+                            . ' LEFT OUTER JOIN user u ON user_id = u.id';
+    }
 
     public function buildObject(\stdClass $o): Post
     {
@@ -26,10 +29,10 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             ->setEmail($o->u_email)
             ->setPassword($o->u_password)
             ->setUsername($o->u_username)
-            ->setCreatedAt(new DateTime($o->u_createdAt))
-            ->setUpdatedAt(new DateTime($o->u_updatedAt))
+            ->setCreatedAt(new DateTime($o->u_created_at))
+            ->setUpdatedAt(new DateTime($o->u_updated_at))
             ->setRoles(json_decode($o->u_roles))
-            ->setIsBlocked($o->u_isBlocked);
+            ->setIsBlocked($o->u_is_blocked);
 
         $post = new Post();
         $post->setId($o->p_id)
@@ -37,9 +40,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             ->setSlug($o->p_slug)
             ->setLead($o->p_lead)
             ->setContent($o->p_content)
-            ->setCreatedAt(new DateTime($o->p_createdAt))
-            ->setUpdatedAt(new DateTime($o->p_updatedAt))
-            ->setIsPublished($o->p_isPublished)
+            ->setCreatedAt(new DateTime($o->p_created_at))
+            ->setUpdatedAt(new DateTime($o->p_updated_at))
+            ->setIsPublished($o->p_is_published)
             ->setUser($user);
 
         return $post;
@@ -50,7 +53,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function getOneBy(array $parameters)
     {
-        return $this->selectOneResultBy($this, self::SQL_SELECT, $parameters);
+        return $this->selectOneResultBy($this, $this->sqlSelect, $parameters);
     }
 
     /**
@@ -62,7 +65,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             $orderBy = ['p.updated_at' => 'DESC'];
         }
 
-        return $this->selectResultBy($this, self::SQL_SELECT, $parameters, $orderBy, $limit);
+        return $this->selectResultBy($this, $this->sqlSelect, $parameters, $orderBy, $limit);
     }
 
     /**
@@ -74,7 +77,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             $orderBy = ['p.updated_at' => 'DESC'];
         }
 
-        return $this->selectAll($this, self::SQL_SELECT, $orderBy, $limit);
+        return $this->selectAll($this, $this->sqlSelect, $orderBy, $limit);
     }
 
     public function getCountBySlug(string $slug): int

@@ -9,6 +9,10 @@ class Post
 {
     use TimestampTrait;
 
+    public const SQL_COLUMNS = [
+        'id', 'title', 'slug', 'lead', 'content', 'created_at', 'updated_at', 'is_published', 'user_id'
+    ];
+
     private string $id;
     private string $title;
     private string $slug;
