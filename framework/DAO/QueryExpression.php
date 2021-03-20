@@ -124,6 +124,16 @@ class QueryExpression
         return $this;
     }
 
+    /**
+     * @param int|string|bool $value
+     */
+    public function setParameter(string $name, $value): self
+    {
+        $this->parameters[$name] = $value;
+
+        return $this;
+    }
+
     public function getParameters(): array
     {
         return $this->parameters;

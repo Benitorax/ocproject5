@@ -14,14 +14,16 @@ class PostController extends AbstractController
      */
     public function index(): Response
     {
-        // retrieves the page number of the query string
+        // retrieves the page number and search terms of the query string
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
+        $searchTerms = $this->request->query->get('q');
 
+        // sets the query for the pagination
         /** @var PostDAO */
         $postDAO = $this->get(PostDAO::class);
-        $postDAO->setIsPublishedQuery();
+        $postDAO->setIsPublishedAndSearchQuery($searchTerms);
 
-        // creates a pagination for the template
+        // creates the pagination for the template
         /** @var Paginator */
         $paginator = $this->get(Paginator::class);
 
@@ -32,7 +34,9 @@ class PostController extends AbstractController
         );
 
         return $this->render('post/index.html.twig', [
-            'pagination' => $pagination
+            'pagination' => $pagination,
+            'searchTerms' => $searchTerms,
+            'searchQueryString' => http_build_query(['q' => $searchTerms])
         ]);
     }
 

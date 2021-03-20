@@ -33,9 +33,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         $this->query->select(PersistentToken::SQL_COLUMNS, 'p')
             ->from(PersistentToken::SQL_TABLE, 'p')
             ->where('series = :series')
-            ->setParameters([
-                'series' => $series
-            ]);
+            ->setParameter('series', $series);
 
         $token = $this->getOneResult($this, $this->query);
 

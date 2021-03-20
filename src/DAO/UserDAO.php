@@ -38,9 +38,7 @@ class UserDAO extends AbstractDAO
     {
         $this->prepareQuery()
             ->where('username = :username')
-            ->setParameters([
-                'username' => $username
-            ]);
+            ->setParameter('username', $username);
 
         return $this->getOneResult($this, $this->query);
     }
@@ -52,9 +50,7 @@ class UserDAO extends AbstractDAO
     {
         $this->prepareQuery()
             ->where('email = :email')
-            ->setParameters([
-                'email' => $email
-            ]);
+            ->setParameter('email', $email);
 
         return $this->getOneResult($this, $this->query);
     }

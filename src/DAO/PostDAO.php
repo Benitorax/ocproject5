@@ -52,9 +52,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     {
         $this->prepareQuery()
             ->where('slug = :slug')
-            ->setParameters([
-                'slug' => $slug
-            ]);
+            ->setParameter('slug', $slug);
 
         return $this->getOneResult($this, $this->query);
     }
@@ -62,13 +60,20 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Setting the query without executing it.
      */
-    public function setIsPublishedQuery(): void
+    public function setIsPublishedAndSearchQuery(?string $search): void
     {
         $this->prepareQuery()
             ->where('is_published = :is_published')
-            ->setParameters([
-                'is_published' => true
-            ]);
+            ->setParameter('is_published', true);
+
+        if (null !== $search && '' !== $search) {
+            $this->query->addWhere(
+                'title LIKE :search'
+                    . ' OR lead LIKE :search'
+                    . ' OR content LIKE :search'
+            )
+                ->setParameter('search', '%' . $search . '%');
+        }
     }
 
     private function prepareQuery(): QueryExpression
