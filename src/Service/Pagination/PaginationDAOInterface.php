@@ -14,19 +14,14 @@ interface PaginationDAOInterface
     /**
      * Returns an array of Model objects.
      *
-     * @param array $parameters = ['id' => $id]
-     * @param array $orderBy = ['updated_at' => 'DESC']
-     * @param array $limit = [$offset, $range] = [10, 10]
      * @return null|object[]|User[]|Comment[]|Post[]
      */
-    public function getBy(array $parameters, array $orderBy = [], array $limit = []);
+    public function getPaginationResult(int $offset, int $range);
 
     /**
      * Returns the count of items.
      *
-     * @param array $parameters = ['id' => $id]
-
      * @return int
      */
-    public function getCountBy(array $parameters);
+    public function getPaginationCount();
 }

@@ -84,7 +84,7 @@ class RememberMeManager
         );
 
         /** @var UserInterface */
-        return $this->userDAO->getOneBy(['username' => $persistentToken->getUsername()]);
+        return $this->userDAO->getOneByUsername($persistentToken->getUsername());
     }
 
     public function autoLogin(Request $request): ?RememberMeToken

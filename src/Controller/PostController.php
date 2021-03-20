@@ -19,15 +19,16 @@ class PostController extends AbstractController
 
         /** @var PostDAO */
         $postDAO = $this->get(PostDAO::class);
+        $postDAO->setIsPublishedQuery();
 
         // creates a pagination for the template
         /** @var Paginator */
         $paginator = $this->get(Paginator::class);
 
         $pagination = $paginator->paginate(
-            $pageNumber,
             $postDAO,
-            ['is_published' => true]
+            $pageNumber,
+            5
         );
 
         return $this->render('post/index.html.twig', [
@@ -43,7 +44,7 @@ class PostController extends AbstractController
         /** @var PostDAO */
         $postDAO = $this->get(PostDAO::class);
 
-        $post = $postDAO->getOneBy(['slug' => $slug]);
+        $post = $postDAO->getOneBySlug($slug);
 
         return $this->render('post/show.html.twig', [
             'post' => $post

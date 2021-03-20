@@ -10,6 +10,7 @@ use App\Model\Post;
 use App\Model\User;
 use App\Model\Comment;
 use Framework\DAO\DAOInterface;
+use Framework\DAO\QueryExpression;
 use Framework\Security\RememberMe\PersistentToken;
 
 abstract class AbstractDAO implements DAOInterface
@@ -54,23 +55,20 @@ abstract class AbstractDAO implements DAOInterface
             return $stmt;
         } else {
             $stmt = $this->checkConnection()->query($sql);
+
             /** @var PDOStatement */
             return $stmt;
         }
     }
 
     /**
-     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
      * @return null|User|Comment|Post|PersistentToken
      */
-    public function selectOneResultBy(
+    public function getOneResult(
         DAOInterface $dao,
-        string $sqlPrefix,
-        array $parameters,
-        ?array $orderBy = [],
-        ?array $limit = []
+        QueryExpression $query
     ) {
-        $stmt = $this->select($sqlPrefix, $parameters, $orderBy, $limit);
+        $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
 
@@ -82,17 +80,13 @@ abstract class AbstractDAO implements DAOInterface
     }
 
     /**
-     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
      * @return null|User[]|Comment[]|Post[]|PersistentToken[]
      */
-    public function selectResultBy(
+    public function getResult(
         DAOInterface $dao,
-        string $sqlPrefix,
-        array $parameters,
-        ?array $orderBy = [],
-        ?array $limit = []
+        QueryExpression $query
     ) {
-        $stmt = $this->select($sqlPrefix, $parameters, $orderBy, $limit);
+        $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
 
@@ -106,42 +100,6 @@ abstract class AbstractDAO implements DAOInterface
         }
 
         return $objects;
-    }
-
-    /**
-     * @return null|User[]|Comment[]|Post[]|PersistentToken[]
-     */
-    public function selectAll(DAOInterface $dao, string $sqlPrefix, ?array $orderBy = null, ?array $limit = null)
-    {
-        $stmt = $this->select($sqlPrefix, null, $orderBy, $limit);
-        $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
-        $stmt->closeCursor();
-
-        if (false === $result) {
-            return null;
-        }
-
-        $objects = [];
-        foreach ($result as $row) {
-            $objects[] = $dao->buildObject($row);
-        }
-
-        return $objects;
-    }
-
-    /**
-     * @param mixed[] $parameters = ['id' => $id, 'username' => $username]
-     * @param mixed[] $orderBy = ['updated_at' => DESC, 'created_at' => DESC]
-     * @param mixed[] $limit = [$offset, $range] = [10, 10]
-     * @return PDOStatement
-     */
-    public function select(string $sql, ?array $parameters = null, ?array $orderBy = null, ?array $limit = null)
-    {
-        $sql = $this->addWhere($sql, $parameters);
-        $sql = $this->addOrderBy($sql, $orderBy);
-        $sql = $this->addLimit($sql, $limit);
-
-        return $this->createQuery($sql, $parameters);
     }
 
     /**
@@ -228,7 +186,6 @@ abstract class AbstractDAO implements DAOInterface
         $i = 1;
         $where = ' WHERE ';
 
-        // TO DO replace $parameters with array_keys($parameters) to delete $value
         foreach (array_keys((array) $parameters) as $key) {
             if ($i < count((array) $parameters)) {
                 $where .= $key . ' = :' . $key . ' AND ';
@@ -239,41 +196,5 @@ abstract class AbstractDAO implements DAOInterface
         }
 
         return $sql . $where;
-    }
-
-    /**
-     * @param mixed[] $orderBy = ['updated_at' => DESC, 'created_at' => DESC]
-     */
-    private function addOrderBy(string $sql, ?array $orderBy): string
-    {
-        if (empty($orderBy)) {
-            return $sql;
-        }
-
-        $i = 1;
-        $order = ' ORDER BY ';
-
-        foreach ($orderBy as $key => $value) {
-            if ($i < count($orderBy)) {
-                $order .= $key . ' ' . $value . ', ';
-            } else {
-                $order .= $key . ' ' . $value;
-            }
-            $i++;
-        }
-
-        return $sql . $order;
-    }
-
-    /**
-     * @param mixed[] $limit = [$offset, $range] = [10, 10]
-     */
-    public function addLimit(string $sql, ?array $limit): string
-    {
-        if (empty($limit)) {
-            return $sql;
-        }
-
-        return $sql . ' LIMIT ' . $limit[0] . ', ' . $limit[1];
     }
 }

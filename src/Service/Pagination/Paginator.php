@@ -12,26 +12,24 @@ class Paginator implements IteratorAggregate, Countable
     private int $pageNumber;
     private float $pagesTotal;
     private int $offset;
-    private int $limitPerPage = 5;
+    private int $limitPerPage;
 
     private DAOInterface $dao;
 
-    private array $parameters = [];
     private array $items = [];
 
     /**
      * Returns the pagination.
-     * @param array $parameters for the query
      */
-    public function paginate(int $pageNumber, DAOInterface $dao, array $parameters): self
+    public function paginate(DAOInterface $dao, int $pageNumber, int $limitPerPage): self
     {
         if ($pageNumber <= 0) {
             return $this;
         }
 
         $this->pageNumber = $pageNumber;
-        $this->offset = ($pageNumber - 1) * $this->limitPerPage;
-        $this->parameters = $parameters;
+        $this->limitPerPage = $limitPerPage;
+        $this->offset = ($pageNumber - 1) * $limitPerPage;
 
         // set the DAO to execute both lines below
         $this->dao = $dao;
@@ -47,7 +45,7 @@ class Paginator implements IteratorAggregate, Countable
      */
     public function executePDOStatement(): void
     {
-        $this->items = (array) $this->dao->getBy($this->parameters, [], [$this->offset, $this->limitPerPage]);
+        $this->items = (array) $this->dao->getPaginationResult($this->offset, $this->limitPerPage);
     }
 
     public function getPageNumber(): int
@@ -62,7 +60,7 @@ class Paginator implements IteratorAggregate, Countable
 
     public function setPagesTotal(): void
     {
-        $publishedCount = $this->dao->getCountBy($this->parameters);
+        $publishedCount = $this->dao->getPaginationCount();
 
         $this->pagesTotal = ceil($publishedCount / $this->limitPerPage);
     }

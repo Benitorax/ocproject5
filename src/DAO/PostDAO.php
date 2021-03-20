@@ -6,20 +6,17 @@ use PDO;
 use DateTime;
 use App\Model\Post;
 use App\Model\User;
-use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
+use App\Service\Pagination\PaginationDAOInterface;
 
 class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
-    private string $sqlSelect;
+    private QueryExpression $query;
 
-    public function __construct(SQLGenerator $sqlGenerator)
+    public function __construct()
     {
-        $this->sqlSelect =  'SELECT ' . $sqlGenerator->generateStringWithAlias('p', Post::SQL_COLUMNS)
-                            . ', '
-                            . $sqlGenerator->generateStringWithAlias('u', User::SQL_COLUMNS)
-                            . ' From Post p'
-                            . ' LEFT OUTER JOIN user u ON user_id = u.id';
+        $this->query = new QueryExpression();
     }
 
     public function buildObject(\stdClass $o): Post
@@ -51,53 +48,36 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * @return null|object|Post the object is instance of Post class
      */
-    public function getOneBy(array $parameters)
+    public function getOneBySlug(string $slug)
     {
-        return $this->selectOneResultBy($this, $this->sqlSelect, $parameters);
+        $this->prepareQuery()
+            ->where('slug = :slug')
+            ->setParameters([
+                'slug' => $slug
+            ]);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|Post[] Array of posts
+     * Setting the query without executing it.
      */
-    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
+    public function setIsPublishedQuery(): void
     {
-        if (empty($orderBy)) {
-            $orderBy = ['p.updated_at' => 'DESC'];
-        }
-
-        return $this->selectResultBy($this, $this->sqlSelect, $parameters, $orderBy, $limit);
+        $this->prepareQuery()
+            ->where('is_published = :is_published')
+            ->setParameters([
+                'is_published' => true
+            ]);
     }
 
-    /**
-     * @return null|object[]|Post[] Array of all posts
-     */
-    public function getAll(array $orderBy = [], array $limit = [])
+    private function prepareQuery(): QueryExpression
     {
-        if (empty($orderBy)) {
-            $orderBy = ['p.updated_at' => 'DESC'];
-        }
-
-        return $this->selectAll($this, $this->sqlSelect, $orderBy, $limit);
-    }
-
-    public function getCountBySlug(string $slug): int
-    {
-        $sql = 'SELECT COUNT(*) AS count FROM post';
-        $result = $this->createQuery($sql, ['slug' => $slug . '%']);
-        $row = $result->fetch(PDO::FETCH_ASSOC);
-        $result->closeCursor();
-
-        return $row['count'];
-    }
-
-    public function getListBySlug(string $slug): int
-    {
-        $sql = 'SELECT COUNT(*) AS count FROM post';
-        $result = $this->createQuery($sql, ['slug' => $slug . '%']);
-        $row = $result->fetch(PDO::FETCH_ASSOC);
-        $result->closeCursor();
-
-        return $row['count'];
+        return $this->query->select(Post::SQL_COLUMNS, 'p')
+            ->addSelect(User::SQL_COLUMNS, 'u')
+            ->from(POST::SQL_TABLE, 'p')
+            ->leftOuterJoin(USER::SQL_TABLE, 'u', 'user_id = u.id')
+            ->orderBy('p.updated_at', 'DESC');
     }
 
     public function add(Post $post): void
@@ -135,13 +115,22 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Returns the total count of posts.
      */
-    public function getCountBy(array $parameters): int
+    public function getPaginationCount(): int
     {
-        $sql = 'SELECT COUNT(*) FROM post';
-        $stmt = $this->createQuery($sql, $parameters);
+        $stmt = $this->createQuery($this->query->generateCountSQL(), $this->query->getParameters());
         $result = $stmt->fetchColumn();
         $stmt->closeCursor();
 
         return (int) $result;
+    }
+
+    /**
+     * @return null|object[]|Post[] Array of posts
+     */
+    public function getPaginationResult(int $offset, int $range)
+    {
+        $this->query->limit($offset, $range);
+
+        return $this->getResult($this, $this->query);
     }
 }

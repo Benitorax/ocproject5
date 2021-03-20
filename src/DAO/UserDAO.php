@@ -4,17 +4,16 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\User;
-use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
 
-class UserDAO extends AbstractDAO implements PaginationDAOInterface
+class UserDAO extends AbstractDAO
 {
-    private string $sqlSelect;
+    private QueryExpression $query;
 
-    public function __construct(SQLGenerator $sqlGenerator)
+    public function __construct()
     {
-        $this->sqlSelect =  'SELECT ' . $sqlGenerator->generateStringWithAlias('u', User::SQL_COLUMNS)
-                            . ' From User u';
+        $this->query = new QueryExpression();
     }
 
     public function buildObject(\stdClass $o): User
@@ -35,33 +34,46 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * @return null|object|User the object is instance of User class
      */
-    public function getOneBy(array $parameters)
+    public function getOneByUsername(string $username)
     {
-        return $this->selectOneResultBy($this, $this->sqlSelect, $parameters);
+        $this->prepareQuery()
+            ->where('username = :username')
+            ->setParameters([
+                'username' => $username
+            ]);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|User[] Array of users
+     * @return null|object|User the object is instance of User class
      */
-    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
+    public function getOneByEmail(string $email)
     {
-        return $this->selectResultBy($this, $this->sqlSelect, $parameters);
+        $this->prepareQuery()
+            ->where('email = :email')
+            ->setParameters([
+                'email' => $email
+            ]);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|User[] Array of all users
-     */
-    public function getAll()
-    {
-        return $this->selectAll($this, $this->sqlSelect);
-    }
-
-    /**
-     * @return null|object[]|User[] Array of users who have role admin
+     * @return null|object[]|User[] Array of admin users
      */
     public function getAllAdmin()
     {
-        return $this->selectAll($this, $this->sqlSelect . ' WHERE roles LIKE \'%admin%\'');
+        $this->prepareQuery()
+            ->where('roles LIKE \'%admin%\'');
+
+        return $this->getResult($this, $this->query);
+    }
+
+    private function prepareQuery(): QueryExpression
+    {
+        return $this->query->select(User::SQL_COLUMNS, 'u')
+            ->from(User::SQL_TABLE, 'u');
     }
 
     public function add(User $user): void
@@ -76,18 +88,5 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
             'roles' => json_encode($user->getRoles()),
             'is_blocked' => intval($user->getIsBlocked())
         ]);
-    }
-
-    /**
-     * Returns the total count of users.
-     */
-    public function getCountBy(array $parameters): int
-    {
-        $sql = 'SELECT COUNT(*) FROM user';
-        $stmt = $this->createQuery($sql, $parameters);
-        $result = $stmt->fetchColumn();
-        $stmt->closeCursor();
-
-        return (int) $result;
     }
 }

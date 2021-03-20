@@ -8,6 +8,7 @@ class User implements UserInterface
 {
     use TimestampTrait;
 
+    public const SQL_TABLE = 'user';
     public const SQL_COLUMNS = [
         'id', 'email', 'password', 'username', 'created_at', 'updated_at', 'roles', 'is_blocked'
     ];

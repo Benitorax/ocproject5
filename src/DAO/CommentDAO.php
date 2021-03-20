@@ -4,17 +4,16 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\Comment;
-use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
 
-class CommentDAO extends AbstractDAO implements PaginationDAOInterface
+class CommentDAO extends AbstractDAO
 {
-    private string $sqlSelect;
+    private QueryExpression $query;
 
-    public function __construct(SQLGenerator $sqlGenerator)
+    public function __construct()
     {
-        $this->sqlSelect =  'SELECT ' . $sqlGenerator->generateStringWithAlias('c', Comment::SQL_COLUMNS)
-                            . ' From Comment c';
+        $this->query = new QueryExpression();
     }
 
     public function buildObject(\stdClass $o): Comment
@@ -31,30 +30,6 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
         return $comment;
     }
 
-    /**
-     * @return null|object|Comment the object is instance of Comment class
-     */
-    public function getOneBy(array $parameters)
-    {
-        return $this->selectOneResultBy($this, $this->sqlSelect, $parameters);
-    }
-
-    /**
-     * @return null|object[]|Comment[] Array of comments
-     */
-    public function getBy(array $parameters, array $orderBy = [], array $limit = [])
-    {
-        return $this->selectResultBy($this, $this->sqlSelect, $parameters);
-    }
-
-    /**
-     * @return null|object[]|Comment[] Array of all comments
-     */
-    public function getAll()
-    {
-        return $this->selectAll($this, $this->sqlSelect);
-    }
-
     public function add(Comment $comment): void
     {
         $this->insert('comment', [
@@ -66,18 +41,5 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
             'user_id' => $comment->getUser()->getId(),
             'post_id' => $comment->getPost()->getId()
         ]);
-    }
-
-    /**
-     * Returns the total count of comments.
-     */
-    public function getCountBy(array $parameters): int
-    {
-        $sql = 'SELECT COUNT(*) FROM comment';
-        $stmt = $this->createQuery($sql, $parameters);
-        $result = $stmt->fetchColumn();
-        $stmt->closeCursor();
-
-        return (int) $result;
     }
 }

@@ -10,6 +10,7 @@ class Comment
 {
     use TimestampTrait;
 
+    public const SQL_TABLE = 'comment';
     public const SQL_COLUMNS = ['id', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
 
     private string $id;

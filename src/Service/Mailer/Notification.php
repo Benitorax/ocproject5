@@ -25,6 +25,7 @@ class Notification
     {
         /** @var User[] */
         $admins = $this->userDAO->getAllAdmin();
+
         $count = 0;
 
         foreach ($admins as $admin) {
