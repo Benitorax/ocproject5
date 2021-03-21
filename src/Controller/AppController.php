@@ -1,35 +1,42 @@
 <?php
+
 namespace App\Controller;
 
-use DateTime;
-use App\Model\Post;
-use App\Model\User;
-use App\DAO\PostDAO;
-use App\DAO\UserDAO;
 use App\Service\Auth;
 use App\Form\LoginForm;
 use App\Form\ContactForm;
 use App\Form\RegisterForm;
 use App\Service\UserManager;
 use App\Service\Mailer\Notification;
-use Config\Response\Response;
-use App\Controller\Controller;
-use Config\Security\TokenStorage;
+use Framework\Response\Response;
+use Framework\Controller\AbstractController;
 use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;
 
-class AppController extends Controller
+class AppController extends AbstractController
 {
+    /**
+     * Displays the home page with contact form visible only by logged users.
+     */
     public function home(): Response
     {
-        $form = new ContactForm($this->get(ContactValidation::class));
+        // creates the form and handles the request
+        /** @var ContactValidation */
+        $validation = $this->get(ContactValidation::class);
+
+        $form = new ContactForm($validation, $this->getUser());
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
-            $mailCount = $this->get(Notification::class)->notifyContact($form);
-            
-            if ($mailCount === 0) {
+        // if the form is valid, then send email
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var Notification */
+            $notification = $this->get(Notification::class);
+            $mailCount = $notification->notifyContact($form);
+
+            // checks if at least one mail has been sent
+            if (0 === $mailCount) {
                 $this->addFlash('danger', 'The messaging service has technical problems. Please try later.');
             } else {
                 $form->clear();
@@ -40,66 +47,60 @@ class AppController extends Controller
         return $this->render('app/home.html.twig', ['form' => $form]);
     }
 
-    public function post(string $slug, string $username): Response
-    {
-        $user = new User();
-        $userId = (string) rand(10000, 99999);
-        $user->setId($userId)
-            ->setEmail($username.$userId.'@mail.com')
-            ->setPassword('123456')
-            ->setUsername($username.$userId)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime());
-            
-        $post = new Post();
-        $postId = (string) rand(10000, 99999);
-        $post->setId($postId)
-        ->setTitle($slug)
-        ->setSlug('mon-titre-de-la-mort'.rand(100, 999))
-        ->setShortText('Mon introduction')
-        ->setText('Le texte complètement vide')
-        ->setCreatedAt(new DateTime())
-        ->setUpdatedAt(new DateTime())
-        ->setIsPublished(true)
-        ->setUser($user);
-
-        $this->get(PostDAO::class)->add($post);
-        $this->get(UserDAO::class)->add($user);
-        
-        return $this->render('post/show.html.twig', [
-            'post' => $post
-        ]);
-    }
-
+    /**
+     * Displays the login page.
+     */
     public function login(): Response
     {
-        if (!empty($this->get(TokenStorage::class)->getToken())) {
+        // if the user is already authenticated, then redirects to home page
+        if ($this->isGranted(['user'])) {
             return $this->redirectToRoute('home');
         }
 
-        $form = new LoginForm($this->get(LoginValidation::class));
+        /** @var LoginValidation */
+        $validation = $this->get(LoginValidation::class);
+
+        $form = new LoginForm($validation);
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
-            $user = $this->get(Auth::class)->authenticateLoginForm($form, $this->request);
+        if ($form->isSubmitted() && $form->isValid()) {
 
+            /** @var Auth */
+            $auth = $this->get(Auth::class);
+            $user = $auth->authenticateLoginForm($form, $this->request);
+
+            // if user exists then redirect to homepage
             if (!empty($user)) {
-                $this->addFlash('success', 'Welcome, '.$user->getUsername().'!');
+                $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
+
                 return $this->redirectToRoute('home');
             }
+
+            // if user does not exist then displays invalid credentials
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 
         return $this->render('app/login.html.twig', ['form' => $form]);
     }
 
+    /**
+     * Displays the register page.
+     */
     public function register(): Response
     {
-        $form = new RegisterForm($this->get(RegisterValidation::class));
+        /** @var RegisterValidation */
+        $validation = $this->get(RegisterValidation::class);
+
+        $form = new RegisterForm($validation);
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted && $form->isValid) {
-            $this->get(UserManager::class)->saveNewUser($form);
+        // if the form is valid, then persists the user in the database
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            /** @var UserManager */
+            $manager = $this->get(UserManager::class);
+            $manager->saveNewUser($form);
+
             $this->addFlash('success', 'You register with success!');
 
             return $this->redirectToRoute('login');
@@ -108,16 +109,27 @@ class AppController extends Controller
         return $this->render('app/register.html.twig', ['form' => $form]);
     }
 
+    /**
+     * Logs out the user and redirect to homepage.
+     */
     public function logout(): Response
     {
+        // checks if the csrf token is valid to execute the logout
         if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
-            $this->get(Auth::class)->handleLogout($this->request);
+
+            /** @var Auth */
+            $auth = $this->get(Auth::class);
+            $auth->handleLogout($this->request);
+
             $this->addFlash('success', 'You logout with success!');
         }
 
         return $this->redirectToRoute('home');
     }
 
+    /**
+     * Displays the Terms of use page.
+     */
     public function termsOfUse(): Response
     {
         return $this->render('app/terms_of_use.html.twig');

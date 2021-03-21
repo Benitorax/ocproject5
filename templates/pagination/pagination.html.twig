@@ -1,0 +1,48 @@
+{% if pagination.items is not same as([]) %}
+    {% set pageNumber = pagination.pageNumber ?: null %}
+    {% set pagesTotal = pagination.pagesTotal ?: null %}
+    {% if searchQueryString is defined %}
+        {% set searchQueryString = searchQueryString ~ '&' %}
+    {% endif %}
+    <nav>
+        <ul class="pagination justify-content-center">
+            <li class="page-item{% if pageNumber <= 1 %} disabled{% endif %}">
+                <a class="page-link" href="?{{searchQueryString}}page=1">First</a>
+            </li>
+            {% if 2 < pageNumber %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{searchQueryString}}page={{ pageNumber - 2 }}">
+                        {{ pageNumber - 2 }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if 1 < pageNumber %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{searchQueryString}}page={{ pageNumber - 1 }}">
+                        {{ pageNumber - 1 }}
+                    </a>
+                </li>
+            {% endif %}
+            <li class="page-item active">
+                <a class="page-link" href="#">{{ pageNumber }}</a>
+            </li>
+            {% if pageNumber < pagesTotal %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{searchQueryString}}page={{ pageNumber + 1 }}">
+                        {{ pageNumber + 1 }}
+                    </a>
+                </li>
+            {% endif %}
+            {% if pageNumber < pagesTotal - 1 %}
+                <li class="page-item">
+                    <a class="page-link" href="?{{searchQueryString}}page={{ pageNumber + 2 }}">
+                        {{ pageNumber + 2 }}
+                    </a>
+                </li>
+            {% endif %}
+            <li class="page-item{% if pageNumber >= pagesTotal %} disabled{% endif %}">
+                <a class="page-link" href="?{{searchQueryString}}page={{ pagesTotal }}">Last</a>
+            </li>
+        </ul>
+    </nav>
+{% endif %}

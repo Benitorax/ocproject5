@@ -1,26 +1,32 @@
 <?php
+
 namespace App\DAO;
 
 use DateTime;
 use App\Model\User;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
 
-class UserDAO extends AbstractDAO implements DAOInterface
+class UserDAO extends AbstractDAO
 {
-    const SQL_SELECT = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked FROM user';
+    private QueryExpression $query;
 
-    public function buildObject(\stdClass $object): User
+    public function __construct()
+    {
+        $this->query = new QueryExpression();
+    }
+
+    public function buildObject(\stdClass $o): User
     {
         $user = new User();
-        $user->setId($object->id)
-            ->setEmail($object->email)
-            ->setPassword($object->password)
-            ->setUsername($object->username)
-            ->setCreatedAt(new DateTime($object->created_at))
-            ->setUpdatedAt(new DateTime($object->updated_at))
-            ->setRoles(json_decode($object->roles))
-            ->setIsBlocked($object->is_blocked);
+        $user->setId($o->u_id)
+            ->setEmail($o->u_email)
+            ->setPassword($o->u_password)
+            ->setUsername($o->u_username)
+            ->setCreatedAt(new DateTime($o->u_created_at))
+            ->setUpdatedAt(new DateTime($o->u_updated_at))
+            ->setRoles(json_decode($o->u_roles))
+            ->setIsBlocked($o->u_is_blocked);
 
         return $user;
     }
@@ -28,33 +34,42 @@ class UserDAO extends AbstractDAO implements DAOInterface
     /**
      * @return null|object|User the object is instance of User class
      */
-    public function getOneBy(array $parameters)
+    public function getOneByUsername(string $username)
     {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
+        $this->prepareQuery()
+            ->where('username = :username')
+            ->setParameter('username', $username);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|User[] the object is instance of User class
+     * @return null|object|User the object is instance of User class
      */
-    public function getBy(array $parameters)
+    public function getOneByEmail(string $email)
     {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+        $this->prepareQuery()
+            ->where('email = :email')
+            ->setParameter('email', $email);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|User[] the object is instance of User class
-     */
-    public function getAll()
-    {
-        return $this->selectAll(self::SQL_SELECT, $this);
-    }
-
-    /**
-     * @return null|object[]|User[] the object is instance of User class
+     * @return null|object[]|User[] Array of admin users
      */
     public function getAllAdmin()
     {
-        return $this->selectAll(self::SQL_SELECT.' WHERE roles LIKE \'%admin%\'', $this);
+        $this->prepareQuery()
+            ->where('roles LIKE \'%admin%\'');
+
+        return $this->getResult($this, $this->query);
+    }
+
+    private function prepareQuery(): QueryExpression
+    {
+        return $this->query->select(User::SQL_COLUMNS, 'u')
+            ->from(User::SQL_TABLE, 'u');
     }
 
     public function add(User $user): void

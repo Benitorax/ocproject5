@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Blog{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-8 col-lg-9">
+            {% for post in pagination %}
+                <div class="media">
+                    <div class="media-body">
+                        <h4><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.title }}</a></h4>
+                        <p>{{ post.lead }}</p>
+                        <small class="form-text text-muted">
+                            {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
+                                Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}
+                            {% else %}
+                                Updated the {{ post.updatedAt|date('Y-m-d \\a\\t H:i:s') }}
+                            {% endif %}
+                        </small>
+                    </div>
+                </div>
+                <hr>
+            {% endfor %}
+            {% include 'pagination/pagination.html.twig' %}
+        </div>
+        <div class="col-12 col-md-4 col-lg-3 d-none d-md-block">
+            <form method="GET">
+                <input type="text" class="form-control" name="q"  id="q" value="{{ searchTerms }}" required>
+                <button type="submit" class="btn btn-success btn-block mt-1 mb-5">Search</button>
+            </form>
+        </div>
+    </div>
+{% endblock %}

@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model;
 
 use App\Model\User;
@@ -8,11 +9,16 @@ class Post
 {
     use TimestampTrait;
 
+    public const SQL_TABLE = 'post';
+    public const SQL_COLUMNS = [
+        'id', 'title', 'slug', 'lead', 'content', 'created_at', 'updated_at', 'is_published', 'user_id'
+    ];
+
     private string $id;
     private string $title;
     private string $slug;
-    private ?string $shortText;
-    private ?string $text;
+    private ?string $lead;
+    private ?string $content;
     private bool $isPublished;
     private User $user;
 
@@ -52,26 +58,26 @@ class Post
         return $this;
     }
 
-    public function getShortText(): ?string
+    public function getLead(): ?string
     {
-        return $this->shortText;
+        return $this->lead;
     }
 
-    public function setShortText(?string $shortText): self
+    public function setLead(?string $lead): self
     {
-        $this->shortText = $shortText;
+        $this->lead = $lead;
 
         return $this;
     }
 
-    public function getText(): ?string
+    public function getContent(): ?string
     {
-        return $this->text;
+        return $this->content;
     }
 
-    public function setText(?string $text): self
+    public function setContent(?string $content): self
     {
-        $this->text = $text;
+        $this->content = $content;
 
         return $this;
     }

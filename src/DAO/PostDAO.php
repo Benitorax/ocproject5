@@ -1,78 +1,98 @@
 <?php
+
 namespace App\DAO;
 
 use PDO;
 use DateTime;
 use App\Model\Post;
 use App\Model\User;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
+use App\Service\Pagination\PaginationDAOInterface;
 
-class PostDAO extends AbstractDAO implements DAOInterface
+class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
-    const SQL_SELECT = 'SELECT id, title, slug, short_text, text, created_at, updated_at, is_published, user_id 
-                        FROM post';
-    
-    public function buildObject(\stdClass $object): Post
+    private QueryExpression $query;
+
+    public function __construct()
     {
+        $this->query = new QueryExpression();
+    }
+
+    public function buildObject(\stdClass $o): Post
+    {
+        $user = new User();
+        $user->setId($o->u_id)
+            ->setEmail($o->u_email)
+            ->setPassword($o->u_password)
+            ->setUsername($o->u_username)
+            ->setCreatedAt(new DateTime($o->u_created_at))
+            ->setUpdatedAt(new DateTime($o->u_updated_at))
+            ->setRoles(json_decode($o->u_roles))
+            ->setIsBlocked($o->u_is_blocked);
+
         $post = new Post();
-        $post->setId($object->id)
-            ->setTitle($object->title)
-            ->setSlug($object->slug)
-            ->setShortText($object->short_text)
-            ->setText($object->text)
-            ->setCreatedAt(new DateTime($object->created_at))
-            ->setUpdatedAt(new DateTime($object->updated_at))
-            ->setIsPublished($object->is_published)
-            ->setUser($this->getUserById($object->user_id));
-            
+        $post->setId($o->p_id)
+            ->setTitle($o->p_title)
+            ->setSlug($o->p_slug)
+            ->setLead($o->p_lead)
+            ->setContent($o->p_content)
+            ->setCreatedAt(new DateTime($o->p_created_at))
+            ->setUpdatedAt(new DateTime($o->p_updated_at))
+            ->setIsPublished($o->p_is_published)
+            ->setUser($user);
+
         return $post;
     }
 
     /**
      * @return null|object|Post the object is instance of Post class
      */
-    public function getOneBy(array $parameters)
+    public function getOneBySlug(string $slug)
     {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
+        $this->prepareQuery()
+            ->where('slug = :slug')
+            ->setParameter('slug', $slug);
+
+        return $this->getOneResult($this, $this->query);
     }
 
     /**
-     * @return null|object[]|Post[] the object is instance of Post class
+     * Setting the query without executing it.
      */
-    public function getBy(array $parameters)
+    public function setIsPublishedAndSearchQuery(?string $search): void
     {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
+        $this->prepareQuery()
+            ->where('is_published = :is_published')
+            ->setParameter('is_published', true);
+
+        if (null !== $search && '' !== $search) {
+            $this->query->addWhere(
+                'title LIKE :search'
+                    . ' OR lead LIKE :search'
+                    . ' OR content LIKE :search'
+            )
+                ->setParameter('search', '%' . $search . '%');
+        }
     }
 
-    /**
-     * @return null|object[]|Post[] the object is instance of Post class
-     */
-    public function getAll()
+    private function prepareQuery(): QueryExpression
     {
-        return $this->selectAll(self::SQL_SELECT, $this);
-    }
-
-    public function getCountBySlug(string $slug): int
-    {
-        $sql = 'SELECT COUNT(*) AS count FROM post';
-        $result = $this->createQuery($sql, ['slug' => $slug.'%']);
-        $row = $result->fetch(PDO::FETCH_ASSOC);
-        $result->closeCursor();
-
-        return $row['count'];
+        return $this->query->select(Post::SQL_COLUMNS, 'p')
+            ->addSelect(User::SQL_COLUMNS, 'u')
+            ->from(POST::SQL_TABLE, 'p')
+            ->leftOuterJoin(USER::SQL_TABLE, 'u', 'user_id = u.id')
+            ->orderBy('p.updated_at', 'DESC');
     }
 
     public function add(Post $post): void
     {
-        $sql = 'INSERT INTO post (id, title, slug, short_text, text, created_at, updated_at, is_published, user_id)'
-            .'VALUES (:id, :title, :slug, :short_text, :text, :created_at, :updated_at, :is_published, :user_id)';
-        $this->createQuery($sql, [
+        $this->insert('post', [
             'id' => $post->getId(),
             'title' => $post->getTitle(),
             'slug' => $post->getSlug(),
-            'short_text' => $post->getShortText(),
-            'text' => $post->getText(),
+            'lead' => $post->getLead(),
+            'content' => $post->getContent(),
             'created_at' => ($post->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($post->getUpdatedAt())->format('Y-m-d H:i:s'),
             'is_published' => intval($post->getIsPublished()),
@@ -81,26 +101,41 @@ class PostDAO extends AbstractDAO implements DAOInterface
     }
 
     /**
-     * @param string|int $userId
+     * Returns the list of slugs by slug of a SQL command.
      */
-    public function getUserById($userId): User
+    public function getSlugsBy(string $value): ?array
     {
-        $sql = 'SELECT id, email, password, username, created_at, updated_at, roles, is_blocked'
-                .'FROM user ORDER BY id DESC';
-        $result = $this->createQuery($sql, [$userId]);
-        $row = $result->fetch();
-        $result->closeCursor();
+        $sql = 'SELECT slug FROM post WHERE slug LIKE :slug';
+        $stmt = $this->createQuery($sql, ['slug' => $value . '%']);
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $stmt->closeCursor();
 
-        $user = new User();
-        $user->setId($row['id'])
-            ->setEmail($row['email'])
-            ->setPassword($row['password'])
-            ->setUsername($row['username'])
-            ->setCreatedAt($row['created_at'])
-            ->setUpdatedAt($row['updated_at'])
-            ->setRoles(json_decode($row['roles']))
-            ->setIsBlocked($row['is_blocked']);
+        if ($result === false) {
+            return null;
+        }
 
-        return $user;
+        return $result;
+    }
+
+    /**
+     * Returns the total count of posts.
+     */
+    public function getPaginationCount(): int
+    {
+        $stmt = $this->createQuery($this->query->generateCountSQL(), $this->query->getParameters());
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
+    }
+
+    /**
+     * @return null|object[]|Post[] Array of posts
+     */
+    public function getPaginationResult(int $offset, int $range)
+    {
+        $this->query->limit($offset, $range);
+
+        return $this->getResult($this, $this->query);
     }
 }

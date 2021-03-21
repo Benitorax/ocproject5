@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Service\Mailer;
 
 use App\Model\User;
@@ -17,16 +18,20 @@ class Notification
         $this->mailer = $mailer;
     }
 
+    /**
+     * Send email to every admin users when a contact form is submitted.
+     */
     public function notifyContact(ContactForm $form): int
     {
         /** @var User[] */
         $admins = $this->userDAO->getAllAdmin();
+
         $count = 0;
 
         foreach ($admins as $admin) {
             $count += $this->mailer->notifyContact($form, $admin);
         }
-        
+
         return $count;
     }
 }

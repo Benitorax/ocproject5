@@ -1,12 +1,14 @@
 <?php
+
 namespace App\Service;
 
 use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\LoginForm;
-use Config\Request\Request;
-use Config\Session\Session;
-use Config\Security\RememberMe\RememberMeManager;
+use Framework\Request\Request;
+use Framework\Session\Session;
+use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\RememberMe\RememberMeManager;
 
 class Auth
 {
@@ -30,39 +32,43 @@ class Auth
     public function authenticate(string $email, string $password): ?User
     {
         /** @var User|null */
-        $user = $this->userDAO->getOneBy(['email' => $email]);
+        $user = $this->userDAO->getOneByEmail($email);
 
-        if ($user === null) {
+        if (null === $user) {
             return null;
         }
 
-        $isPasswordValid = $this->encoder->isPasswordValid($user, $password);
-
-        if (!$isPasswordValid) {
+        if (!$this->encoder->isPasswordValid($user, $password)) {
             return null;
         }
 
         $this->session->set('user', $user);
+
         return $user;
     }
 
+    /**
+     * Authenticate from login form.
+     */
     public function authenticateLoginForm(LoginForm $form, Request $request): ?User
     {
-        $user = $this->authenticate($form->email, $form->password);
+        $user = $this->authenticate($form->getEmail(), $form->getPassword());
 
         if (!$user instanceof User) {
             return null;
         }
 
-        if ((bool) $form->rememberme) {
+        // if rememberme is checked then create a rememberme token
+        if ((bool) $form->getRememberme()) {
             $this->rememberMeManager->createNewToken($user, $request);
         }
-        
+
         return $user;
     }
 
     public function handleLogout(Request $request): void
     {
+        // if there is a rememberme cookie then delete the rememberme token
         if ($request->cookies->has(RememberMeManager::COOKIE_NAME)) {
             $this->rememberMeManager->deleteToken($request);
         }

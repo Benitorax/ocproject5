@@ -1,33 +1,29 @@
 <?php
+
 namespace App\Service\Validation;
 
 use App\Form\ContactForm;
-use App\Service\Validation\Validation;
+use Framework\Form\AbstractForm;
+use Framework\Validation\Validation;
 
 class ContactValidation extends Validation
 {
-    const SUBJECT = [
+    private const SUBJECT = [
         ['notBlank'],
         ['minLength', 5],
         ['maxLength', 50]
     ];
-    const CONTENT = [
+    private const CONTENT = [
         ['notBlank'],
         ['minLength', 20],
         ['maxLength', 1500],
     ];
-    const TERMS = [
-        ['checkbox', true]
-    ];
 
-    public function validate(ContactForm $form): void
+    public function validate(AbstractForm $form): void
     {
-        $form->errors['subject'] = $this->check(self::SUBJECT, $form->subject, 'subject');
-        $form->errors['content'] = $this->check(self::CONTENT, $form->content, 'content');
-        $form->errors['csrf'] = $this->checkCsrfToken($form->csrfToken);
-
-        if (!$this->hasErrorMessages($form)) {
-            $form->isValid = true;
-        }
+        /** @var ContactForm $form */
+        $form->addError('subject', $this->check(self::SUBJECT, $form->getSubject(), 'subject'));
+        $form->addError('content', $this->check(self::CONTENT, $form->getContent(), 'content'));
+        $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
     }
 }

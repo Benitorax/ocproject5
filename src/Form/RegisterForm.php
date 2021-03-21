@@ -1,17 +1,17 @@
 <?php
+
 namespace App\Form;
 
-use Config\Request\Request;
-use Config\Request\Parameter;
+use Framework\Form\AbstractForm;
 use App\Service\Validation\RegisterValidation;
 
 class RegisterForm extends AbstractForm
 {
-    public string $email;
-    public string $password1;
-    public string $password2;
-    public string $username;
-    public bool $terms;
+    public string $email = '';
+    public string $password1 = '';
+    public string $password2 = '';
+    public string $username = '';
+    public bool $terms = false;
 
     private RegisterValidation $validation;
 
@@ -20,22 +20,69 @@ class RegisterForm extends AbstractForm
         $this->validation = $validation;
     }
 
-    public function handleRequest(Request $request): void
+    public function getValidation(): RegisterValidation
     {
-        if ($request->getMethod() == 'POST') {
-            $this->hydrate($request->request);
-            $this->validation->validate($this);
-        }
+        return $this->validation;
     }
 
-    public function hydrate(Parameter $post): void
+
+    public function getEmail(): string
     {
-        $this->email = $post->get('email') ?: '';
-        $this->password1 = $post->get('password1') ?: '';
-        $this->password2 = $post->get('password2') ?: '';
-        $this->username = $post->get('username') ?: '';
-        $this->terms = $post->get('terms') ?: false;
-        $this->csrfToken = $post->get('csrf_token') ?: '';
-        $this->isSubmitted = true;
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword1(): string
+    {
+        return $this->password1;
+    }
+
+    public function setPassword1(string $password): self
+    {
+        $this->password1 = $password;
+
+        return $this;
+    }
+
+    public function getPassword2(): string
+    {
+        return $this->password2;
+    }
+
+    public function setPassword2(string $password): self
+    {
+        $this->password2 = $password;
+
+        return $this;
+    }
+
+    public function getUsername(): string
+    {
+        return $this->username;
+    }
+
+    public function setUsername(string $username): self
+    {
+        $this->username = $username;
+
+        return $this;
+    }
+
+    public function getTerms(): bool
+    {
+        return $this->terms;
+    }
+
+    public function setTerms(bool $terms): self
+    {
+        $this->terms = $terms;
+
+        return $this;
     }
 }

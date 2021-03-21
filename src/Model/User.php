@@ -1,16 +1,24 @@
 <?php
+
 namespace App\Model;
 
-class User
+use Framework\Security\User\UserInterface;
+
+class User implements UserInterface
 {
     use TimestampTrait;
-    
+
+    public const SQL_TABLE = 'user';
+    public const SQL_COLUMNS = [
+        'id', 'email', 'password', 'username', 'created_at', 'updated_at', 'roles', 'is_blocked'
+    ];
+
     private string $id;
     private string $email;
     private string $password;
     private string $username;
     private array $roles = ['user'];
-    private bool $isBlocked = true;
+    private bool $isBlocked = false;
 
     public function getId(): string
     {

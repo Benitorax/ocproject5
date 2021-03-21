@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Model;
 
 use DateTime;
@@ -7,7 +8,7 @@ trait TimestampTrait
 {
     private DateTime $createdAt;
     private DateTime $updatedAt;
-    
+
     public function getCreatedAt(): DateTime
     {
         return $this->createdAt;

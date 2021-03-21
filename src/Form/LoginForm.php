@@ -1,16 +1,15 @@
 <?php
+
 namespace App\Form;
 
-use App\Form\AbstractForm;
-use Config\Request\Request;
-use Config\Request\Parameter;
+use Framework\Form\AbstractForm;
 use App\Service\Validation\LoginValidation;
 
 class LoginForm extends AbstractForm
 {
-    public string $email;
-    public string $password;
-    public bool $rememberme;
+    private string $email = '';
+    private string $password = '';
+    private bool $rememberme = false;
 
     private LoginValidation $validation;
 
@@ -18,21 +17,45 @@ class LoginForm extends AbstractForm
     {
         $this->validation = $validation;
     }
-    
-    public function handleRequest(Request $request): void
+
+    public function getValidation(): LoginValidation
     {
-        if ($request->getMethod() == 'POST') {
-            $this->hydrate($request->request);
-            $this->validation->validate($this);
-        }
+        return $this->validation;
     }
 
-    public function hydrate(Parameter $post): void
+    public function getEmail(): string
     {
-        $this->email = $post->get('email') ?: '';
-        $this->password = $post->get('password') ?: '';
-        $this->rememberme = $post->get('rememberme') ?: false;
-        $this->csrfToken = $post->get('csrf_token') ?: '';
-        $this->isSubmitted = true;
+        return $this->email;
+    }
+
+    public function setEmail(string $email): self
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
+
+    public function setPassword(string $password): self
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    public function getRememberme(): bool
+    {
+        return $this->rememberme;
+    }
+
+    public function setRememberme(bool $rememberme): self
+    {
+        $this->rememberme = $rememberme;
+
+        return $this;
     }
 }

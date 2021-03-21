@@ -1,31 +1,31 @@
 <?php
+
 namespace App\Service;
 
 use DateTime;
-use App\DAO\DAO;
 use App\Model\Post;
 use App\DAO\PostDAO;
 
 class PostManager
 {
     private PostDAO $postDAO;
-    private DAO $dao;
-    
-    public function __construct(PostDAO $postDAO, DAO $dao)
+
+    public function __construct(PostDAO $postDAO)
     {
         $this->postDAO = $postDAO;
-        $this->dao = $dao;
     }
-    
+
     public function createAndSave(Post $post): Post
     {
+        $dateTime = new DateTime();
         $post
-        ->setSlug($this->slugify($post->getTitle()))
-        ->setCreatedAt(new DateTime())
-        ->setUpdatedAt(new DateTime());
+            ->setSlug($this->slugify($post->getTitle()))
+            ->setCreatedAt($dateTime)
+            ->setUpdatedAt($dateTime)
+        ;
 
         $this->postDAO->add($post);
-        
+
         return $post;
     }
 
@@ -38,9 +38,23 @@ class PostManager
                 $this->removeAccent(trim($title))
             )
         );
-        $count = $this->dao->getCountBy('post', 'slug', $slug.'%', 'LIKE');
 
-        return ($count > 0) ? ($slug . '-' . ($count + 1)) : $slug;
+        // retrieves identical slugs from database
+        $slugs = (array) $this->postDAO->getSlugsBy($slug);
+
+        if (count($slugs) === 0) {
+            return $slug;
+        }
+
+        // get only the index character of the slugs and sort them in ascending
+        $slugs = array_map(function ($element) use ($title) {
+            return substr($element['slug'], strlen($title) + 1);
+        }, $slugs);
+
+        asort($slugs, SORT_NUMERIC);
+
+        // attach the last index + 1 to the slug
+        return $slug . '-' . ((int) $slugs[array_key_last($slugs)] + 1);
     }
 
     public function removeAccent(string $string): string
@@ -57,7 +71,7 @@ class PostManager
                     'ť', 'Ŧ', 'ŧ', 'Ũ', 'ũ', 'Ū', 'ū', 'Ŭ', 'ŭ', 'Ů', 'ů', 'Ű', 'ű', 'Ų', 'ų', 'Ŵ', 'ŵ', 'Ŷ',
                     'ŷ', 'Ÿ', 'Ź', 'ź', 'Ż', 'ż', 'Ž', 'ž', 'ſ', 'ƒ', 'Ơ', 'ơ', 'Ư', 'ư', 'Ǎ', 'ǎ', 'Ǐ', 'ǐ',
                     'Ǒ', 'ǒ', 'Ǔ', 'ǔ', 'Ǖ', 'ǖ', 'Ǘ', 'ǘ', 'Ǚ', 'ǚ', 'Ǜ', 'ǜ', 'Ǻ', 'ǻ', 'Ǽ', 'ǽ', 'Ǿ', 'ǿ');
-        
+
         $b = array('A', 'A', 'A', 'A', 'A', 'A', 'AE', 'C', 'E', 'E', 'E', 'E', 'I', 'I', 'I', 'I', 'D', 'N', 'O',
                     'O', 'O', 'O', 'O', 'O', 'U', 'U', 'U', 'U', 'Y', 's', 'a', 'a', 'a', 'a', 'a', 'a', 'ae', 'c',
                     'e', 'e', 'e', 'e', 'i', 'i', 'i', 'i', 'n', 'o', 'o', 'o', 'o', 'o', 'o', 'u', 'u', 'u', 'u',
@@ -69,7 +83,7 @@ class PostManager
                     's', 'T', 't', 'T', 't', 'T', 't', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'W',
                     'w', 'Y', 'y', 'Y', 'Z', 'z', 'Z', 'z', 'Z', 'z', 's', 'f', 'O', 'o', 'U', 'u', 'A', 'a', 'I', 'i',
                     'O', 'o', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'U', 'u', 'A', 'a', 'AE', 'ae', 'O', 'o');
-                        
+
         return str_replace($a, $b, $string);
     }
 }

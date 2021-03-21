@@ -1,61 +1,40 @@
 <?php
+
 namespace App\DAO;
 
 use DateTime;
-use App\Model\User;
 use App\Model\Comment;
-use Config\DAO\AbstractDAO;
-use Config\DAO\DAOInterface;
+use Framework\DAO\AbstractDAO;
+use Framework\DAO\QueryExpression;
 
-class CommentDAO extends AbstractDAO implements DAOInterface
+class CommentDAO extends AbstractDAO
 {
-    const SQL_SELECT = 'SELECT id, text, created_at, updated_at, is_validated, user_id, post_id FROM comment';
+    private QueryExpression $query;
 
-    public function buildObject(\stdClass $object): Comment
+    public function __construct()
+    {
+        $this->query = new QueryExpression();
+    }
+
+    public function buildObject(\stdClass $o): Comment
     {
         $comment = new Comment();
-        $comment->setId($object->id)
-            ->setText($object->text)
-            ->setCreatedAt(new DateTime($object->created_at))
-            ->setUpdatedAt(new DateTime($object->updated_at))
-            ->setIsValidated($object->is_validated)
-            ->setUser($object->user_id)
-            ->setPost($object->post_id);
+        $comment->setId($o->c_id)
+            ->setContent($o->c_content)
+            ->setCreatedAt(new DateTime($o->c_created_at))
+            ->setUpdatedAt(new DateTime($o->c_updated_at))
+            ->setIsValidated($o->c_is_validated)
+            ->setUser($o->c_user_id)
+            ->setPost($o->c_post_id);
 
         return $comment;
     }
 
-    /**
-     * @return null|object|Comment the object is instance of Comment class
-     */
-    public function getOneBy(array $parameters)
-    {
-        return $this->selectOneResultBy(self::SQL_SELECT, $parameters, $this);
-    }
-
-    /**
-     * @return null|object[]|Comment[] the object is instance of Comment class
-     */
-    public function getBy(array $parameters)
-    {
-        return $this->selectResultBy(self::SQL_SELECT, $parameters, $this);
-    }
-
-    /**
-     * @return null|object[]|Comment[] the object is instance of Comment class
-     */
-    public function getAll()
-    {
-        return $this->selectAll(self::SQL_SELECT, $this);
-    }
-
     public function add(Comment $comment): void
     {
-        $sql = 'INSERT INTO user (id, text, created_at, updated_at, is_validated, user_id, post_id)'
-            .'VALUES (:id, :text, :created_at, :updated_at, :is_validated, :user_id, :post_id)';
-        $this->createQuery($sql, [
+        $this->insert('comment', [
             'id' => $comment->getId(),
-            'text' => $comment->getText(),
+            'content' => $comment->getContent(),
             'created_at' => ($comment->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($comment->getUpdatedAt())->format('Y-m-d H:i:s'),
             'is_validated' => intval($comment->getIsValidated()),
