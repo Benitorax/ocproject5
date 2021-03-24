@@ -2,13 +2,25 @@
 
 namespace App\Controller;
 
-use App\DAO\PostDAO;
+use Framework\View\View;
 use Framework\Response\Response;
-use App\Service\Pagination\Paginator;
+use Framework\Container\Container;
+use App\Service\PostManager;
 use Framework\Controller\AbstractController;
 
 class PostController extends AbstractController
 {
+    private PostManager $postManager;
+
+    public function __construct(
+        View $view,
+        Container $container,
+        PostManager $postManager
+    ) {
+        parent::__construct($view, $container);
+        $this->postManager = $postManager;
+    }
+
     /**
      * Displays a list of posts.
      */
@@ -18,20 +30,8 @@ class PostController extends AbstractController
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
         $searchTerms = $this->request->query->get('q');
 
-        // sets the query for the pagination
-        /** @var PostDAO */
-        $postDAO = $this->get(PostDAO::class);
-        $postDAO->setIsPublishedAndSearchQuery($searchTerms);
-
-        // creates the pagination for the template
-        /** @var Paginator */
-        $paginator = $this->get(Paginator::class);
-
-        $pagination = $paginator->paginate(
-            $postDAO,
-            $pageNumber,
-            5
-        );
+        // get the pagination
+        $pagination = $this->postManager->getPaginationForIsPublishedAndSearchTerms($searchTerms, $pageNumber);
 
         return $this->render('post/index.html.twig', [
             'pagination' => $pagination,
@@ -45,13 +45,8 @@ class PostController extends AbstractController
      */
     public function show(string $slug): Response
     {
-        /** @var PostDAO */
-        $postDAO = $this->get(PostDAO::class);
-
-        $post = $postDAO->getOneBySlug($slug);
-
         return $this->render('post/show.html.twig', [
-            'post' => $post
+            'post' => $this->postManager->getOneBySlug($slug),
         ]);
     }
 }

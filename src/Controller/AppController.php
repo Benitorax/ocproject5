@@ -2,15 +2,12 @@
 
 namespace App\Controller;
 
-use App\Service\Auth;
-use App\Form\LoginForm;
 use App\Form\ContactForm;
 use App\Form\RegisterForm;
 use App\Service\UserManager;
 use App\Service\Mailer\Notification;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
-use App\Service\Validation\LoginValidation;
 use App\Service\Validation\ContactValidation;
 use App\Service\Validation\RegisterValidation;
 
@@ -48,42 +45,6 @@ class AppController extends AbstractController
     }
 
     /**
-     * Displays the login page.
-     */
-    public function login(): Response
-    {
-        // if the user is already authenticated, then redirects to home page
-        if ($this->isGranted(['user'])) {
-            return $this->redirectToRoute('home');
-        }
-
-        /** @var LoginValidation */
-        $validation = $this->get(LoginValidation::class);
-
-        $form = new LoginForm($validation);
-        $form->handleRequest($this->request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-
-            /** @var Auth */
-            $auth = $this->get(Auth::class);
-            $user = $auth->authenticateLoginForm($form, $this->request);
-
-            // if user exists then redirect to homepage
-            if (!empty($user)) {
-                $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
-
-                return $this->redirectToRoute('home');
-            }
-
-            // if user does not exist then displays invalid credentials
-            $this->addFlash('danger', 'Email or password Invalid.');
-        }
-
-        return $this->render('app/login.html.twig', ['form' => $form]);
-    }
-
-    /**
      * Displays the register page.
      */
     public function register(): Response
@@ -107,24 +68,6 @@ class AppController extends AbstractController
         }
 
         return $this->render('app/register.html.twig', ['form' => $form]);
-    }
-
-    /**
-     * Logs out the user and redirect to homepage.
-     */
-    public function logout(): Response
-    {
-        // checks if the csrf token is valid to execute the logout
-        if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
-
-            /** @var Auth */
-            $auth = $this->get(Auth::class);
-            $auth->handleLogout($this->request);
-
-            $this->addFlash('success', 'You logout with success!');
-        }
-
-        return $this->redirectToRoute('home');
     }
 
     /**

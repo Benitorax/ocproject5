@@ -5,25 +5,47 @@ namespace App\Service;
 use DateTime;
 use App\Model\Post;
 use App\DAO\PostDAO;
+use App\Service\Pagination\Paginator;
 
 class PostManager
 {
     private PostDAO $postDAO;
+    private Paginator $paginator;
 
-    public function __construct(PostDAO $postDAO)
+    public function __construct(PostDAO $postDAO, Paginator $paginator)
     {
         $this->postDAO = $postDAO;
+        $this->paginator = $paginator;
+    }
+
+    public function getPaginationForIsPublishedAndSearchTerms(string $searchTerms = null, int $pageNumber): Paginator
+    {
+        // sets the query for the pagination
+        $this->postDAO->setIsPublishedAndSearchQuery($searchTerms);
+
+        // creates the pagination for the template
+        return $this->paginator->paginate(
+            $this->postDAO,
+            $pageNumber,
+            5
+        );
+    }
+
+    /**
+     * @return null|object|Post
+     */
+    public function getOneBySlug(string $slug)
+    {
+        return $this->postDAO->getOneBySlug($slug);
     }
 
     public function createAndSave(Post $post): Post
     {
         $dateTime = new DateTime();
-        $post
-            ->setSlug($this->slugify($post->getTitle()))
+        $post->setSlug($this->slugify($post->getTitle()))
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)
         ;
-
         $this->postDAO->add($post);
 
         return $post;
