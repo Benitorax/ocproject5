@@ -14,11 +14,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private QueryExpression $query;
 
-    public function __construct()
-    {
-        $this->query = new QueryExpression();
-    }
-
+    /**
+     * Returns a Post object from stdClass.
+     */
     public function buildObject(\stdClass $o): Post
     {
         $user = new User();
@@ -76,15 +74,22 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
         }
     }
 
+    /**
+     * Sets the select, table and jointure for the sql query.
+     */
     private function prepareQuery(): QueryExpression
     {
-        return $this->query->select(Post::SQL_COLUMNS, 'p')
+        return $this->query = (new QueryExpression())
+            ->select(Post::SQL_COLUMNS, 'p')
             ->addSelect(User::SQL_COLUMNS, 'u')
             ->from(POST::SQL_TABLE, 'p')
             ->leftOuterJoin(USER::SQL_TABLE, 'u', 'user_id = u.id')
             ->orderBy('p.updated_at', 'DESC');
     }
 
+    /**
+     * Inserts a new row in the database.
+     */
     public function add(Post $post): void
     {
         $this->insert('post', [
