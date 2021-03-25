@@ -2,6 +2,7 @@
 
 namespace Framework\Controller;
 
+use Exception;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
@@ -9,8 +10,8 @@ use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Router\UrlGenerator;
 use Framework\Security\TokenStorage;
-use Framework\Security\Csrf\CsrfTokenManager;
 use Framework\Security\User\UserInterface;
+use Framework\Security\Csrf\CsrfTokenManager;
 
 abstract class AbstractController
 {
@@ -113,6 +114,16 @@ abstract class AbstractController
         }
 
         return false;
+    }
+
+    /**
+     * Throws an exception if the user does not have access.
+     */
+    protected function denyAccessUnlessGranted(array $roles): void
+    {
+        if (!$this->isGranted($roles)) {
+            throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
+        }
     }
 
     /**

@@ -35,7 +35,7 @@ class SecurityController extends AbstractController
 
             // if user exists then redirect to homepage
             if (!empty($user)) {
-                $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
+                $this->addFlash('success', 'Welcome to admin area, ' . $user->getUsername() . '!');
 
                 return $this->redirectToRoute('admin_post_index');
             }

@@ -21,6 +21,8 @@ class AdminPostController extends AbstractController
      */
     public function index(): Response
     {
+        $this->denyAccessUnlessGranted(['admin']);
+
         // retrieves the page number and search terms of the query string
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
         $searchTerms = $this->request->query->get('q');
@@ -40,6 +42,8 @@ class AdminPostController extends AbstractController
      */
     public function create(): Response
     {
+        $this->denyAccessUnlessGranted(['admin']);
+
         /** @var PostCreateForm */
         $form = $this->createForm(PostCreateForm::class);
         $form->handleRequest($this->request);
