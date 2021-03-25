@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use Framework\Form\AbstractForm;
-use App\Service\Validation\LoginValidation;
+use App\Validation\LoginValidation;
 
 class LoginForm extends AbstractForm
 {
@@ -21,6 +21,11 @@ class LoginForm extends AbstractForm
     public function getValidation(): LoginValidation
     {
         return $this->validation;
+    }
+
+    public function newInstance(): self
+    {
+        return new self($this->validation);
     }
 
     public function getEmail(): string

@@ -9,5 +9,13 @@ use Framework\Validation\ValidationInterface;
  */
 interface FormInterface
 {
+    /**
+     * Returns the validation object which validates the form.
+     */
     public function getValidation(): ValidationInterface;
+
+    /**
+     * Returns a new instance of the form.
+     */
+    public function newInstance(): self;
 }

@@ -7,7 +7,6 @@ use App\Form\LoginForm;
 use Framework\View\View;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use App\Service\Validation\LoginValidation;
 use Framework\Controller\AbstractController;
 
 class SecurityController extends AbstractController
@@ -33,10 +32,8 @@ class SecurityController extends AbstractController
             return $this->redirectToRoute('home');
         }
 
-        /** @var LoginValidation */
-        $validation = $this->get(LoginValidation::class);
-
-        $form = new LoginForm($validation);
+        /** @var LoginForm */
+        $form = $this->createForm(LoginForm::class);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {

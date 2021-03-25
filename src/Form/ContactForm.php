@@ -4,11 +4,13 @@ namespace App\Form;
 
 use DateTime;
 use Framework\Form\AbstractForm;
-use App\Service\Validation\ContactValidation;
+use Framework\Security\TokenStorage;
+use App\Validation\ContactValidation;
 use Framework\Security\User\UserInterface;
 
 class ContactForm extends AbstractForm
 {
+    private TokenStorage $tokenStorage;
     private UserInterface $user;
     private string $subject = '';
     private string $content = '';
@@ -16,19 +18,28 @@ class ContactForm extends AbstractForm
 
     private ContactValidation $validation;
 
-    public function __construct(ContactValidation $validation, ?UserInterface $user)
+    public function __construct(ContactValidation $validation, TokenStorage $tokenStorage)
     {
+        $this->tokenStorage = $tokenStorage;
         $this->validation = $validation;
         $this->createdAt = new DateTime('now');
 
-        if (null !== $user) {
-            $this->user = $user;
+        if (null !== $token = $tokenStorage->getToken()) {
+            if (null !== $user = $token->getUser()) {
+                $this->user = $user;
+            }
         }
     }
+
 
     public function getValidation(): ContactValidation
     {
         return $this->validation;
+    }
+
+    public function newInstance(): self
+    {
+        return new self($this->validation, $this->tokenStorage);
     }
 
     public function clear(): void

@@ -8,21 +8,36 @@ use Framework\Router\Router;
 
 class Container
 {
-    /** @var object[] $services */
+    /**
+     * @template T
+     * @var T[] $services
+     * */
     private array $services = [];
 
-    public function get(string $className): object
+    /**
+     * @template T
+     * @param class-string<T> $className
+     * @return T
+     */
+    public function get(string $className)
     {
         if ($this->has($className)) {
+            /** @var T */
             return $this->services[$className];
         } else {
             return $this->create($className);
         }
     }
 
-    public function create(string $className): object
+    /**
+     * @template T
+     * @param class-string<T> $className
+     * @return T
+     */
+    public function create(string $className)
     {
         if (get_class($this) === $className) {
+            /** @var T */
             return $this;
         }
 
@@ -39,6 +54,11 @@ class Container
         return $service;
     }
 
+    /**
+     * @template T
+     * @param class-string<T> $className
+     * @return bool
+     */
     public function has(string $className): bool
     {
         if (isset($this->services[$className])) {
@@ -52,7 +72,10 @@ class Container
         $this->services[get_class($service)] = $service;
     }
 
-    public function getRouter(): Router
+    /**
+     * @return Router
+     */
+    public function getRouter()
     {
         $className = Router::class;
         if ($this->has($className)) {
@@ -65,9 +88,11 @@ class Container
 
     /**
      * Retrieve parameters of the class's constructor, instantiate them and return them inside an array
-     * @return object[]
+     * @template T
+     * @param class-string<T> $className
+     * @return T[]|null
      */
-    public function resolveArguments(string $className): ?array
+    public function resolveArguments(string $className)
     {
         if (method_exists($className, '__construct')) {
             $reflection = new ReflectionMethod($className, '__construct');
@@ -83,9 +108,9 @@ class Container
 
                 if (!empty($serviceClassName)) {
                     if ($this->has($serviceClassName)) {
-                        $arguments[] = $this->get($serviceClassName);
+                        $arguments[] = $this->get($serviceClassName); // @phpstan-ignore-line
                     } else {
-                        $service = $this->create($serviceClassName);
+                        $service = $this->create($serviceClassName); // @phpstan-ignore-line
                         $arguments[] = $service;
                     }
                 }

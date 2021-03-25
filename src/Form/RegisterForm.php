@@ -3,7 +3,7 @@
 namespace App\Form;
 
 use Framework\Form\AbstractForm;
-use App\Service\Validation\RegisterValidation;
+use App\Validation\RegisterValidation;
 
 class RegisterForm extends AbstractForm
 {
@@ -25,6 +25,10 @@ class RegisterForm extends AbstractForm
         return $this->validation;
     }
 
+    public function newInstance(): self
+    {
+        return new self($this->validation);
+    }
 
     public function getEmail(): string
     {

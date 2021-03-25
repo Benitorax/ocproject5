@@ -8,8 +8,6 @@ use App\Service\UserManager;
 use App\Service\Mailer\Notification;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
-use App\Service\Validation\ContactValidation;
-use App\Service\Validation\RegisterValidation;
 
 class AppController extends AbstractController
 {
@@ -19,10 +17,8 @@ class AppController extends AbstractController
     public function home(): Response
     {
         // creates the form and handles the request
-        /** @var ContactValidation */
-        $validation = $this->get(ContactValidation::class);
-
-        $form = new ContactForm($validation, $this->getUser());
+        /** @var ContactForm */
+        $form = $this->createForm(ContactForm::class);
         $form->handleRequest($this->request);
 
         // if the form is valid, then send email
@@ -49,10 +45,8 @@ class AppController extends AbstractController
      */
     public function register(): Response
     {
-        /** @var RegisterValidation */
-        $validation = $this->get(RegisterValidation::class);
-
-        $form = new RegisterForm($validation);
+        /** @var RegisterForm */
+        $form = $this->createForm(RegisterForm::class);
         $form->handleRequest($this->request);
 
         // if the form is valid, then persists the user in the database

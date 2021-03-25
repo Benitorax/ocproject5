@@ -39,15 +39,10 @@ class App
         $this->container = new Container();
         $this->container->set($this);
 
-        /**
-         * @var RequestContext it hydrates the RequestContext from the request
-         */
         $context = $this->container->get(RequestContext::class);
         $context->fromRequest($request);
 
-        /**
-         * @var Session it add the session in the request
-         */
+        // adds the session in the request
         $session = $this->container->get(Session::class);
         $this->session = $session;
         $request->setSession($this->session);
@@ -60,7 +55,6 @@ class App
      */
     public function authenticate(Request $request): void
     {
-        /** @var TokenStorage */
         $tokenStorage = $this->container->get(TokenStorage::class);
 
         // check User from session
@@ -70,9 +64,8 @@ class App
         }
 
         // check remember me cookie
-        /** @var RememberMeManager */
-        $rememberMeManager = $this->container->get(RememberMeManager::class);
         try {
+            $rememberMeManager = $this->container->get(RememberMeManager::class);
             $token = $rememberMeManager->autoLogin($request);
         } catch (Exception $e) {
             $token = null;

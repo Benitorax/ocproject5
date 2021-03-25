@@ -2,12 +2,15 @@
 
 namespace Framework\Controller;
 
+use Exception;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Request\Parameter;
 use Framework\Response\Response;
 use Framework\Container\Container;
+use Framework\Form\AbstractForm;
+use Framework\Form\FormInterface;
 use Framework\Router\UrlGenerator;
 use Framework\Security\TokenStorage;
 use Framework\Security\Csrf\CsrfTokenManager;
@@ -41,10 +44,14 @@ abstract class AbstractController
 
     /**
      * Returns an instantiate service.
+     *
+     * @template T
+     * @param class-string<T> $className
+     * @return T
      */
-    public function get(string $name): object
+    public function get(string $className)
     {
-        return $this->container->get($name);
+        return $this->container->get($className);
     }
 
     /**
@@ -120,7 +127,7 @@ abstract class AbstractController
     }
 
     /**
-     * Returns a user object if authenticated, otherwise null.
+     * Returns an user object if authenticated, otherwise null.
      */
     public function getUser(): ?UserInterface
     {
@@ -136,5 +143,19 @@ abstract class AbstractController
         }
 
         return $user;
+    }
+
+    /**
+     * Returns an instantiate form.
+     *
+     * The $className must be the name of the form class which is instantiated.
+     *
+     * @template T
+     * @param class-string<T> $className
+     * @return T
+     */
+    public function createForm(string $className)
+    {
+        return $this->get($className)->newInstance();
     }
 }
