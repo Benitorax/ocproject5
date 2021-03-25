@@ -5,18 +5,14 @@ namespace App\Controller\Admin;
 use App\Form\PostCreateForm;
 use App\Service\PostManager;
 use Framework\Response\Response;
-use Framework\Container\Container;
 use Framework\Controller\AbstractController;
 
 class AdminPostController extends AbstractController
 {
     private PostManager $postManager;
 
-    public function __construct(
-        Container $container,
-        PostManager $postManager
-    ) {
-        parent::__construct($container);
+    public function __construct(PostManager $postManager)
+    {
         $this->postManager = $postManager;
     }
 

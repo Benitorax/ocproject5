@@ -11,7 +11,6 @@ use Faker\Generator;
 use App\Service\IdGenerator;
 use App\Service\PostManager;
 use Framework\Response\Response;
-use Framework\Container\Container;
 use Framework\Controller\AbstractController;
 use Framework\Security\Encoder\PasswordEncoder;
 
@@ -24,13 +23,11 @@ class FixturesController extends AbstractController
     private Generator $faker;
 
     public function __construct(
-        Container $container,
         PasswordEncoder $encoder,
         PostManager $postManager,
         PostDAO $postDAO,
         UserDAO $userDAO
     ) {
-        parent::__construct($container);
         $this->encoder = $encoder;
         $this->postManager = $postManager;
         $this->postDAO = $postDAO;

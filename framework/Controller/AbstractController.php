@@ -17,7 +17,10 @@ abstract class AbstractController
     protected Container $container;
     protected Request $request;
 
-    public function __construct(Container $container)
+    /**
+     * Sets the container.
+     */
+    public function setContainer(Container $container): void
     {
         $this->container = $container;
     }

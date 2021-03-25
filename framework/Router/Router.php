@@ -8,7 +8,6 @@ use Framework\Router\Route;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Controller\AbstractController;
 use Framework\Controller\ErrorController;
 
 class Router
@@ -111,6 +110,7 @@ class Router
         [$className, $method] = $callable;
 
         $controllerClass = $this->container->create($className); // @phpstan-ignore-line
+        $controllerClass->setContainer($this->container);
         $controllerClass->setRequest($this->request);
         $controller = [$controllerClass, $method];
 
