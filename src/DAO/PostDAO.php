@@ -58,6 +58,23 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Setting the query without executing it.
      */
+    public function setAllPostsQuery(?string $search): void
+    {
+        $this->prepareQuery();
+
+        if (null !== $search && '' !== $search) {
+            $this->query->addWhere(
+                'title LIKE :search'
+                    . ' OR lead LIKE :search'
+                    . ' OR content LIKE :search'
+            )
+            ->setParameter('search', '%' . $search . '%');
+        }
+    }
+
+    /**
+     * Setting the query without executing it.
+     */
     public function setIsPublishedAndSearchQuery(?string $search): void
     {
         $this->prepareQuery()
@@ -70,7 +87,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
                     . ' OR lead LIKE :search'
                     . ' OR content LIKE :search'
             )
-                ->setParameter('search', '%' . $search . '%');
+            ->setParameter('search', '%' . $search . '%');
         }
     }
 

@@ -18,6 +18,25 @@ class PostManager
         $this->paginator = $paginator;
     }
 
+    /**
+     * Returns Paginator.
+     */
+    public function getPaginationForAllPosts(string $searchTerms = null, int $pageNumber): Paginator
+    {
+        // sets the query for the pagination
+        $this->postDAO->setAllPostsQuery($searchTerms);
+
+        // creates the pagination for the template
+        return $this->paginator->paginate(
+            $this->postDAO,
+            $pageNumber,
+            15
+        );
+    }
+
+    /**
+     * Returns Paginator.
+     */
     public function getPaginationForIsPublishedAndSearchTerms(string $searchTerms = null, int $pageNumber): Paginator
     {
         // sets the query for the pagination

@@ -1,0 +1,44 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Post Management{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <div class="col-12 col-md-4 col-lg-3">
+            <form method="GET">
+                <input type="text" class="form-control" name="q"  id="q" value="{{ searchTerms }}" required>
+                <button type="submit" class="btn btn-success btn-block mt-1 mb-5">Search</button>
+            </form>
+        </div>
+        <div class="col-12 col-md-8 col-lg-9">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Title</th>
+                        <th scope="col">Last Modified</th>
+                        <th scope="col">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in pagination %}
+                        <tr>
+                            <th scope="row">{{ loop.index + pagination.offset }}</th>
+                            <td>{{ post.title }}</td>
+                            <td>{{ post.updatedAt|date('Y-m-d H:i:s') }}</td>
+                            <td></td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'pagination/pagination.html.twig' %}
+        </div>
+    </div>
+{% endblock %}

@@ -11,6 +11,7 @@
  */
 
 return [
+    // Security
     '/logout' => [
         'name' => 'logout',
         'method' => 'POST',
@@ -21,15 +22,7 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\SecurityController::login'
     ],
-    '/register' => [
-        'name' => 'register',
-        'method' => ['GET', 'POST'],
-        'callable' => 'App\Controller\AppController::register'
-    ],
-    '/terms_of_use' => [
-        'name' => 'terms_of_use',
-        'callable' => 'App\Controller\AppController::termsOfUse'
-    ],
+    // Post
     '/post/{slug}' => [
         'name' => 'post_show',
         'method' => 'GET',
@@ -39,11 +32,27 @@ return [
         'name' => 'post_index',
         'callable' => 'App\Controller\PostController::index'
     ],
+    // Admin
+    '/admin/post' => [
+        'name' => 'admin_post_index',
+        'callable' => 'App\Controller\Admin\AdminPostController::index'
+    ],
+    // Security
+    '/register' => [
+        'name' => 'register',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\AppController::register'
+    ],
+    '/terms_of_use' => [
+        'name' => 'terms_of_use',
+        'callable' => 'App\Controller\AppController::termsOfUse'
+    ],
     '/' => [
         'name' => 'home',
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::home'
     ],
+    // Fixtures
     '/fixtures' => [
         'name' => 'fixtures',
         'callable' => 'App\Controller\FixturesController::load'
