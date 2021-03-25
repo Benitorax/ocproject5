@@ -4,6 +4,7 @@ namespace App\Model;
 
 use App\Model\User;
 use App\Model\TimestampTrait;
+use Framework\Security\User\UserInterface;
 
 class Post
 {
@@ -16,7 +17,7 @@ class Post
 
     private string $id;
     private string $title;
-    private string $slug;
+    private ?string $slug = '';
     private ?string $lead;
     private ?string $content;
     private bool $isPublished;
@@ -46,7 +47,7 @@ class Post
         return $this;
     }
 
-    public function getSlug(): string
+    public function getSlug(): ?string
     {
         return $this->slug;
     }

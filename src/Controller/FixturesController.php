@@ -92,7 +92,7 @@ class FixturesController extends AbstractController
     {
         $firstName = $this->faker->firstName();
         $lastName = $this->faker->lastName;
-        $dateTime = $this->faker->dateTimeBetween('-2 years', '1 year');
+        $dateTime = $this->faker->dateTimeBetween('-2 years', '-10 months');
 
         $user = (new User())->setId(IdGenerator::generate())
             ->setEmail(strtolower($firstName . '.' . $lastName) . '@yopmail.com')

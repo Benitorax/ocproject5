@@ -37,6 +37,11 @@ return [
         'name' => 'admin_post_index',
         'callable' => 'App\Controller\Admin\AdminPostController::index'
     ],
+    '/admin/post/create' => [
+        'name' => 'admin_post_create',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\Admin\AdminPostController::create'
+    ],
     // Security
     '/register' => [
         'name' => 'register',

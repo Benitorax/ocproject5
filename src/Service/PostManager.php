@@ -2,9 +2,9 @@
 
 namespace App\Service;
 
-use DateTime;
 use App\Model\Post;
 use App\DAO\PostDAO;
+use App\Form\PostCreateForm;
 use App\Service\Pagination\Paginator;
 
 class PostManager
@@ -16,6 +16,29 @@ class PostManager
     {
         $this->postDAO = $postDAO;
         $this->paginator = $paginator;
+    }
+
+    /**
+     * Creates and saves the Post in database.
+     */
+    public function managePostCreate(PostCreateForm $form): Post
+    {
+        $post = (new Post())->setId(IdGenerator::generate())
+            ->setTitle($form->getTitle())
+            ->setLead($form->getLead())
+            ->setContent($form->getContent())
+            ->setIsPublished($form->getIsPublished())
+            ->setCreatedAt($form->getCreatedAt())
+            ->setUpdatedAt($form->getUpdatedAt())
+            ->setUser($form->getUser());
+
+        if ($form->getIsPublished()) {
+            $this->addSlug($post);
+        }
+
+        $this->postDAO->add($post);
+
+        return $post;
     }
 
     /**
@@ -58,18 +81,18 @@ class PostManager
         return $this->postDAO->getOneBySlug($slug);
     }
 
-    public function createAndSave(Post $post): Post
-    {
-        $dateTime = new DateTime();
-        $post->setSlug($this->slugify($post->getTitle()))
-            ->setCreatedAt($dateTime)
-            ->setUpdatedAt($dateTime)
-        ;
-        $this->postDAO->add($post);
 
-        return $post;
+    /**
+     * Adds a slug to the post.
+     */
+    public function addSlug(Post $post): Post
+    {
+        return $post->setSlug($this->slugify($post->getTitle()));
     }
 
+    /**
+     * Slugify the title.
+     */
     public function slugify(string $title): string
     {
         $slug = mb_strtolower(
