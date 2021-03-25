@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use Framework\View\View;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use App\Service\PostManager;
@@ -13,11 +12,10 @@ class PostController extends AbstractController
     private PostManager $postManager;
 
     public function __construct(
-        View $view,
         Container $container,
         PostManager $postManager
     ) {
-        parent::__construct($view, $container);
+        parent::__construct($container);
         $this->postManager = $postManager;
     }
 

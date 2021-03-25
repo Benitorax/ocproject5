@@ -7,7 +7,7 @@ use App\Model\Post;
 use App\Model\User;
 use App\DAO\PostDAO;
 use App\DAO\UserDAO;
-use Framework\View\View;
+use Faker\Generator;
 use App\Service\IdGenerator;
 use App\Service\PostManager;
 use Framework\Response\Response;
@@ -17,22 +17,20 @@ use Framework\Security\Encoder\PasswordEncoder;
 
 class FixturesController extends AbstractController
 {
-    private $encoder;
-    private $postManager;
-    private $postDAO;
-    private $userDAO;
-    private $faker;
+    private PasswordEncoder $encoder;
+    private PostManager $postManager;
+    private PostDAO $postDAO;
+    private UserDAO $userDAO;
+    private Generator $faker;
 
     public function __construct(
-        View $view,
         Container $container,
-        PasswordEncoder $encoder, 
-        PostManager $postManager, 
-        PostDAO $postDAO, 
+        PasswordEncoder $encoder,
+        PostManager $postManager,
+        PostDAO $postDAO,
         UserDAO $userDAO
-    )
-    {
-        parent::__construct($view, $container);
+    ) {
+        parent::__construct($container);
         $this->encoder = $encoder;
         $this->postManager = $postManager;
         $this->postDAO = $postDAO;
@@ -40,7 +38,7 @@ class FixturesController extends AbstractController
 
         $this->faker = Factory::create('en_GB');
     }
-    
+
     /**
      * Loads fixtures
      */
@@ -61,7 +59,7 @@ class FixturesController extends AbstractController
     /**
      * Creates and saves a number of posts.
      */
-    public function createPosts(User $user, int $numberOfPosts): void 
+    public function createPosts(User $user, int $numberOfPosts): void
     {
         for ($i = 0; $i < $numberOfPosts; $i++) {
             $this->createPost($user);
@@ -72,7 +70,7 @@ class FixturesController extends AbstractController
     /**
      * Creates and saves a number of users.
      */
-    public function createUsers(int $numberOfUsers): void 
+    public function createUsers(int $numberOfUsers): void
     {
         for ($i = 0; $i < $numberOfUsers; $i++) {
             $this->createUser();
@@ -104,7 +102,7 @@ class FixturesController extends AbstractController
             ->setUpdatedAt($dateTime)
         ;
 
-        if($isAdmin) {
+        if ($isAdmin) {
             $user->setRoles(['user', 'admin']);
         }
 
@@ -119,7 +117,7 @@ class FixturesController extends AbstractController
     public function createPost(User $user): Post
     {
         $dateTime = $this->faker->dateTimeBetween('-1 years', 'now');
-        $isPublished = random_int(0, 100) > 70;
+        $isPublished = random_int(0, 100) < 70;
 
         $post = new Post();
         $post->setId(IdGenerator::generate())

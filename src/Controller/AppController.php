@@ -17,16 +17,12 @@ class AppController extends AbstractController
     public function home(): Response
     {
         // creates the form and handles the request
-        /** @var ContactForm */
         $form = $this->createForm(ContactForm::class);
         $form->handleRequest($this->request);
 
         // if the form is valid, then send email
         if ($form->isSubmitted() && $form->isValid()) {
-
-            /** @var Notification */
-            $notification = $this->get(Notification::class);
-            $mailCount = $notification->notifyContact($form);
+            $mailCount = $this->get(Notification::class)->notifyContact($form);
 
             // checks if at least one mail has been sent
             if (0 === $mailCount) {
@@ -45,16 +41,12 @@ class AppController extends AbstractController
      */
     public function register(): Response
     {
-        /** @var RegisterForm */
         $form = $this->createForm(RegisterForm::class);
         $form->handleRequest($this->request);
 
         // if the form is valid, then persists the user in the database
         if ($form->isSubmitted() && $form->isValid()) {
-
-            /** @var UserManager */
-            $manager = $this->get(UserManager::class);
-            $manager->saveNewUser($form);
+            $this->get(UserManager::class)->saveNewUser($form);
 
             $this->addFlash('success', 'You register with success!');
 

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Service\Auth;
 use App\Form\LoginForm;
-use Framework\View\View;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Controller\AbstractController;
@@ -13,12 +12,9 @@ class SecurityController extends AbstractController
 {
     private Auth $auth;
 
-    public function __construct(
-        View $view,
-        Container $container,
-        Auth $auth
-    ) {
-        parent::__construct($view, $container);
+    public function __construct(Container $container, Auth $auth)
+    {
+        parent::__construct($container);
         $this->auth = $auth;
     }
 

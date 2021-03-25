@@ -2,15 +2,11 @@
 
 namespace Framework\Controller;
 
-use Exception;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
-use Framework\Request\Parameter;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Form\AbstractForm;
-use Framework\Form\FormInterface;
 use Framework\Router\UrlGenerator;
 use Framework\Security\TokenStorage;
 use Framework\Security\Csrf\CsrfTokenManager;
@@ -18,16 +14,11 @@ use Framework\Security\User\UserInterface;
 
 abstract class AbstractController
 {
-    protected View $view;
     protected Container $container;
-
     protected Request $request;
-    protected Parameter $query;
-    protected Parameter $post;
 
-    public function __construct(View $view, Container $container)
+    public function __construct(Container $container)
     {
-        $this->view = $view;
         $this->container = $container;
     }
 
@@ -37,9 +28,7 @@ abstract class AbstractController
     public function setRequest(Request $request): void
     {
         $this->request = $request;
-        $this->query = $this->request->query;
-        $this->post = $this->request->request;
-        $this->view->setRequest($request);
+        $this->container->get(View::class)->setRequest($request);
     }
 
     /**
@@ -59,7 +48,7 @@ abstract class AbstractController
      */
     public function render(string $viewPath, array $parameters = [], Response $response = null): Response
     {
-        return $this->view->render($viewPath, $parameters, $response);
+        return $this->container->get(View::class)->render($viewPath, $parameters, $response);
     }
 
     /**
@@ -67,15 +56,15 @@ abstract class AbstractController
      */
     public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
-        $generator = $this->get(UrlGenerator::class);
+        $generator = $this->container->get(UrlGenerator::class);
         $url = $generator->generate($routeName, $parameters);
 
         $response = new Response('', 302);
         $response->headers->set('Location', $url);
 
-        return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
+        return $this->container->get(View::class)->render('app/redirect.html.twig', ['url' => $url], $response);
 
-        // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
+        // header("Location: ".$this->container->get(UrlGenerator::class)->generate($routeName, $parameters));
         // exit();
     }
 
@@ -84,7 +73,7 @@ abstract class AbstractController
      */
     public function isCsrfTokenValid(?string $token): bool
     {
-        $tokenManager = $this->get(CsrfTokenManager::class);
+        $tokenManager = $this->container->get(CsrfTokenManager::class);
 
         if ($tokenManager->isTokenValid($token)) {
             return true;
@@ -128,7 +117,7 @@ abstract class AbstractController
      */
     public function getUser(): ?UserInterface
     {
-        $tokenStorage = $this->get(TokenStorage::class);
+        $tokenStorage = $this->container->get(TokenStorage::class);
 
         if (null === $token = $tokenStorage->getToken()) {
             return null;
@@ -152,6 +141,6 @@ abstract class AbstractController
      */
     public function createForm(string $className)
     {
-        return $this->get($className)->newInstance();
+        return $this->container->get($className)->newInstance();
     }
 }

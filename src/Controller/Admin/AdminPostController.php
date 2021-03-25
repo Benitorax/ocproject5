@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use Framework\View\View;
 use App\Service\PostManager;
 use Framework\Container\Container;
 use Framework\Controller\AbstractController;
@@ -13,11 +12,10 @@ class AdminPostController extends AbstractController
     private PostManager $postManager;
 
     public function __construct(
-        View $view,
         Container $container,
         PostManager $postManager
     ) {
-        parent::__construct($view, $container);
+        parent::__construct($container);
         $this->postManager = $postManager;
     }
 
