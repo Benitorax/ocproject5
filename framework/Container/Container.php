@@ -2,8 +2,8 @@
 
 namespace Framework\Container;
 
-use ReflectionType;
 use ReflectionMethod;
+use ReflectionNamedType;
 use Framework\Router\Router;
 
 class Container
@@ -54,11 +54,6 @@ class Container
         return $service;
     }
 
-    /**
-     * @template T
-     * @param class-string<T> $className
-     * @return bool
-     */
     public function has(string $className): bool
     {
         if (isset($this->services[$className])) {
@@ -79,10 +74,9 @@ class Container
     {
         $className = Router::class;
         if ($this->has($className)) {
-            /** @var Router */
             return $this->get($className);
         }
-        /** @var Router */
+
         return $this->create($className);
     }
 
@@ -99,12 +93,9 @@ class Container
             $arguments = null;
 
             foreach ($reflection->getParameters() as $param) {
-                /** @var ReflectionType */
+                /** @var ReflectionNamedType */
                 $reflectionType = $param->getType();
-
-                if (method_exists($reflectionType, 'getName')) {
-                    $serviceClassName = $reflectionType->getName();
-                }
+                $serviceClassName = $reflectionType->getName();
 
                 if (!empty($serviceClassName)) {
                     if ($this->has($serviceClassName)) {

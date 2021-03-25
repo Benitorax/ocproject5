@@ -17,10 +17,10 @@ class FixturesController extends AbstractController
 {
     public function load(): Response
     {
-        /** @var PasswordEncoder */ $encoder = $this->get(PasswordEncoder::class);
-        /** @var PostManager */ $postManager = $this->get(PostManager::class);
-        /** @var PostDAO */ $postDAO = $this->get(PostDAO::class);
-        /** @var UserDAO */ $userDAO = $this->get(UserDAO::class);
+        $encoder = $this->get(PasswordEncoder::class);
+        $postManager = $this->get(PostManager::class);
+        $postDAO = $this->get(PostDAO::class);
+        $userDAO = $this->get(UserDAO::class);
         $faker = Factory::create('en_GB');
 
         for ($i = 0; $i < 3; $i++) {

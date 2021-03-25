@@ -67,7 +67,6 @@ abstract class AbstractController
      */
     public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
-        /** @var UrlGenerator */
         $generator = $this->get(UrlGenerator::class);
         $url = $generator->generate($routeName, $parameters);
 
@@ -85,7 +84,6 @@ abstract class AbstractController
      */
     public function isCsrfTokenValid(?string $token): bool
     {
-        /** @var CsrfTokenManager */
         $tokenManager = $this->get(CsrfTokenManager::class);
 
         if ($tokenManager->isTokenValid($token)) {
@@ -101,7 +99,6 @@ abstract class AbstractController
     public function addFlash(string $type, string $message): void
     {
         if ($this->container->has(Session::class)) {
-            /** @var Session */
             $session = $this->container->get(Session::class);
             $session->getFlashes()->add($type, $message);
         }
@@ -131,7 +128,6 @@ abstract class AbstractController
      */
     public function getUser(): ?UserInterface
     {
-        /** @var TokenStorage */
         $tokenStorage = $this->get(TokenStorage::class);
 
         if (null === $token = $tokenStorage->getToken()) {
