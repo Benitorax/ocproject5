@@ -44,7 +44,7 @@ abstract class AbstractForm implements FormInterface
             $method = 'set' . ucfirst($name);
 
             if (method_exists($form, $method)) {
-                $form->$method($value);
+                $form->$method(trim($value));
             }
         }
     }
