@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Controller;
+namespace App\Controller\Admin;
 
 use App\Service\Auth;
 use App\Form\LoginForm;
@@ -19,13 +19,13 @@ class SecurityController extends AbstractController
     }
 
     /**
-     * Displays the login page.
+     * Displays the login page for admin users.
      */
     public function login(): Response
     {
         // if the user is already authenticated, then redirects to home page
-        if ($this->isGranted(['user'])) {
-            return $this->redirectToRoute('home');
+        if ($this->isGranted(['admin'])) {
+            return $this->redirectToRoute('admin_post_index');
         }
 
         /** @var LoginForm */
@@ -33,35 +33,19 @@ class SecurityController extends AbstractController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->auth->authenticateLoginForm($form, $this->request);
+            $user = $this->auth->authenticateAdminLoginForm($form, $this->request);
 
             // if user exists then redirect to homepage
             if (!empty($user)) {
                 $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
 
-                return $this->redirectToRoute('home');
+                return $this->redirectToRoute('admin_post_index');
             }
 
             // if user does not exist then displays invalid credentials
             $this->addFlash('danger', 'Email or password Invalid.');
         }
 
-        return $this->render('security/login.html.twig', ['form' => $form]);
-    }
-
-    /**
-     * Logs out the user and redirect to homepage.
-     *
-     * Always redirects to homepage whether or not the csrf is valid.
-     */
-    public function logout(): Response
-    {
-        // checks if the csrf token is valid to execute the logout
-        if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
-            $this->auth->handleLogout($this->request);
-            $this->addFlash('success', 'You logout with success!');
-        }
-
-        return $this->redirectToRoute('home');
+        return $this->render('admin/security/login.html.twig', ['form' => $form]);
     }
 }

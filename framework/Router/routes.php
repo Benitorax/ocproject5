@@ -33,6 +33,11 @@ return [
         'callable' => 'App\Controller\PostController::index'
     ],
     // Admin
+    '/admin/login' => [
+        'name' => 'admin_login',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\Admin\SecurityController::login'
+    ],
     '/admin/post' => [
         'name' => 'admin_post_index',
         'callable' => 'App\Controller\Admin\AdminPostController::index'
@@ -42,7 +47,7 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\AdminPostController::create'
     ],
-    // Security
+    // App
     '/register' => [
         'name' => 'register',
         'method' => ['GET', 'POST'],
