@@ -21,9 +21,11 @@ class SecurityController extends AbstractController
      */
     public function login(): Response
     {
-        // if the user is already authenticated, then redirects to home page
+        // if the user is already authenticated, then redirects
         if ($this->isGranted(['admin'])) {
             return $this->redirectToRoute('admin_post_index');
+        } elseif ($this->isGranted(['user'])) {
+            return $this->redirectToRoute('home');
         }
 
         /** @var LoginForm */
