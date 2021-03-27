@@ -65,6 +65,11 @@ class Paginator implements IteratorAggregate, Countable
         $this->pagesTotal = ceil($publishedCount / $this->limitPerPage);
     }
 
+    public function getOffset(): int
+    {
+        return $this->offset;
+    }
+
     public function getItems(): array
     {
         return $this->items;

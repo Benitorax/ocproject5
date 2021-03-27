@@ -2,21 +2,24 @@
 
 namespace App\Form;
 
+use App\Model\User;
 use Framework\Form\AbstractForm;
-use App\Service\Validation\RegisterValidation;
+use App\Validation\RegisterValidation;
 
 class RegisterForm extends AbstractForm
 {
-    public string $email = '';
-    public string $password1 = '';
-    public string $password2 = '';
-    public string $username = '';
-    public bool $terms = false;
+    private User $user;
+    // private string $email = '';
+    // private string $password1 = '';
+    private string $password2 = '';
+    // private string $username = '';
+    private bool $terms = false;
 
     private RegisterValidation $validation;
 
     public function __construct(RegisterValidation $validation)
     {
+        $this->user = new User();
         $this->validation = $validation;
     }
 
@@ -25,27 +28,31 @@ class RegisterForm extends AbstractForm
         return $this->validation;
     }
 
+    public function newInstance(): self
+    {
+        return new self($this->validation);
+    }
 
     public function getEmail(): string
     {
-        return $this->email;
+        return $this->user->getEmail();
     }
 
     public function setEmail(string $email): self
     {
-        $this->email = $email;
+        $this->user->setEmail($email);
 
         return $this;
     }
 
     public function getPassword1(): string
     {
-        return $this->password1;
+        return $this->user->getPassword();
     }
 
     public function setPassword1(string $password): self
     {
-        $this->password1 = $password;
+        $this->user->setPassword($password);
 
         return $this;
     }
@@ -64,12 +71,12 @@ class RegisterForm extends AbstractForm
 
     public function getUsername(): string
     {
-        return $this->username;
+        return $this->user->getUsername();
     }
 
     public function setUsername(string $username): self
     {
-        $this->username = $username;
+        $this->user->setUsername($username);
 
         return $this;
     }
@@ -84,5 +91,10 @@ class RegisterForm extends AbstractForm
         $this->terms = $terms;
 
         return $this;
+    }
+
+    public function getData(): User
+    {
+        return $this->user;
     }
 }

@@ -65,23 +65,8 @@ class RememberMeManager
         }
 
         $tokenValue = base64_encode(random_bytes(64));
-
         $this->rememberMeDAO->updateToken($series, $tokenValue, new DateTime());
-
-        $request->attributes->set(
-            self::COOKIE_ATTR_NAME,
-            new Cookie(
-                $this->options['name'],
-                $this->encodeCookie([$series, $tokenValue]),
-                (string) (time() + $this->options['lifetime']),
-                $this->options['path'],
-                $this->options['domain'],
-                $this->options['secure'] ?? $request->isSecure(),
-                $this->options['httponly'],
-                false,
-                $this->options['samesite']
-            )
-        );
+        $this->setCookieToRequest($request, $series, $tokenValue);
 
         /** @var UserInterface */
         return $this->userDAO->getOneByUsername($persistentToken->getUsername());
@@ -122,6 +107,11 @@ class RememberMeManager
             )
         );
 
+        $this->setCookieToRequest($request, $series, $tokenValue);
+    }
+
+    public function setCookieToRequest(Request $request, string $series, string $tokenValue): void
+    {
         $request->attributes->set(
             self::COOKIE_ATTR_NAME,
             new Cookie(

@@ -9,7 +9,7 @@ class IdGenerator
 
     public static function generate(): string
     {
-        return uniqid((string) rand(self::MIN_PREFIX, self::MAX_PREFIX))
-            . uniqid((string) rand(self::MIN_PREFIX, self::MAX_PREFIX));
+        return uniqid((string) mt_rand(self::MIN_PREFIX, self::MAX_PREFIX))
+            . uniqid((string) mt_rand(self::MIN_PREFIX, self::MAX_PREFIX));
     }
 }

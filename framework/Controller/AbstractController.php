@@ -2,29 +2,27 @@
 
 namespace Framework\Controller;
 
+use Exception;
 use Framework\View\View;
 use Framework\Request\Request;
 use Framework\Session\Session;
-use Framework\Request\Parameter;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Router\UrlGenerator;
 use Framework\Security\TokenStorage;
-use Framework\Security\Csrf\CsrfTokenManager;
 use Framework\Security\User\UserInterface;
+use Framework\Security\Csrf\CsrfTokenManager;
 
 abstract class AbstractController
 {
-    protected View $view;
     protected Container $container;
-
     protected Request $request;
-    protected Parameter $query;
-    protected Parameter $post;
 
-    public function __construct(View $view, Container $container)
+    /**
+     * Sets the container.
+     */
+    public function setContainer(Container $container): void
     {
-        $this->view = $view;
         $this->container = $container;
     }
 
@@ -34,17 +32,19 @@ abstract class AbstractController
     public function setRequest(Request $request): void
     {
         $this->request = $request;
-        $this->query = $this->request->query;
-        $this->post = $this->request->request;
-        $this->view->setRequest($request);
+        $this->container->get(View::class)->setRequest($request);
     }
 
     /**
      * Returns an instantiate service.
+     *
+     * @template T
+     * @param class-string<T> $className
+     * @return T
      */
-    public function get(string $name): object
+    public function get(string $className)
     {
-        return $this->container->get($name);
+        return $this->container->get($className);
     }
 
     /**
@@ -52,7 +52,7 @@ abstract class AbstractController
      */
     public function render(string $viewPath, array $parameters = [], Response $response = null): Response
     {
-        return $this->view->render($viewPath, $parameters, $response);
+        return $this->container->get(View::class)->render($viewPath, $parameters, $response);
     }
 
     /**
@@ -60,26 +60,25 @@ abstract class AbstractController
      */
     public function redirectToRoute(string $routeName, array $parameters = []): Response
     {
-        /** @var UrlGenerator */
-        $generator = $this->get(UrlGenerator::class);
+        $generator = $this->container->get(UrlGenerator::class);
         $url = $generator->generate($routeName, $parameters);
 
         $response = new Response('', 302);
         $response->headers->set('Location', $url);
 
-        return $this->view->render('app/redirect.html.twig', ['url' => $url], $response);
+        return $this->container->get(View::class)->render('app/redirect.html.twig', ['url' => $url], $response);
 
-        // header("Location: ".$this->get(UrlGenerator::class)->generate($routeName, $parameters));
+        // header("Location: ".$this->container->get(UrlGenerator::class)->generate($routeName, $parameters));
         // exit();
     }
 
     /**
      * Checks if the csrf token is valid.
      */
-    public function isCsrfTokenValid(?string $token): bool
+    public function isCsrfTokenValid(): bool
     {
-        /** @var CsrfTokenManager */
-        $tokenManager = $this->get(CsrfTokenManager::class);
+        $tokenManager = $this->container->get(CsrfTokenManager::class);
+        $token = $this->request->request->get('csrf_token');
 
         if ($tokenManager->isTokenValid($token)) {
             return true;
@@ -94,7 +93,6 @@ abstract class AbstractController
     public function addFlash(string $type, string $message): void
     {
         if ($this->container->has(Session::class)) {
-            /** @var Session */
             $session = $this->container->get(Session::class);
             $session->getFlashes()->add($type, $message);
         }
@@ -120,12 +118,21 @@ abstract class AbstractController
     }
 
     /**
-     * Returns a user object if authenticated, otherwise null.
+     * Throws an exception if the user does not have access.
+     */
+    protected function denyAccessUnlessGranted(array $roles): void
+    {
+        if (!$this->isGranted($roles)) {
+            throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
+        }
+    }
+
+    /**
+     * Returns an user object if authenticated, otherwise null.
      */
     public function getUser(): ?UserInterface
     {
-        /** @var TokenStorage */
-        $tokenStorage = $this->get(TokenStorage::class);
+        $tokenStorage = $this->container->get(TokenStorage::class);
 
         if (null === $token = $tokenStorage->getToken()) {
             return null;
@@ -136,5 +143,26 @@ abstract class AbstractController
         }
 
         return $user;
+    }
+
+    /**
+     * Returns an instantiate form.
+     *
+     * The $className must be the name of the form class which is instantiated.
+     *
+     * @template T
+     * @param class-string<T> $className
+     * @param null|mixed $object
+     * @return T
+     */
+    public function createForm(string $className, $object = null)
+    {
+        $form = $this->container->get($className)->newInstance();
+
+        if (null !== $object) {
+            $form->hydrateForm($object);
+        }
+
+        return $form;
     }
 }

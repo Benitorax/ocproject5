@@ -44,11 +44,14 @@ abstract class AbstractForm implements FormInterface
             $method = 'set' . ucfirst($name);
 
             if (method_exists($form, $method)) {
-                $form->$method($value);
+                $form->$method(trim($value));
             }
         }
     }
 
+    /**
+     * Converts the string from snake_case to camelCase for the setter.
+     */
     public function snakeCaseToCamelCase(string $string): string
     {
         $strings = [];

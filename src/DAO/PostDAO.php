@@ -14,11 +14,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private QueryExpression $query;
 
-    public function __construct()
-    {
-        $this->query = new QueryExpression();
-    }
-
+    /**
+     * Returns a Post object from stdClass.
+     */
     public function buildObject(\stdClass $o): Post
     {
         $user = new User();
@@ -58,6 +56,35 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * @return null|object|Post the object is instance of Post class
+     */
+    public function getOneById(string $id)
+    {
+        $this->prepareQuery()
+            ->where('p.id = :id')
+            ->setParameter('id', $id);
+
+        return $this->getOneResult($this, $this->query);
+    }
+
+    /**
+     * Setting the query without executing it.
+     */
+    public function setAllPostsQuery(?string $search): void
+    {
+        $this->prepareQuery();
+
+        if (null !== $search && '' !== $search) {
+            $this->query->addWhere(
+                'title LIKE :search'
+                    . ' OR lead LIKE :search'
+                    . ' OR content LIKE :search'
+            )
+            ->setParameter('search', '%' . $search . '%');
+        }
+    }
+
+    /**
      * Setting the query without executing it.
      */
     public function setIsPublishedAndSearchQuery(?string $search): void
@@ -72,19 +99,47 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
                     . ' OR lead LIKE :search'
                     . ' OR content LIKE :search'
             )
-                ->setParameter('search', '%' . $search . '%');
+            ->setParameter('search', '%' . $search . '%');
         }
     }
 
+    /**
+     * Sets the select, table and jointure for the sql query.
+     */
     private function prepareQuery(): QueryExpression
     {
-        return $this->query->select(Post::SQL_COLUMNS, 'p')
+        return $this->query = (new QueryExpression())
+            ->select(Post::SQL_COLUMNS, 'p')
             ->addSelect(User::SQL_COLUMNS, 'u')
             ->from(POST::SQL_TABLE, 'p')
             ->leftOuterJoin(USER::SQL_TABLE, 'u', 'user_id = u.id')
             ->orderBy('p.updated_at', 'DESC');
     }
 
+    /**
+     * Inserts a new row in the database.
+     */
+    public function updatePost(Post $post): void
+    {
+        $this->update(
+            'post',
+            [
+                'title' => $post->getTitle(),
+                'slug' => $post->getSlug(),
+                'lead' => $post->getLead(),
+                'content' => $post->getContent(),
+                'created_at' => ($post->getCreatedAt())->format('Y-m-d H:i:s'),
+                'updated_at' => ($post->getUpdatedAt())->format('Y-m-d H:i:s'),
+                'is_published' => intval($post->getIsPublished()),
+                'user_id' => $post->getUser()->getId(),
+            ],
+            ['id' => $post->getId()]
+        );
+    }
+
+    /**
+     * Inserts a new row in the database.
+     */
     public function add(Post $post): void
     {
         $this->insert('post', [
@@ -98,6 +153,14 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             'is_published' => intval($post->getIsPublished()),
             'user_id' => $post->getUser()->getId(),
         ]);
+    }
+
+    /**
+     * Deletes a Post by id.
+     */
+    public function deleteById(string $id): void
+    {
+        $this->delete(Post::SQL_TABLE, ['id' => $id]);
     }
 
     /**

@@ -11,11 +11,9 @@ class UserDAO extends AbstractDAO
 {
     private QueryExpression $query;
 
-    public function __construct()
-    {
-        $this->query = new QueryExpression();
-    }
-
+    /**
+     * Returns an User object from stdClass.
+     */
     public function buildObject(\stdClass $o): User
     {
         $user = new User();
@@ -66,12 +64,19 @@ class UserDAO extends AbstractDAO
         return $this->getResult($this, $this->query);
     }
 
+    /**
+     * Sets the select and the table for the sql query.
+     */
     private function prepareQuery(): QueryExpression
     {
-        return $this->query->select(User::SQL_COLUMNS, 'u')
+        return $this->query = (new QueryExpression())
+            ->select(User::SQL_COLUMNS, 'u')
             ->from(User::SQL_TABLE, 'u');
     }
 
+    /**
+     * Inserts a new row in the database.
+     */
     public function add(User $user): void
     {
         $this->insert('user', [

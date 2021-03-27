@@ -66,6 +66,26 @@ class Auth
         return $user;
     }
 
+    public function authenticateAdminLoginForm(LoginForm $form, Request $request): ?User
+    {
+        $user = $this->authenticate($form->getEmail(), $form->getPassword());
+
+        if (!$user instanceof User) {
+            return null;
+        }
+
+        if (!in_array('admin', $user->getRoles())) {
+            return null;
+        }
+
+        // if rememberme is checked then create a rememberme token
+        if ((bool) $form->getRememberme()) {
+            $this->rememberMeManager->createNewToken($user, $request);
+        }
+
+        return $user;
+    }
+
     public function handleLogout(Request $request): void
     {
         // if there is a rememberme cookie then delete the rememberme token

@@ -16,6 +16,9 @@ class CommentDAO extends AbstractDAO
         $this->query = new QueryExpression();
     }
 
+    /**
+     * Returns a Comment object from stdClass.
+     */
     public function buildObject(\stdClass $o): Comment
     {
         $comment = new Comment();
@@ -30,6 +33,9 @@ class CommentDAO extends AbstractDAO
         return $comment;
     }
 
+    /**
+     * Inserts a new row in the database.
+     */
     public function add(Comment $comment): void
     {
         $this->insert('comment', [

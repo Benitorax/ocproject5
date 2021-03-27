@@ -8,7 +8,6 @@ use Framework\Router\Route;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Controller\AbstractController;
 use Framework\Controller\ErrorController;
 
 class Router
@@ -108,12 +107,12 @@ class Router
      */
     public function executeController(array $callable, $arguments = null): Response
     {
-        [$classname, $method] = $callable;
+        [$className, $method] = $callable;
 
-        /** @var AbstractController abstract class of Controller */
-        $object = $this->container->create($classname);
-        $object->setRequest($this->request);
-        $controller = [$object, $method];
+        $controllerClass = $this->container->create($className); // @phpstan-ignore-line
+        $controllerClass->setContainer($this->container);
+        $controllerClass->setRequest($this->request);
+        $controller = [$controllerClass, $method];
 
         if (is_callable($controller)) {
             if (is_array($arguments)) {
@@ -123,7 +122,7 @@ class Router
             }
         } else {
             throw new Exception(
-                sprintf('Can\'t execute controller %s.', get_class($object)),
+                sprintf('Can\'t execute controller "%s" of class "%s".', $method, $className),
                 500
             );
         }

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Validation;
+namespace App\Validation;
 
 use App\Form\LoginForm;
 use Framework\Form\AbstractForm;
