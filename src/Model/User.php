@@ -14,9 +14,9 @@ class User implements UserInterface
     ];
 
     private string $id;
-    private string $email;
-    private string $password;
-    private string $username;
+    private string $email = '';
+    private string $password = '';
+    private string $username = '';
     private array $roles = ['user'];
     private bool $isBlocked = false;
 

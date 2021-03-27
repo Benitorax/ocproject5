@@ -94,7 +94,7 @@ class PostForm extends AbstractForm
         return $this->post;
     }
 
-    public function setData(Post $post): self
+    public function hydrateForm(Post $post): self
     {
         $this->post = $post;
 

@@ -46,8 +46,8 @@ class AppController extends AbstractController
 
         // if the form is valid, then persists the user in the database
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->get(UserManager::class)->saveNewUser($form);
-
+            $user = $form->getData();
+            $this->get(UserManager::class)->saveNewUser($user);
             $this->addFlash('success', 'You register with success!');
 
             return $this->redirectToRoute('login');

@@ -160,7 +160,7 @@ abstract class AbstractController
         $form = $this->container->get($className)->newInstance();
 
         if (null !== $object) {
-            $form->setData($object);
+            $form->hydrateForm($object);
         }
 
         return $form;

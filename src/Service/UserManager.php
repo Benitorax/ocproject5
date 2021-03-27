@@ -21,14 +21,11 @@ class UserManager
         $this->encoder = $encoder;
     }
 
-    public function saveNewUser(RegisterForm $form): User
+    public function saveNewUser(User $user): User
     {
         $dateTime = new DateTime();
-        $user = new User();
         $user->setId(IdGenerator::generate())
-            ->setEmail($form->getEmail())
-            ->setPassword((string) $this->encoder->encode($form->getPassword1()))
-            ->setUsername($form->getUsername())
+            ->setPassword((string) $this->encoder->encode($user->getPassword()))
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)
         ;

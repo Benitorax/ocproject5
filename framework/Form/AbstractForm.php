@@ -49,6 +49,9 @@ abstract class AbstractForm implements FormInterface
         }
     }
 
+    /**
+     * Converts the string from snake_case to camelCase for the setter.
+     */
     public function snakeCaseToCamelCase(string $string): string
     {
         $strings = [];

@@ -40,7 +40,10 @@ class RegisterValidation extends Validation
         $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
 
         if (!$form->getErrors()['password1']) {
-            $form->addError('password2', $this->checkIdentical($form->password1, $form->password2, 'password'));
+            $form->addError(
+                'password2',
+                $this->checkIdentical($form->getPassword1(), $form->getPassword2(), 'password')
+            );
         }
     }
 }
