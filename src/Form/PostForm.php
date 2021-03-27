@@ -2,44 +2,34 @@
 
 namespace App\Form;
 
-use DateTime;
-use App\Model\TimestampTrait;
+use App\Model\Post;
 use App\Model\User;
 use Framework\Form\AbstractForm;
+use App\Validation\PostValidation;
 use Framework\Security\TokenStorage;
-use App\Validation\PostCreateValidation;
 
-class PostCreateForm extends AbstractForm
+class PostForm extends AbstractForm
 {
-    use TimestampTrait;
+    private Post $post;
 
-    private string $title = '';
-    private string $lead = '';
-    private string $content = '';
-    private bool $isPublished = false;
-    private User $user;
-
-    private PostCreateValidation $validation;
+    private PostValidation $validation;
     private TokenStorage $tokenStorage;
 
-    public function __construct(PostCreateValidation $validation, TokenStorage $tokenStorage)
+    public function __construct(PostValidation $validation, TokenStorage $tokenStorage)
     {
+        $this->post = new Post();
         $this->tokenStorage = $tokenStorage;
         $this->validation = $validation;
-
-        $dateTime = new DateTime('now');
-        $this->createdAt = $dateTime;
-        $this->updatedAt = $dateTime;
 
         if (null !== $token = $tokenStorage->getToken()) {
             if (null !== $user = $token->getUser()) {
                 /** @var User $user */
-                $this->user = $user;
+                $this->post->setUser($user);
             }
         }
     }
 
-    public function getValidation(): PostCreateValidation
+    public function getValidation(): PostValidation
     {
         return $this->validation;
     }
@@ -51,54 +41,63 @@ class PostCreateForm extends AbstractForm
 
     public function getTitle(): string
     {
-        return $this->title;
+        return $this->post->getTitle();
     }
 
     public function setTitle(string $title): self
     {
-        $this->title = $title;
+        if ($this->post->getCreatedAt()->format('Y-m-d H:i:s') === $this->post->getUpdatedAt()->format('Y-m-d H:i:s')) {
+            $this->post->setTitle($title);
+        }
 
         return $this;
     }
 
     public function getLead(): string
     {
-        return $this->lead;
+        return $this->post->getLead();
     }
 
     public function setLead(string $lead): self
     {
-        $this->lead = $lead;
+        $this->post->setLead($lead);
 
         return $this;
     }
 
     public function getContent(): string
     {
-        return $this->content;
+        return $this->post->getContent();
     }
 
     public function setContent(string $content): self
     {
-        $this->content = $content;
+        $this->post->setContent($content);
 
         return $this;
     }
 
     public function getIsPublished(): bool
     {
-        return $this->isPublished;
+        return $this->post->getIsPublished();
     }
 
     public function setIsPublished(bool $isPublished): self
     {
-        $this->isPublished = $isPublished;
+        $this->post->setIsPublished($isPublished);
 
         return $this;
     }
 
-    public function getUser(): User
+    public function getData(): Post
     {
-        return $this->user;
+        return $this->post;
+    }
+
+    public function setData(Post $post): self
+    {
+        $this->post = $post;
+
+        return $this;
     }
 }

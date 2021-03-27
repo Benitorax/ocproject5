@@ -4,8 +4,8 @@ namespace App\Service;
 
 use App\Model\Post;
 use App\DAO\PostDAO;
-use App\Form\PostCreateForm;
 use App\Service\Pagination\Paginator;
+use DateTime;
 
 class PostManager
 {
@@ -21,32 +21,34 @@ class PostManager
     /**
      * Creates and saves the Post in database.
      */
-    public function managePostCreate(PostCreateForm $form): Post
+    public function manageCreatePost(Post $post): Post
     {
-        $post = (new Post())->setId(IdGenerator::generate())
-            ->setTitle($form->getTitle())
-            ->setLead($form->getLead())
-            ->setContent($form->getContent())
-            ->setIsPublished($form->getIsPublished())
-            ->setCreatedAt($form->getCreatedAt())
-            ->setUpdatedAt($form->getUpdatedAt())
-            ->setUser($form->getUser());
-
-        if ($form->getIsPublished()) {
+        if ($post->getIsPublished()) {
             $this->addSlug($post);
         }
 
+        $dateTime = new DateTime('now');
+        $post->setId(IdGenerator::generate())
+            ->setCreatedAt($dateTime)
+            ->setUpdatedAt($dateTime);
         $this->postDAO->add($post);
 
         return $post;
     }
 
     /**
-     * Deletes a Post by id.
+     * Creates and saves the Post in database.
      */
-    public function deletePostById(string $id): void
+    public function manageEditPost(Post $post): Post
     {
-        $this->postDAO->deleteById($id);
+        if ($post->getIsPublished()) {
+            $this->addSlug($post);
+        }
+
+        $post->setUpdatedAt(new DateTime('now'));
+        $this->postDAO->updatePost($post);
+
+        return $post;
     }
 
     /**

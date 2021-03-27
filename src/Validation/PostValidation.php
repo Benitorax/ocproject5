@@ -2,11 +2,11 @@
 
 namespace App\Validation;
 
-use App\Form\PostCreateForm;
+use App\Form\PostForm;
 use Framework\Form\AbstractForm;
 use Framework\Validation\Validation;
 
-class PostCreateValidation extends Validation
+class PostValidation extends Validation
 {
     private const TITLE = [
         ['notBlank'],
@@ -26,7 +26,7 @@ class PostCreateValidation extends Validation
 
     public function validate(AbstractForm $form): void
     {
-        /** @var PostCreateForm $form */
+        /** @var PostForm $form */
         $form->addError('title', $this->check(self::TITLE, $form->getTitle(), 'title'));
         $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
 

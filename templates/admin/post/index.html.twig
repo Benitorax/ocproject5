@@ -14,11 +14,11 @@
                 <div class="col-12 col-sm-auto m-3">
                     <form method="GET">
                         <div class="form-row">
-                            <div class="col-auto">
+                            <div class="col-12 col-sm-auto">
                                 <input type="text" class="form-control" name="q"  id="q" value="{{ searchTerms }}" required>
                             </div>
-                            <div class="col-auto">
-                                <button type="submit" class="btn btn-secondary">Search</button>
+                            <div class="col-12 col-sm-auto">
+                                <button type="submit" class="btn btn-secondary btn-block">Search</button>
                             </div>
                         </div>
                     </form>
@@ -33,7 +33,7 @@
                         <th scope="col">Title</th>
                         <th scope="col">Last Modified</th>
                         <th scope="col">Published</th>
-                        <th scope="col">Options</th>
+                        <th scope="col"><i class="bi bi-gear-fill"></i></th>
                     </tr>
                 </thead>
                 <tbody>
@@ -50,11 +50,20 @@
                                 {%- endif -%}
                             </td>
                             <td>
-                                <form method="POST" action="{{ path('admin_post_delete', {id: post.id}) }}">
-                                    {% import "form/_form.html.twig" as _form %}
-                                    {{ _form.input_csrf(csrf_token()) }}
-                                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                </form>
+                                <div class="row">
+                                    <div class="col-12 col-sm-auto p-0">
+                                        <a href="{{ path('admin_post_edit', {id: post.id}) }}">
+                                            <button class="btn btn-info"><i class="bi bi-pen"></i></button>
+                                        </a>
+                                    </div>
+                                    <div class="col-12 col-sm-auto p-0">
+                                        <form method="POST" action="{{ path('admin_post_delete', {id: post.id}) }}">
+                                            {% import "form/_form.html.twig" as _form %}
+                                            {{ _form.input_csrf(csrf_token()) }}
+                                            <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </div>
+                                </div>
                             </td>
                         </tr>
                     {% else %}

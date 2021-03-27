@@ -152,10 +152,17 @@ abstract class AbstractController
      *
      * @template T
      * @param class-string<T> $className
+     * @param null|mixed $object
      * @return T
      */
-    public function createForm(string $className)
+    public function createForm(string $className, $object = null)
     {
-        return $this->container->get($className)->newInstance();
+        $form = $this->container->get($className)->newInstance();
+
+        if (null !== $object) {
+            $form->setData($object);
+        }
+
+        return $form;
     }
 }

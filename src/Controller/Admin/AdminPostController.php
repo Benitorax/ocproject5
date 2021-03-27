@@ -2,7 +2,8 @@
 
 namespace App\Controller\Admin;
 
-use App\Form\PostCreateForm;
+use App\DAO\PostDAO;
+use App\Form\PostForm;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
@@ -10,10 +11,12 @@ use Framework\Controller\AbstractController;
 class AdminPostController extends AbstractController
 {
     private PostManager $postManager;
+    private PostDAO $postDAO;
 
-    public function __construct(PostManager $postManager)
+    public function __construct(PostManager $postManager, PostDAO $postDAO)
     {
         $this->postManager = $postManager;
+        $this->postDAO = $postDAO;
     }
 
     /**
@@ -44,18 +47,40 @@ class AdminPostController extends AbstractController
     {
         $this->denyAccessUnlessGranted(['admin']);
 
-        /** @var PostCreateForm */
-        $form = $this->createForm(PostCreateForm::class);
+        $form = $this->createForm(PostForm::class);
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->postManager->managePostCreate($form);
-            $this->addFlash('success', 'You have created a post with success!');
+            $post = $form->getData();
+            $this->postManager->manageCreatePost($post);
+            $this->addFlash('success', 'The post has been created with success!');
 
             return $this->redirectToRoute('admin_post_index');
         }
 
         return $this->render('admin/post/create.html.twig', ['form' => $form]);
+    }
+
+    /**
+     * Displays a form page to create a post.
+     */
+    public function edit(string $id): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        $post = $this->postDAO->getOneById($id);
+        $form = $this->createForm(PostForm::class, $post);
+        $form->handleRequest($this->request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $post = $form->getData();
+            $this->postManager->manageEditPost($post);
+            $this->addFlash('success', 'The post has been saved with success!');
+
+            return $this->redirectToRoute('admin_post_index');
+        }
+
+        return $this->render('admin/post/edit.html.twig', ['form' => $form]);
     }
 
     /**
@@ -66,7 +91,7 @@ class AdminPostController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->postManager->deletePostById($id);
+            $this->postDAO->deleteById($id);
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 
