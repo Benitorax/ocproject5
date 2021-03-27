@@ -32,6 +32,7 @@
                         <th scope="col">#</th>
                         <th scope="col">Title</th>
                         <th scope="col">Last Modified</th>
+                        <th scope="col">Published</th>
                         <th scope="col">Options</th>
                     </tr>
                 </thead>
@@ -41,14 +42,25 @@
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
                             <td>{{ post.title }}</td>
                             <td>{{ post.updatedAt|date('Y-m-d H:i:s') }}</td>
-                            <td></td>
+                            <td>
+                                {%- if post.isPublished is same as(true) -%}
+                                    Yes
+                                {%- else -%}
+                                    No
+                                {%- endif -%}
+                            </td>
+                            <td>
+                                <form method="POST" action="{{ path('admin_post_delete', {id: post.id}) }}">
+                                    {% import "form/_form.html.twig" as _form %}
+                                    {{ _form.input_csrf(csrf_token()) }}
+                                    <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
                         </tr>
                     {% else %}
                         <tr>
                             <th scope="row"></th>
-                            <td></td>
-                            <td></td>
-                            <td></td>
+                            <td colspan="3">No posts created</td>
                         </tr>
                     {% endfor %}
                 </tbody>

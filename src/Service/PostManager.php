@@ -42,6 +42,14 @@ class PostManager
     }
 
     /**
+     * Deletes a Post by id.
+     */
+    public function deletePostById(string $id): void
+    {
+        $this->postDAO->deleteById($id);
+    }
+
+    /**
      * Returns Paginator.
      */
     public function getPaginationForAllPosts(string $searchTerms = null, int $pageNumber): Paginator

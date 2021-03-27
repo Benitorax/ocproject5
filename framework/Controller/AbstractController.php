@@ -75,9 +75,10 @@ abstract class AbstractController
     /**
      * Checks if the csrf token is valid.
      */
-    public function isCsrfTokenValid(?string $token): bool
+    public function isCsrfTokenValid(): bool
     {
         $tokenManager = $this->container->get(CsrfTokenManager::class);
+        $token = $this->request->request->get('csrf_token');
 
         if ($tokenManager->isTokenValid($token)) {
             return true;

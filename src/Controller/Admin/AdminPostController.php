@@ -57,4 +57,19 @@ class AdminPostController extends AbstractController
 
         return $this->render('admin/post/create.html.twig', ['form' => $form]);
     }
+
+    /**
+     * Deletes a post.
+     */
+    public function delete(string $id): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        if ($this->isCsrfTokenValid()) {
+            $this->postManager->deletePostById($id);
+            $this->addFlash('success', 'The post has been deleted with success!');
+        }
+
+        return $this->redirectToRoute('admin_post_index');
+    }
 }

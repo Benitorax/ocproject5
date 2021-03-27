@@ -47,6 +47,11 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\AdminPostController::create'
     ],
+    '/admin/post/{id}/delete' => [
+        'name' => 'admin_post_delete',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\AdminPostController::delete'
+    ],
     // App
     '/register' => [
         'name' => 'register',

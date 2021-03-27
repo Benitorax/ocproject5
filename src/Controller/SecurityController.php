@@ -55,7 +55,7 @@ class SecurityController extends AbstractController
     public function logout(): Response
     {
         // checks if the csrf token is valid to execute the logout
-        if ($this->isCsrfTokenValid($this->request->request->get('csrf_token'))) {
+        if ($this->isCsrfTokenValid()) {
             $this->auth->handleLogout($this->request);
             $this->addFlash('success', 'You logout with success!');
         }

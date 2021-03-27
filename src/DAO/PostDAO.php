@@ -123,6 +123,14 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Deletes a Post by id.
+     */
+    public function deleteById(string $id): void
+    {
+        $this->delete(Post::SQL_TABLE, ['id' => $id]);
+    }
+
+    /**
      * Returns the list of slugs by slug of a SQL command.
      */
     public function getSlugsBy(string $value): ?array
