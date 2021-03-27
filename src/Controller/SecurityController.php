@@ -58,6 +58,12 @@ class SecurityController extends AbstractController
         if ($this->isCsrfTokenValid()) {
             $this->auth->handleLogout($this->request);
             $this->addFlash('success', 'You logout with success!');
+
+            return $this->redirectToRoute('home');
+        }
+
+        if ($this->isGranted(['admin'])) {
+            return $this->redirectToRoute('admin_post_index');
         }
 
         return $this->redirectToRoute('home');

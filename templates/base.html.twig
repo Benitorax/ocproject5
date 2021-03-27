@@ -77,9 +77,11 @@
                     <li class="nav-item{% if currentRoute is same as('terms_of_use') %} active{% endif %}">
                         <a class="nav-link" href="{{ path('terms_of_use') }}">Terms of use</a>
                     </li>
-                    <li class="nav-item{% if currentRoute is same as('admin_login') %} active{% endif %}">
-                        <a class="nav-link" href="{{ path('admin_login') }}">Admin</a>
-                    </li>
+                    {% if app.user is null %}
+                        <li class="nav-item{% if currentRoute is same as('admin_login') %} active{% endif %}">
+                            <a class="nav-link" href="{{ path('admin_login') }}">Admin</a>
+                        </li>
+                    {% endif %}
                     <li class="navbar-text">
                        © MyWebsite 2021
                     </li>
