@@ -46,7 +46,7 @@ class PostForm extends AbstractForm
 
     public function setTitle(string $title): self
     {
-        if ($this->post->getCreatedAt()->format('Y-m-d H:i:s') === $this->post->getUpdatedAt()->format('Y-m-d H:i:s')) {
+        if (null === $this->post->getSlug()) {
             $this->post->setTitle($title);
         }
 

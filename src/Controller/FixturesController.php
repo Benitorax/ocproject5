@@ -113,20 +113,30 @@ class FixturesController extends AbstractController
      */
     public function createPost(User $user): Post
     {
-        $dateTime = $this->faker->dateTimeBetween('-1 years', 'now');
         $isPublished = random_int(0, 100) < 70;
+        $dateTime1 = $this->faker->dateTimeBetween('-1 years', 'now');
+
+        // sets randomly updatedAt different from createdAt
+        if (mt_rand(0, 1) === 1) {
+            $dateTime2 = $this->faker->dateTimeBetween($dateTime1->format('Y-m-d H:i:s'), 'now');
+        } else {
+            $dateTime2 = $dateTime1;
+        }
 
         $post = new Post();
         $post->setId(IdGenerator::generate())
             ->setTitle($this->faker->realText(70, 5))
-            ->setSlug($this->postManager->slugify($post->getTitle()))
             ->setLead($this->faker->realText(255, 3))
             ->setContent($this->faker->paragraphs(3, true))
-            ->setCreatedAt($dateTime)
-            ->setUpdatedAt($dateTime)
+            ->setCreatedAt($dateTime1)
+            ->setUpdatedAt($dateTime2)
             ->setIsPublished($isPublished)
             ->setUser($user)
         ;
+
+        if ($isPublished) {
+            $post->setSlug($this->postManager->slugify($post->getTitle()));
+        }
 
         $this->postDAO->add($post);
 

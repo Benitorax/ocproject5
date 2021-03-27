@@ -41,7 +41,7 @@ class PostManager
      */
     public function manageEditPost(Post $post): Post
     {
-        if ($post->getIsPublished()) {
+        if ($post->getIsPublished() && null === $post->getSlug()) {
             $this->addSlug($post);
         }
 

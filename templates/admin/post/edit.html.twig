@@ -13,7 +13,7 @@
                         {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="title">Title</label>
-                            {% if form.data.createdAt|date('Y-m-d H:i:s') is not same as(form.data.updatedAt|date('Y-m-d H:i:s')) %}
+                            {% if form.data.slug is not null %}
                                 <input type="text" class="form-control" value="{{ form.title }}" readonly>
                             {% else %}
                                 <input type="text" class="form-control" name="title"  id="title" value="{{ form.title }}" maxlength="100" required>
