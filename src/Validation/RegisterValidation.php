@@ -11,7 +11,7 @@ class RegisterValidation extends Validation
     private const EMAIL = [
         ['notBlank'],
         ['minLength', 8],
-        ['maxLength', 50],
+        ['maxLength', 70],
         ['email'],
         ['unique', 'user:email']
     ];

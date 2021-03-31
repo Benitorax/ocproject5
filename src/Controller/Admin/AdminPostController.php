@@ -2,7 +2,6 @@
 
 namespace App\Controller\Admin;
 
-use App\DAO\PostDAO;
 use App\Form\PostForm;
 use App\Service\PostManager;
 use Framework\Response\Response;
@@ -11,16 +10,14 @@ use Framework\Controller\AbstractController;
 class AdminPostController extends AbstractController
 {
     private PostManager $postManager;
-    private PostDAO $postDAO;
 
-    public function __construct(PostManager $postManager, PostDAO $postDAO)
+    public function __construct(PostManager $postManager)
     {
         $this->postManager = $postManager;
-        $this->postDAO = $postDAO;
     }
 
     /**
-     * Displays a list of posts.
+     * Displays a list of all the posts.
      */
     public function index(): Response
     {
@@ -68,7 +65,7 @@ class AdminPostController extends AbstractController
     {
         $this->denyAccessUnlessGranted(['admin']);
 
-        $post = $this->postDAO->getOneById($id);
+        $post = $this->postManager->getPostById($id);
         $form = $this->createForm(PostForm::class, $post);
         $form->handleRequest($this->request);
 
@@ -91,7 +88,7 @@ class AdminPostController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->postDAO->deleteById($id);
+            $this->postManager->deletePostById($id);
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 

@@ -13,7 +13,7 @@
                         {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="email">Email address</label>
-                            <input type="email" class="form-control" name ="email" id="email" aria-describedby="emailHelp" value="{{ form.email }}" maxlength="50" required>
+                            <input type="email" class="form-control" name ="email" id="email" aria-describedby="emailHelp" value="{{ form.email }}" maxlength="70" required>
                             {% if form.errors.email is not null %}<div class="invalid-feedback">{{ form.errors.email }}</div>{% endif %}
                         </div>
                         <div class="form-group">

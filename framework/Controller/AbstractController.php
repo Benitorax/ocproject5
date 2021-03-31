@@ -122,9 +122,11 @@ abstract class AbstractController
      */
     protected function denyAccessUnlessGranted(array $roles): void
     {
-        if (!$this->isGranted($roles)) {
-            throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
+        if ($this->isGranted($roles)) {
+            return;
         }
+
+        throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
     }
 
     /**

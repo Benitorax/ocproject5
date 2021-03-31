@@ -16,7 +16,7 @@ class PostController extends AbstractController
     }
 
     /**
-     * Displays a list of posts.
+     * Displays a list of published posts.
      */
     public function index(): Response
     {
@@ -24,11 +24,8 @@ class PostController extends AbstractController
         $pageNumber = (int) $this->request->query->get('page') ?: 1;
         $searchTerms = $this->request->query->get('q');
 
-        // get the pagination
-        $pagination = $this->postManager->getPaginationForIsPublishedAndSearchTerms($searchTerms, $pageNumber);
-
         return $this->render('post/index.html.twig', [
-            'pagination' => $pagination,
+            'pagination' => $this->postManager->getPaginationForIsPublishedAndSearchTerms($searchTerms, $pageNumber),
             'searchTerms' => $searchTerms,
             'searchQueryString' => http_build_query(['q' => $searchTerms])
         ]);

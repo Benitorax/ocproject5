@@ -91,6 +91,18 @@ class PostManager
         return $this->postDAO->getOneBySlug($slug);
     }
 
+    /**
+     * @return null|object|Post
+     */
+    public function getPostById(string $id)
+    {
+        return $this->postDAO->getOneById($id);
+    }
+
+    public function deletePostById(string $id): void
+    {
+        $this->postDAO->deleteById($id);
+    }
 
     /**
      * Adds a slug to the post.
