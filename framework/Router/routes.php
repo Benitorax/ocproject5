@@ -63,6 +63,16 @@ return [
         'name' => 'admin_user_index',
         'callable' => 'App\Controller\Admin\AdminUserController::index'
     ],
+    '/admin/user/{uuid}/block' => [
+        'name' => 'admin_user_block',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\AdminUserController::block'
+    ],
+    '/admin/user/{uuid}/unblock' => [
+        'name' => 'admin_user_unblock',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\AdminUserController::unblock'
+    ],
     // App
     '/register' => [
         'name' => 'register',

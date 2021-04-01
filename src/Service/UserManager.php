@@ -54,4 +54,20 @@ class UserManager
             15
         );
     }
+
+    /**
+     * Blocks user by its id in database.
+     */
+    public function blockUserByUuid(string $uuid): void
+    {
+        $this->userDAO->blockByUuid($uuid);
+    }
+
+    /**
+     * Unblocks user by its id in database.
+     */
+    public function unblockUserByUuid(string $uuid): void
+    {
+        $this->userDAO->unblockByUuid($uuid);
+    }
 }

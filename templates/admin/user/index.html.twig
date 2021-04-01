@@ -11,13 +11,13 @@
                         <li class="nav-item">
                             <a class="nav-link
                             {% if 'filter=blocked' not in queryString
-                                and 'filter=unblocked' not in queryString %} active{% endif %}" href="?filter=all">All</a>
+                                and 'filter=unblocked' not in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'all'}) }}">All</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link{% if 'filter=blocked' in queryString %} active{% endif %}" href="?filter=blocked">Blocked</a>
+                            <a class="nav-link{% if 'filter=blocked' in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'blocked'}) }}">Blocked</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link{% if 'filter=unblocked' in queryString %} active{% endif %}" href="?filter=unblocked">Unblocked</a>
+                            <a class="nav-link{% if 'filter=unblocked' in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'unblocked'}) }}">Unblocked</a>
                         </li>
                     </ul>
                 </div>
@@ -57,18 +57,21 @@
                             <td>{{ user.createdAt|date('Y-m-d H:i:s') }}</td>
                             <td>
                                 <div class="row">
-                                    {# <div class="col-12 col-sm-auto p-0">
-                                        <a href="{{ path('admin_user_block', {id: user.id}) }}">
-                                            <button class="btn btn-info"><i class="bi bi-pen"></i></button>
-                                        </a>
-                                    </div>
                                     <div class="col-12 col-sm-auto p-0">
-                                        <form method="POST" action="{{ path('admin_user_delete', {id: user.id}) }}">
-                                            {% import "form/_form.html.twig" as _form %}
-                                            {{ _form.input_csrf(csrf_token()) }}
-                                            <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                        </form>
-                                    </div> #}
+                                        {% if user.isBlocked is same as(true) %}
+                                            <form method="POST" action="{{ path('admin_user_unblock', {uuid: user.uuid}) }}">
+                                                {% import "form/_form.html.twig" as _form %}
+                                                {{ _form.input_csrf(csrf_token()) }}
+                                                <button class="btn btn-info"><i class="bi bi-unlock"></i></button>
+                                            </form>
+                                        {% else %}
+                                            <form method="POST" action="{{ path('admin_user_block', {uuid: user.uuid}) }}">
+                                                {% import "form/_form.html.twig" as _form %}
+                                                {{ _form.input_csrf(csrf_token()) }}
+                                                <button class="btn btn-danger"><i class="bi bi-lock"></i></button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
                                 </div>
                             </td>
                         </tr>

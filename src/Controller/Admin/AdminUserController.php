@@ -33,4 +33,34 @@ class AdminUserController extends AbstractController
             'queryString' => http_build_query($this->request->query->all())
         ]);
     }
+
+    /**
+     * Blocks a user.
+     */
+    public function block(string $uuid): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        if ($this->isCsrfTokenValid()) {
+            $this->userManager->blockUserByUuid($uuid);
+            $this->addFlash('success', 'The user has been blocked with success!');
+        }
+
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+    }
+
+    /**
+     * Unblocks a user.
+     */
+    public function unblock(string $uuid): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        if ($this->isCsrfTokenValid()) {
+            $this->userManager->unblockUserByUuid($uuid);
+            $this->addFlash('success', 'The user has been unblocked with success!');
+        }
+
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+    }
 }

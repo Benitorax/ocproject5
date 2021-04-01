@@ -117,6 +117,21 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         ]);
     }
 
+    /**
+     * Update a blocked user.
+     */
+    public function blockByUuid(string $uuid): void
+    {
+        $this->update('user', ['is_blocked' => 1], ['uuid' => $uuid]);
+    }
+
+    /**
+     * Update a unblocked user.
+     */
+    public function unblockByUuid(string $uuid): void
+    {
+        $this->update('user', ['is_blocked' => 0], ['uuid' => $uuid]);
+    }
 
     /**
      * Returns the total count of posts.
