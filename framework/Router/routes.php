@@ -48,12 +48,12 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\AdminPostController::create'
     ],
-    '/admin/post/{id}/edit' => [
+    '/admin/post/{uuid}/edit' => [
         'name' => 'admin_post_edit',
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\AdminPostController::edit'
     ],
-    '/admin/post/{id}/delete' => [
+    '/admin/post/{uuid}/delete' => [
         'name' => 'admin_post_delete',
         'method' => 'POST',
         'callable' => 'App\Controller\Admin\AdminPostController::delete'

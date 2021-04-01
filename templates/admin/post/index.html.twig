@@ -52,12 +52,12 @@
                             <td>
                                 <div class="row">
                                     <div class="col-12 col-sm-auto p-0">
-                                        <a href="{{ path('admin_post_edit', {id: post.id}) }}">
+                                        <a href="{{ path('admin_post_edit', {uuid: post.uuid}) }}">
                                             <button class="btn btn-info"><i class="bi bi-pen"></i></button>
                                         </a>
                                     </div>
                                     <div class="col-12 col-sm-auto p-0">
-                                        <form method="POST" action="{{ path('admin_post_delete', {id: post.id}) }}">
+                                        <form method="POST" action="{{ path('admin_post_delete', {uuid: post.uuid}) }}">
                                             {% import "form/_form.html.twig" as _form %}
                                             {{ _form.input_csrf(csrf_token()) }}
                                             <button class="btn btn-danger"><i class="bi bi-trash"></i></button>

@@ -95,14 +95,14 @@ class PostManager
     /**
      * @return null|object|Post
      */
-    public function getPostById(string $id)
+    public function getPostByUuid(string $uuid)
     {
-        return $this->postDAO->getOneById($id);
+        return $this->postDAO->getOneByUuid($uuid);
     }
 
-    public function deletePostById(string $id): void
+    public function deletePostByUuid(string $uuid): void
     {
-        $this->postDAO->deleteById($id);
+        $this->postDAO->deleteByUuid($uuid);
     }
 
     /**

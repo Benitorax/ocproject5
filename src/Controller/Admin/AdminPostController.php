@@ -58,11 +58,11 @@ class AdminPostController extends AbstractController
     /**
      * Displays a form page to create a post.
      */
-    public function edit(string $id): Response
+    public function edit(string $uuid): Response
     {
         $this->denyAccessUnlessGranted(['admin']);
 
-        $post = $this->postManager->getPostById($id);
+        $post = $this->postManager->getPostByUuid($uuid);
         $form = $this->createForm(PostForm::class, $post);
         $form->handleRequest($this->request);
 
@@ -80,12 +80,12 @@ class AdminPostController extends AbstractController
     /**
      * Deletes a post.
      */
-    public function delete(string $id): Response
+    public function delete(string $uuid): Response
     {
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->postManager->deletePostById($id);
+            $this->postManager->deletePostByUuid($uuid);
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 

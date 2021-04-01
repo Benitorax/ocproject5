@@ -61,11 +61,11 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * @return null|object|Post the object is instance of Post class
      */
-    public function getOneById(string $id)
+    public function getOneByUuid(string $uuid)
     {
         $this->prepareQuery()
-            ->where('p.id = :id')
-            ->setParameter('id', $id);
+            ->where('p.uuid = :uuid')
+            ->setParameter('uuid', $uuid);
 
         return $this->getOneResult($this, $this->query);
     }
@@ -160,9 +160,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Deletes a Post by id.
      */
-    public function deleteById(string $id): void
+    public function deleteByUuid(string $uuid): void
     {
-        $this->delete(Post::SQL_TABLE, ['id' => $id]);
+        $this->delete(Post::SQL_TABLE, ['uuid' => $uuid]);
     }
 
     /**

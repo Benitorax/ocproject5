@@ -11,7 +11,7 @@ class PostValidation extends Validation
     private const TITLE = [
         ['notBlank'],
         ['minLength', 10],
-        ['maxLength', 100],
+        ['maxLength', 150],
     ];
     private const LEAD = [
         ['notBlank'],

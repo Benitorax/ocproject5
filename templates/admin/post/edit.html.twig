@@ -16,14 +16,14 @@
                             {% if form.data.slug is not null %}
                                 <input type="text" class="form-control" value="{{ form.title }}" readonly>
                             {% else %}
-                                <input type="text" class="form-control" name="title"  id="title" value="{{ form.title }}" maxlength="10" minlength="100" required>
+                                <input type="text" class="form-control" name="title"  id="title" value="{{ form.title }}" minlength="10" maxlength="100" required>
                                 <small id="isPublishedHelp" class="form-text text-muted">The title can't be modified after publication.</small>
                                 {% if form.errors.title is not null %}<div class="invalid-feedback">{{ form.errors.title }}</div>{% endif %}
                             {% endif %}
                         </div>
                         <div class="form-group">
                             <label for="lead">Lead</label>
-                            <textarea class="form-control" name="lead" id="lead"  minlength="50" maxlength="1500" rows="6" required>{{ form.lead }}</textarea>
+                            <textarea class="form-control" name="lead" id="lead"  minlength="50" maxlength="300" rows="6" required>{{ form.lead }}</textarea>
                             {% if form.errors.lead is not null %}<div class="invalid-feedback">{{ form.errors.lead }}</div>{% endif %}
                         </div>
                         <div class="form-group">
