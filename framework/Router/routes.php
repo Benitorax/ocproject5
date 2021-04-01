@@ -38,6 +38,7 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\SecurityController::login'
     ],
+    // Admin > Post
     '/admin/post' => [
         'name' => 'admin_post_index',
         'callable' => 'App\Controller\Admin\AdminPostController::index'
@@ -56,6 +57,11 @@ return [
         'name' => 'admin_post_delete',
         'method' => 'POST',
         'callable' => 'App\Controller\Admin\AdminPostController::delete'
+    ],
+    // Admin > User
+    '/admin/user' => [
+        'name' => 'admin_user_index',
+        'callable' => 'App\Controller\Admin\AdminUserController::index'
     ],
     // App
     '/register' => [

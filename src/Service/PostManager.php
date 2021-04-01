@@ -63,7 +63,7 @@ class PostManager
         // creates the pagination for the template
         return $this->paginator->paginate(
             $this->postDAO,
-            $pageNumber,
+            $pageNumber < 1 ? 1 : $pageNumber,
             15
         );
     }
@@ -79,7 +79,7 @@ class PostManager
         // creates the pagination for the template
         return $this->paginator->paginate(
             $this->postDAO,
-            $pageNumber,
+            $pageNumber < 1 ? 1 : $pageNumber,
             5
         );
     }

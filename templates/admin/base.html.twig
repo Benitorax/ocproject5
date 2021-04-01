@@ -11,6 +11,9 @@
                 <li class="nav-item{% if currentRoute is same as('admin_post_index') %} active{% endif %}">
                     <a class="nav-link" href="{{ path('admin_post_index') }}">Posts</a>
                 </li>
+                <li class="nav-item{% if currentRoute is same as('admin_user_index') %} active{% endif %}">
+                    <a class="nav-link" href="{{ path('admin_user_index') }}">Users</a>
+                </li>
             </ul>
         </div>
 

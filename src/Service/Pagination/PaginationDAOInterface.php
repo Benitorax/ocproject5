@@ -7,7 +7,7 @@ use App\Model\User;
 use App\Model\Comment;
 
 /**
- * Must implement this interface if extends AbstractDAO.
+ * DAO class must implement this interface to have pagination.
  */
 interface PaginationDAOInterface
 {

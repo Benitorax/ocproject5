@@ -21,13 +21,13 @@ class PostController extends AbstractController
     public function index(): Response
     {
         // retrieves the page number and search terms of the query string
-        $pageNumber = (int) $this->request->query->get('page') ?: 1;
+        $pageNumber = (int) $this->request->query->get('page');
         $searchTerms = $this->request->query->get('q');
 
         return $this->render('post/index.html.twig', [
             'pagination' => $this->postManager->getPaginationForIsPublishedAndSearchTerms($searchTerms, $pageNumber),
             'searchTerms' => $searchTerms,
-            'searchQueryString' => http_build_query(['q' => $searchTerms])
+            'queryString' => http_build_query($this->request->query->all())
         ]);
     }
 

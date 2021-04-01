@@ -7,8 +7,9 @@ use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
+use App\Service\Pagination\PaginationDAOInterface;
 
-class UserDAO extends AbstractDAO
+class UserDAO extends AbstractDAO implements PaginationDAOInterface
 {
     private QueryExpression $query;
 
@@ -29,6 +30,28 @@ class UserDAO extends AbstractDAO
             ->setIsBlocked($o->u_is_blocked);
 
         return $user;
+    }
+
+    /**
+     * Setting the query without executing it.
+     */
+    public function setAllUsersQuery(?string $filter, ?string $search): void
+    {
+        $this->prepareQuery();
+
+        if (null !== $search && '' !== $search) {
+            $this->query->addWhere(
+                'username LIKE :search'
+                    . ' OR email LIKE :search'
+            )
+            ->setParameter('search', '%' . $search . '%');
+        }
+
+        if ($filter === 'blocked') {
+            $this->query->addWhere('is_blocked = 1');
+        } elseif ($filter === 'unblocked') {
+            $this->query->addWhere('is_blocked = 0');
+        }
     }
 
     /**
@@ -73,7 +96,8 @@ class UserDAO extends AbstractDAO
     {
         return $this->query = (new QueryExpression())
             ->select(User::SQL_COLUMNS, 'u')
-            ->from(User::SQL_TABLE, 'u');
+            ->from(User::SQL_TABLE, 'u')
+            ->orderBy('created_at', 'DESC');
     }
 
     /**
@@ -91,5 +115,28 @@ class UserDAO extends AbstractDAO
             'roles' => json_encode($user->getRoles()),
             'is_blocked' => intval($user->getIsBlocked())
         ]);
+    }
+
+
+    /**
+     * Returns the total count of posts.
+     */
+    public function getPaginationCount(): int
+    {
+        $stmt = $this->createQuery($this->query->generateCountSQL(), $this->query->getParameters());
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
+    }
+
+    /**
+     * @return null|object[]|User[] Array of posts
+     */
+    public function getPaginationResult(int $offset, int $range)
+    {
+        $this->query->limit($offset, $range);
+
+        return $this->getResult($this, $this->query);
     }
 }

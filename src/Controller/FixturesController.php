@@ -41,7 +41,7 @@ class FixturesController extends AbstractController
      */
     public function load(): Response
     {
-        $this->createUsers(4);
+        $this->createUsers(20);
 
         for ($i = 0; $i < 3; $i++) {
             $user = $this->createAdminUser();

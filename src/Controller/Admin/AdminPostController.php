@@ -24,16 +24,13 @@ class AdminPostController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         // retrieves the page number and search terms of the query string
-        $pageNumber = (int) $this->request->query->get('page') ?: 1;
+        $pageNumber = (int) $this->request->query->get('page');
         $searchTerms = $this->request->query->get('q');
 
-        // get the pagination
-        $pagination = $this->postManager->getPaginationForAllPosts($searchTerms, $pageNumber);
-
         return $this->render('admin/post/index.html.twig', [
-            'pagination' => $pagination,
+            'pagination' => $this->postManager->getPaginationForAllPosts($searchTerms, $pageNumber),
             'searchTerms' => $searchTerms,
-            'searchQueryString' => http_build_query(['q' => $searchTerms])
+            'queryString' => http_build_query($this->request->query->all())
         ]);
     }
 
