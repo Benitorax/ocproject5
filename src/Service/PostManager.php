@@ -2,10 +2,11 @@
 
 namespace App\Service;
 
+use DateTime;
 use App\Model\Post;
 use App\DAO\PostDAO;
+use Ramsey\Uuid\Uuid;
 use App\Service\Pagination\Paginator;
-use DateTime;
 
 class PostManager
 {
@@ -28,7 +29,7 @@ class PostManager
         }
 
         $dateTime = new DateTime('now');
-        $post->setId(IdGenerator::generate())
+        $post->setUuid(Uuid::uuid4())
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime);
         $this->postDAO->add($post);

@@ -4,6 +4,7 @@ namespace App\DAO;
 
 use DateTime;
 use App\Model\User;
+use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 
@@ -18,6 +19,7 @@ class UserDAO extends AbstractDAO
     {
         $user = new User();
         $user->setId($o->u_id)
+            ->setUuid(Uuid::fromString($o->u_uuid))
             ->setEmail($o->u_email)
             ->setPassword($o->u_password)
             ->setUsername($o->u_username)
@@ -80,7 +82,7 @@ class UserDAO extends AbstractDAO
     public function add(User $user): void
     {
         $this->insert('user', [
-            'id' => $user->getId(),
+            'uuid' => $user->getUuid()->toString(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),
             'username' => $user->getUsername(),

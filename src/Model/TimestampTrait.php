@@ -4,6 +4,9 @@ namespace App\Model;
 
 use DateTime;
 
+/**
+ * Contains createdAt and updatedAt with getters and setters.
+ */
 trait TimestampTrait
 {
     private DateTime $createdAt;

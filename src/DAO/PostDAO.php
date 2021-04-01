@@ -6,6 +6,7 @@ use PDO;
 use DateTime;
 use App\Model\Post;
 use App\Model\User;
+use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 use App\Service\Pagination\PaginationDAOInterface;
@@ -21,6 +22,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     {
         $user = new User();
         $user->setId($o->u_id)
+            ->setUuid(Uuid::fromString($o->u_uuid))
             ->setEmail($o->u_email)
             ->setPassword($o->u_password)
             ->setUsername($o->u_username)
@@ -31,6 +33,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
 
         $post = new Post();
         $post->setId($o->p_id)
+            ->setUuid(Uuid::fromString($o->p_uuid))
             ->setTitle($o->p_title)
             ->setSlug($o->p_slug)
             ->setLead($o->p_lead)
@@ -128,7 +131,6 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
                 'slug' => $post->getSlug(),
                 'lead' => $post->getLead(),
                 'content' => $post->getContent(),
-                'created_at' => ($post->getCreatedAt())->format('Y-m-d H:i:s'),
                 'updated_at' => ($post->getUpdatedAt())->format('Y-m-d H:i:s'),
                 'is_published' => intval($post->getIsPublished()),
                 'user_id' => $post->getUser()->getId(),
@@ -143,7 +145,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     public function add(Post $post): void
     {
         $this->insert('post', [
-            'id' => $post->getId(),
+            'uuid' => $post->getUuid(),
             'title' => $post->getTitle(),
             'slug' => $post->getSlug(),
             'lead' => $post->getLead(),

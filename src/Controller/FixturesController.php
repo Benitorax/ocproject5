@@ -8,7 +8,7 @@ use App\Model\User;
 use App\DAO\PostDAO;
 use App\DAO\UserDAO;
 use Faker\Generator;
-use App\Service\IdGenerator;
+use Ramsey\Uuid\Uuid;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
@@ -91,7 +91,7 @@ class FixturesController extends AbstractController
         $lastName = $this->faker->lastName;
         $dateTime = $this->faker->dateTimeBetween('-2 years', '-10 months');
 
-        $user = (new User())->setId(IdGenerator::generate())
+        $user = (new User())->setUuid(Uuid::uuid4())
             ->setEmail(strtolower($firstName . '.' . $lastName) . '@yopmail.com')
             ->setPassword((string) $this->encoder->encode('123456'))
             ->setUsername($firstName . ' ' . $lastName)
@@ -104,7 +104,9 @@ class FixturesController extends AbstractController
         }
 
         $this->userDAO->add($user);
+        $user = $this->userDAO->getOneByUsername($firstName . ' ' . $lastName);
 
+        /** @var User */
         return $user;
     }
 
@@ -124,7 +126,7 @@ class FixturesController extends AbstractController
         }
 
         $post = new Post();
-        $post->setId(IdGenerator::generate())
+        $post->setUuid(Uuid::uuid4())
             ->setTitle($this->faker->realText(70, 5))
             ->setLead($this->faker->realText(255, 3))
             ->setContent($this->faker->paragraphs(3, true))

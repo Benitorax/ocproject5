@@ -5,7 +5,7 @@ namespace App\Service;
 use DateTime;
 use App\Model\User;
 use App\DAO\UserDAO;
-use App\Form\RegisterForm;
+use Ramsey\Uuid\Uuid;
 use Framework\Security\Encoder\PasswordEncoder;
 
 class UserManager
@@ -24,7 +24,7 @@ class UserManager
     public function saveNewUser(User $user): User
     {
         $dateTime = new DateTime();
-        $user->setId(IdGenerator::generate())
+        $user->setUuid(Uuid::uuid4())
             ->setPassword((string) $this->encoder->encode($user->getPassword()))
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)
