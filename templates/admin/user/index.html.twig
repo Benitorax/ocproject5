@@ -57,20 +57,25 @@
                             <td>{{ user.createdAt|date('Y-m-d H:i:s') }}</td>
                             <td>
                                 <div class="row">
-                                    <div class="col-12 col-sm-auto p-0">
+                                    {% import "form/_form.html.twig" as _form %}
+                                    <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
                                         {% if user.isBlocked is same as(true) %}
                                             <form method="POST" action="{{ path('admin_user_unblock', {uuid: user.uuid}) }}">
-                                                {% import "form/_form.html.twig" as _form %}
                                                 {{ _form.input_csrf(csrf_token()) }}
                                                 <button class="btn btn-info"><i class="bi bi-unlock"></i></button>
                                             </form>
                                         {% else %}
                                             <form method="POST" action="{{ path('admin_user_block', {uuid: user.uuid}) }}">
-                                                {% import "form/_form.html.twig" as _form %}
                                                 {{ _form.input_csrf(csrf_token()) }}
-                                                <button class="btn btn-danger"><i class="bi bi-lock"></i></button>
+                                                <button class="btn btn-warning"><i class="bi bi-lock"></i></button>
                                             </form>
                                         {% endif %}
+                                    </div>
+                                    <div class="col-12 col-sm-auto p-0">
+                                        <form method="POST" action="{{ path('admin_user_delete', {uuid: user.uuid}) }}">
+                                            {{ _form.input_csrf(csrf_token()) }}
+                                            <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
+                                        </form>
                                     </div>
                                 </div>
                             </td>

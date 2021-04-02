@@ -21,7 +21,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     public function buildObject(\stdClass $o): Post
     {
         $user = new User();
-        $user->setId($o->u_id)
+
+        if (!empty($o->u_id)) {
+            $user->setId($o->u_id)
             ->setUuid(Uuid::fromString($o->u_uuid))
             ->setEmail($o->u_email)
             ->setPassword($o->u_password)
@@ -30,6 +32,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             ->setUpdatedAt(new DateTime($o->u_updated_at))
             ->setRoles(json_decode($o->u_roles))
             ->setIsBlocked($o->u_is_blocked);
+        }
 
         $post = new Post();
         $post->setId($o->p_id)

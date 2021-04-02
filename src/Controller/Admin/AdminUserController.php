@@ -63,4 +63,19 @@ class AdminUserController extends AbstractController
 
         return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
     }
+
+    /**
+     * Deletes a user.
+     */
+    public function delete(string $uuid): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        if ($this->isCsrfTokenValid()) {
+            $this->userManager->deleteUserByUuid($uuid);
+            $this->addFlash('success', 'The user has been deleted with success!');
+        }
+
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+    }
 }

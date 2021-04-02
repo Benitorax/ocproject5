@@ -56,7 +56,7 @@ class UserManager
     }
 
     /**
-     * Blocks user by its id in database.
+     * Blocks user in database by id.
      */
     public function blockUserByUuid(string $uuid): void
     {
@@ -64,10 +64,18 @@ class UserManager
     }
 
     /**
-     * Unblocks user by its id in database.
+     * Unblocks user in database by id.
      */
     public function unblockUserByUuid(string $uuid): void
     {
         $this->userDAO->unblockByUuid($uuid);
+    }
+
+    /**
+     * Deletes user in database by id.
+     */
+    public function deleteUserByUuid(string $uuid): void
+    {
+        $this->userDAO->deleteByUuid($uuid);
     }
 }

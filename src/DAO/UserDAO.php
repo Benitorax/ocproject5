@@ -134,6 +134,14 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Deletes a user.
+     */
+    public function deleteByUuid(string $uuid): void
+    {
+        $this->delete('user', ['uuid' => $uuid]);
+    }
+
+    /**
      * Returns the total count of posts.
      */
     public function getPaginationCount(): int

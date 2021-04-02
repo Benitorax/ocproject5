@@ -73,6 +73,11 @@ return [
         'method' => 'POST',
         'callable' => 'App\Controller\Admin\AdminUserController::unblock'
     ],
+    '/admin/user/{uuid}/delete' => [
+        'name' => 'admin_user_delete',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\AdminUserController::delete'
+    ],
     // App
     '/register' => [
         'name' => 'register',
