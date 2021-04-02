@@ -90,6 +90,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
                 'title LIKE :search'
                     . ' OR lead LIKE :search'
                     . ' OR content LIKE :search'
+                    . ' OR u.username LIKE :search'
             )
             ->setParameter('search', '%' . $search . '%');
         }
