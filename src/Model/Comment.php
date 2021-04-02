@@ -4,15 +4,11 @@ namespace App\Model;
 
 use App\Model\Post;
 use App\Model\User;
-use Ramsey\Uuid\UuidInterface;
 
 class Comment
 {
     use IdentifierTrait;
     use TimestampTrait;
-
-    public const SQL_TABLE = 'comment';
-    public const SQL_COLUMNS = ['id', 'uuid', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
 
     private string $content;
     private bool $isValidated;

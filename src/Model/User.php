@@ -9,11 +9,6 @@ class User implements UserInterface
     use IdentifierTrait;
     use TimestampTrait;
 
-    public const SQL_TABLE = 'user';
-    public const SQL_COLUMNS = [
-        'id', 'uuid', 'email', 'password', 'username', 'created_at', 'updated_at', 'roles', 'is_blocked'
-    ];
-
     private string $email = '';
     private string $password = '';
     private string $username = '';

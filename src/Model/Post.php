@@ -9,11 +9,6 @@ class Post
     use IdentifierTrait;
     use TimestampTrait;
 
-    public const SQL_TABLE = 'post';
-    public const SQL_COLUMNS = [
-        'id', 'uuid', 'title', 'slug', 'lead', 'content', 'created_at', 'updated_at', 'is_published', 'user_id'
-    ];
-
     private string $title = '';
     private ?string $slug = null;
     private string $lead = '';

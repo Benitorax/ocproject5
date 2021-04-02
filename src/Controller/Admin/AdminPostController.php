@@ -74,7 +74,10 @@ class AdminPostController extends AbstractController
             return $this->redirectToRoute('admin_post_index');
         }
 
-        return $this->render('admin/post/edit.html.twig', ['form' => $form]);
+        return $this->render('admin/post/edit.html.twig', [
+            'form' => $form,
+            'post' => $post
+        ]);
     }
 
     /**

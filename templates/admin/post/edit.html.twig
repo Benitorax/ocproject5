@@ -36,6 +36,9 @@
                             <label class="form-check-label" for="is_published">Publish the post</label>
                             <small id="isPublishedHelp" class="form-text text-muted">You can save now and publish later.</small>
                         </div>
+                        <div>
+                            <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
+                        </div>
                         {{ _form.input_csrf(csrf_token()) }}
                         <div class="text-center">
                             <button type="submit" class="btn btn-primary">Save</button>

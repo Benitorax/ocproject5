@@ -13,6 +13,11 @@ use App\Service\Pagination\PaginationDAOInterface;
 
 class PostDAO extends AbstractDAO implements PaginationDAOInterface
 {
+    public const SQL_TABLE = 'post';
+    public const SQL_COLUMNS = [
+        'id', 'uuid', 'title', 'slug', 'lead', 'content', 'created_at', 'updated_at', 'is_published', 'user_id'
+    ];
+
     private QueryExpression $query;
 
     /**
@@ -115,10 +120,10 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     private function prepareQuery(): QueryExpression
     {
         return $this->query = (new QueryExpression())
-            ->select(Post::SQL_COLUMNS, 'p')
-            ->addSelect(User::SQL_COLUMNS, 'u')
-            ->from(POST::SQL_TABLE, 'p')
-            ->leftOuterJoin(USER::SQL_TABLE, 'u', 'user_id = u.id')
+            ->select(self::SQL_COLUMNS, 'p')
+            ->addSelect(UserDAO::SQL_COLUMNS, 'u')
+            ->from(self::SQL_TABLE, 'p')
+            ->leftOuterJoin(UserDAO::SQL_TABLE, 'u', 'user_id = u.id')
             ->orderBy('p.updated_at', 'DESC');
     }
 
@@ -165,7 +170,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function deleteByUuid(string $uuid): void
     {
-        $this->delete(Post::SQL_TABLE, ['uuid' => $uuid]);
+        $this->delete(self::SQL_TABLE, ['uuid' => $uuid]);
     }
 
     /**

@@ -11,6 +11,11 @@ use App\Service\Pagination\PaginationDAOInterface;
 
 class UserDAO extends AbstractDAO implements PaginationDAOInterface
 {
+    public const SQL_TABLE = 'user';
+    public const SQL_COLUMNS = [
+        'id', 'uuid', 'email', 'password', 'username', 'created_at', 'updated_at', 'roles', 'is_blocked'
+    ];
+
     private QueryExpression $query;
 
     /**
@@ -95,8 +100,8 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     private function prepareQuery(): QueryExpression
     {
         return $this->query = (new QueryExpression())
-            ->select(User::SQL_COLUMNS, 'u')
-            ->from(User::SQL_TABLE, 'u')
+            ->select(self::SQL_COLUMNS, 'u')
+            ->from(self::SQL_TABLE, 'u')
             ->orderBy('created_at', 'DESC');
     }
 

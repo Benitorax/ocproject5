@@ -10,6 +10,9 @@ use Framework\DAO\QueryExpression;
 
 class CommentDAO extends AbstractDAO
 {
+    public const SQL_TABLE = 'comment';
+    public const SQL_COLUMNS = ['id', 'uuid', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
+
     private QueryExpression $query;
 
     public function __construct()
