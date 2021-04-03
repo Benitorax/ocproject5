@@ -21,7 +21,6 @@ class SecurityController extends AbstractController
      */
     public function login(): Response
     {
-        // if the user is already authenticated, then redirects to home page
         if ($this->isGranted(['user'])) {
             return $this->redirectToRoute('home');
         }
@@ -33,9 +32,13 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $user = $this->auth->authenticateLoginForm($form, $this->request);
 
-            // if user exists then redirect to homepage
+            // checks if user exists
             if (!empty($user)) {
                 $this->addFlash('success', 'Welcome, ' . $user->getUsername() . '!');
+
+                if (in_array('admin', $user->getRoles())) {
+                    return $this->redirectToRoute('admin_dashboard');
+                }
 
                 return $this->redirectToRoute('home');
             }

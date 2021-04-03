@@ -20,6 +20,10 @@ class DashboardController extends AbstractController
      */
     public function index(): Response
     {
+        if (false === $this->isGranted(['user'])) {
+            return $this->redirectToRoute('login');
+        }
+
         $this->denyAccessUnlessGranted(['admin']);
 
         return $this->redirectToRoute('admin_dashboard_post_draft');
