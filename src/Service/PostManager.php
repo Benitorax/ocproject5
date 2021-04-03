@@ -85,6 +85,22 @@ class PostManager
     }
 
     /**
+     * Returns Paginator
+     */
+    public function getPaginationForDraftPosts(int $pageNumber): Paginator
+    {
+        // sets the query for the pagination
+        $this->postDAO->setNeverPublishedQuery();
+
+        // creates the pagination for the template
+        return $this->paginator->paginate(
+            $this->postDAO,
+            $pageNumber < 1 ? 1 : $pageNumber,
+            15
+        );
+    }
+
+    /**
      * @return null|object|Post
      */
     public function getOneBySlug(string $slug)

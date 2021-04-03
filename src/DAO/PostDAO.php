@@ -79,7 +79,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
-     * Setting the query without executing it.
+     * Setting the query to get all posts without executing it.
      */
     public function setAllPostsQuery(?string $search): void
     {
@@ -94,6 +94,15 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             )
             ->setParameter('search', '%' . $search . '%');
         }
+    }
+
+    /**
+     * Setting the query to get drafts without executing it.
+     */
+    public function setNeverPublishedQuery(): void
+    {
+        $this->prepareQuery()
+            ->where('slug IS NULL');
     }
 
     /**

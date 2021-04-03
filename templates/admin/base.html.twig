@@ -5,8 +5,8 @@
     <header class="navbar navbar-expand-sm navbar-dark" style="background-color: #800000;">
         <div>
             <ul class="navbar-nav">
-                <li class="nav-item disabled{% if currentRoute is same as('home') %} active{% endif %}">
-                    <a class="nav-link" href="{{ path('home') }}">Dashboard</a>
+                <li class="nav-item disabled{% if currentRoute is same as('admin_dashboard') %} active{% endif %}">
+                    <a class="nav-link" href="{{ path('admin_dashboard') }}">Dashboard</a>
                 </li>
                 <li class="nav-item{% if currentRoute is same as('admin_post_index') %} active{% endif %}">
                     <a class="nav-link" href="{{ path('admin_post_index') }}">Posts</a>

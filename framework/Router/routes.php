@@ -38,6 +38,15 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\SecurityController::login'
     ],
+    '/admin/dashboard' => [
+        'name' => 'admin_dashboard',
+        'callable' => 'App\Controller\Admin\AdminDashboardController::index'
+    ],
+    '/admin/dashboard/draft' => [
+        'name' => 'admin_dashboard_post_draft',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\Admin\AdminDashboardController::showDraftPosts'
+    ],
     // Admin > Post
     '/admin/post' => [
         'name' => 'admin_post_index',
