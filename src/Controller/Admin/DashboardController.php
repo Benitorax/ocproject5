@@ -6,7 +6,7 @@ use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
-class AdminDashboardController extends AbstractController
+class DashboardController extends AbstractController
 {
     private PostManager $postManager;
 

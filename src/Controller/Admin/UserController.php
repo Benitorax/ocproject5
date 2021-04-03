@@ -6,7 +6,7 @@ use App\Service\UserManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
-class AdminUserController extends AbstractController
+class UserController extends AbstractController
 {
     private UserManager $userManager;
 

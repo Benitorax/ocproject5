@@ -40,52 +40,52 @@ return [
     ],
     '/admin/dashboard' => [
         'name' => 'admin_dashboard',
-        'callable' => 'App\Controller\Admin\AdminDashboardController::index'
+        'callable' => 'App\Controller\Admin\DashboardController::index'
     ],
     '/admin/dashboard/draft' => [
         'name' => 'admin_dashboard_post_draft',
         'method' => ['GET', 'POST'],
-        'callable' => 'App\Controller\Admin\AdminDashboardController::showDraftPosts'
+        'callable' => 'App\Controller\Admin\DashboardController::showDraftPosts'
     ],
     // Admin > Post
     '/admin/post' => [
         'name' => 'admin_post_index',
-        'callable' => 'App\Controller\Admin\AdminPostController::index'
+        'callable' => 'App\Controller\Admin\PostController::index'
     ],
     '/admin/post/create' => [
         'name' => 'admin_post_create',
         'method' => ['GET', 'POST'],
-        'callable' => 'App\Controller\Admin\AdminPostController::create'
+        'callable' => 'App\Controller\Admin\PostController::create'
     ],
     '/admin/post/{uuid}/edit' => [
         'name' => 'admin_post_edit',
         'method' => ['GET', 'POST'],
-        'callable' => 'App\Controller\Admin\AdminPostController::edit'
+        'callable' => 'App\Controller\Admin\PostController::edit'
     ],
     '/admin/post/{uuid}/delete' => [
         'name' => 'admin_post_delete',
         'method' => 'POST',
-        'callable' => 'App\Controller\Admin\AdminPostController::delete'
+        'callable' => 'App\Controller\Admin\PostController::delete'
     ],
     // Admin > User
     '/admin/user' => [
         'name' => 'admin_user_index',
-        'callable' => 'App\Controller\Admin\AdminUserController::index'
+        'callable' => 'App\Controller\Admin\UserController::index'
     ],
     '/admin/user/{uuid}/block' => [
         'name' => 'admin_user_block',
         'method' => 'POST',
-        'callable' => 'App\Controller\Admin\AdminUserController::block'
+        'callable' => 'App\Controller\Admin\UserController::block'
     ],
     '/admin/user/{uuid}/unblock' => [
         'name' => 'admin_user_unblock',
         'method' => 'POST',
-        'callable' => 'App\Controller\Admin\AdminUserController::unblock'
+        'callable' => 'App\Controller\Admin\UserController::unblock'
     ],
     '/admin/user/{uuid}/delete' => [
         'name' => 'admin_user_delete',
         'method' => 'POST',
-        'callable' => 'App\Controller\Admin\AdminUserController::delete'
+        'callable' => 'App\Controller\Admin\UserController::delete'
     ],
     // App
     '/register' => [
