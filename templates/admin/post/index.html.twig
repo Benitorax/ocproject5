@@ -57,11 +57,7 @@
                                         </a>
                                     </div>
                                     <div class="col-12 col-sm-auto p-0">
-                                        <form method="POST" action="{{ path('admin_post_delete', {uuid: post.uuid}) }}">
-                                            {% import "form/_form.html.twig" as _form %}
-                                            {{ _form.input_csrf(csrf_token()) }}
-                                            <button class="btn btn-danger"><i class="bi bi-trash"></i></button>
-                                        </form>
+                                        <button class="btn btn-danger js-button-delete" data-url="{{ path('admin_post_delete', {uuid: post.uuid}) }}"><i class="bi bi-trash"></i></button>
                                     </div>
                                 </div>
                             </td>
@@ -77,4 +73,11 @@
             {% include 'pagination/_pagination.html.twig' %}
         </section>
     </div>
+    {% include 'modal/_confirm_delete.html.twig' %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <script src="/js/modal.js"></script>
 {% endblock %}
