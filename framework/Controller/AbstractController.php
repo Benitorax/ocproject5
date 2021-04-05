@@ -73,6 +73,17 @@ abstract class AbstractController
     }
 
     /**
+     * Redirects to another route from the route's name and its parameters.
+     */
+    public function redirectToUrl(string $url): Response
+    {
+        $response = new Response('', 302);
+        $response->headers->set('Location', $url);
+
+        return $this->container->get(View::class)->render('app/redirect.html.twig', ['url' => $url], $response);
+    }
+
+    /**
      * Checks if the csrf token is valid.
      */
     public function isCsrfTokenValid(): bool
@@ -122,9 +133,11 @@ abstract class AbstractController
      */
     protected function denyAccessUnlessGranted(array $roles): void
     {
-        if (!$this->isGranted($roles)) {
-            throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
+        if ($this->isGranted($roles)) {
+            return;
         }
+
+        throw new Exception(sprintf('Access Denied. Required roles: %s.', implode(', ', $roles)), 403);
     }
 
     /**

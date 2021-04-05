@@ -2,14 +2,20 @@
 
 {% block header %}
     {% set currentRoute = app.request.attributes.get('route') %}
-    <header class="navbar navbar-expand-sm navbar-dark" style="background-color: #800000;">
+    <header class="navbar navbar-expand-sm navbar-dark" style="background-color: #666699;">
         <div>
             <ul class="navbar-nav">
-                <li class="nav-item disabled{% if currentRoute is same as('home') %} active{% endif %}">
-                    <a class="nav-link" href="{{ path('home') }}">Dashboard</a>
+                <li class="nav-item disabled{% if currentRoute in ['admin_dashboard', 'admin_dashboard_post_draft'] %} active{% endif %}">
+                    <a class="nav-link" href="{{ path('admin_dashboard') }}">Dashboard</a>
                 </li>
                 <li class="nav-item{% if currentRoute is same as('admin_post_index') %} active{% endif %}">
                     <a class="nav-link" href="{{ path('admin_post_index') }}">Posts</a>
+                </li>
+                <li class="nav-item{% if currentRoute is same as('admin_user_index') %} active{% endif %}">
+                    <a class="nav-link" href="{{ path('admin_user_index') }}">Users</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ path('home') }}" style="color: #ddddbb">Quit</a>
                 </li>
             </ul>
         </div>
@@ -24,7 +30,7 @@
                     <form method="POST" action="{{ path('logout') }}">
                         {% import "form/_form.html.twig" as _form %}
                         {{ _form.input_csrf(csrf_token()) }}
-                        <button type="submit" class="float-right btn text-info my-2 my-sm-0" style="background-color: #800000">Logout</button>
+                        <button type="submit" class="float-right btn my-2 my-sm-0" style="color: #99ccff; background-color: #666699">Logout</button>
                     </form>
                 {% else %}
                     <li class="nav-item">

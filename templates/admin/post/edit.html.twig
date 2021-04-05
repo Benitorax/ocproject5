@@ -9,32 +9,35 @@
             <h5 class="card-title text-center">Edit a post</h5>
             <div class="card">
                 <div class="card-body">
-                    <form method="POST" novalidate>
+                    <form method="POST">
                         {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="title">Title</label>
                             {% if form.data.slug is not null %}
                                 <input type="text" class="form-control" value="{{ form.title }}" readonly>
                             {% else %}
-                                <input type="text" class="form-control" name="title"  id="title" value="{{ form.title }}" maxlength="100" required>
+                                <input type="text" class="form-control" name="title"  id="title" value="{{ form.title }}" minlength="10" maxlength="100" required>
                                 <small id="isPublishedHelp" class="form-text text-muted">The title can't be modified after publication.</small>
                                 {% if form.errors.title is not null %}<div class="invalid-feedback">{{ form.errors.title }}</div>{% endif %}
                             {% endif %}
                         </div>
                         <div class="form-group">
                             <label for="lead">Lead</label>
-                            <textarea class="form-control" name="lead" id="lead" maxlength="1500" rows="6" required>{{ form.lead }}</textarea>
+                            <textarea class="form-control" name="lead" id="lead"  minlength="50" maxlength="300" rows="6" required>{{ form.lead }}</textarea>
                             {% if form.errors.lead is not null %}<div class="invalid-feedback">{{ form.errors.lead }}</div>{% endif %}
                         </div>
                         <div class="form-group">
                             <label for="content">Content</label>
-                            <textarea class="form-control" name="content" id="content" maxlength="1500" rows="10" required>{{ form.content }}</textarea>
+                            <textarea class="form-control" name="content" id="content"  minlength="100" maxlength="1500" rows="10" required>{{ form.content }}</textarea>
                             {% if form.errors.content is not null %}<div class="invalid-feedback">{{ form.errors.content }}</div>{% endif %}
                         </div>
                         <div class="form-group form-check">
                             <input type="checkbox" class="form-check-input" name="is_published" id="is_published" aria-describedby="isPublishedHelp" {% if form.isPublished %}checked{% endif %}>
                             <label class="form-check-label" for="is_published">Publish the post</label>
                             <small id="isPublishedHelp" class="form-text text-muted">You can save now and publish later.</small>
+                        </div>
+                        <div>
+                            <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
                         </div>
                         {{ _form.input_csrf(csrf_token()) }}
                         <div class="text-center">

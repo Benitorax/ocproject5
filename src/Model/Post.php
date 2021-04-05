@@ -3,37 +3,18 @@
 namespace App\Model;
 
 use App\Model\User;
-use App\Model\TimestampTrait;
-use Framework\Security\User\UserInterface;
 
 class Post
 {
+    use IdentifierTrait;
     use TimestampTrait;
 
-    public const SQL_TABLE = 'post';
-    public const SQL_COLUMNS = [
-        'id', 'title', 'slug', 'lead', 'content', 'created_at', 'updated_at', 'is_published', 'user_id'
-    ];
-
-    private string $id;
     private string $title = '';
     private ?string $slug = null;
     private string $lead = '';
     private string $content = '';
     private bool $isPublished = false;
     private User $user;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     public function getTitle(): string
     {

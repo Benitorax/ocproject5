@@ -1,0 +1,98 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}User Management{% endblock %}
+
+{% block body %}
+    <div class="row">
+        <aside class="col-12 mb-3">
+            <div class="row justify-content-between">
+                <div class="col-12 col-sm-auto m-3">
+                    <ul class="nav nav-pills justify-content-center">
+                        <li class="nav-item">
+                            <a class="nav-link
+                            {% if 'filter=blocked' not in queryString
+                                and 'filter=unblocked' not in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'all'}) }}">All</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if 'filter=blocked' in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'blocked'}) }}">Blocked</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link{% if 'filter=unblocked' in queryString %} active{% endif %}" href="?{{ queryWithParams(queryString, {filter: 'unblocked'}) }}">Unblocked</a>
+                        </li>
+                    </ul>
+                </div>
+                <div class="col-12 col-sm-auto m-3">
+                    <form method="GET">
+                        <div class="form-row">
+                            <div class="col-12 col-sm-auto">
+                                <input type="text" class="form-control" name="q"  id="q" value="{{ searchTerms }}" required>
+                            </div>
+                            <div class="col-12 col-sm-auto">
+                                <button type="submit" class="btn btn-secondary btn-block">Search</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </aside>
+        <section class="col mx-auto">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Username</th>
+                        <th scope="col">Email</th>
+                        <th scope="col">Blocked</th>
+                        <th scope="col">Created</th>
+                        <th scope="col"><i class="bi bi-gear-fill"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in pagination %}
+                        <tr>
+                            <th scope="row">{{ loop.index + pagination.offset }}</th>
+                            <td>{{ user.username }}</td>
+                            <td>{{ user.email }}</td>
+                            <td>{% if user.isBlocked is same as(true) %}Yes{% else %}No{% endif %}</td>
+                            <td>{{ user.createdAt|date('Y-m-d H:i:s') }}</td>
+                            <td>
+                                <div class="row">
+                                    {% import "form/_form.html.twig" as _form %}
+                                    <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
+                                        {% if user.isBlocked is same as(true) %}
+                                            <form method="POST" action="{{ path('admin_user_unblock', {uuid: user.uuid}) }}">
+                                                {{ _form.input_csrf(csrf_token()) }}
+                                                <button class="btn btn-info"><i class="bi bi-unlock"></i></button>
+                                            </form>
+                                        {% else %}
+                                            <form method="POST" action="{{ path('admin_user_block', {uuid: user.uuid}) }}">
+                                                {{ _form.input_csrf(csrf_token()) }}
+                                                <button class="btn btn-warning"><i class="bi bi-lock"></i></button>
+                                            </form>
+                                        {% endif %}
+                                    </div>
+                                    <div class="col-12 col-sm-auto p-0">
+                                        <button class="btn btn-danger js-button-delete" data-url="{{ path('admin_user_delete', {uuid: user.uuid}) }}"><i class="bi bi-trash"></i></button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td colspan="3">No user registered</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'pagination/_pagination.html.twig' %}
+        </section>
+    </div>
+    {% include 'modal/_confirm_delete.html.twig' %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <script src="/js/modal.js"></script>
+{% endblock %}

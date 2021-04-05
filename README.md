@@ -26,8 +26,9 @@
 
 <h2>Librairies</h2>
 <ul>
-  <li>Twig for the frontend.</li>
-  <li>SwiftMailer to send email.</li>
+  <li>Ramsey/Uuid for uuid inside model classes.</li> 
+  <li>Twig for the template engine.</li>
+  <li>SwiftMailer to send emails.</li>
   <li>Faker to load fixtures.</li>
 </ul>
 <br/>

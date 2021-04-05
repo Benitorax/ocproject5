@@ -77,9 +77,9 @@
                     <li class="nav-item{% if currentRoute is same as('terms_of_use') %} active{% endif %}">
                         <a class="nav-link" href="{{ path('terms_of_use') }}">Terms of use</a>
                     </li>
-                    {% if 'admin' in app.user.roles %}
+                    {% if 'admin' in app.user.roles or app.user is same as(null) %}
                         <li class="nav-item{% if currentRoute is same as('admin_login') %} active{% endif %}">
-                            <a class="nav-link" href="{{ path('admin_login') }}">Admin</a>
+                            <a class="nav-link" href="{{ path('admin_dashboard') }}">Admin</a>
                         </li>
                     {% endif %}
                     <li class="navbar-text">

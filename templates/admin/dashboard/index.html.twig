@@ -1,38 +1,28 @@
 {% extends 'admin/base.html.twig' %}
+{% import "form/_form.html.twig" as _form %}
 
-{% block title %}Post Management{% endblock %}
+{% block title %}Dashboard{% endblock %}
 
 {% block body %}
-    <div class="row">
-        <aside class="col-12 mb-3">
-            <div class="row justify-content-between">
-                <div class="col-12 col-sm-auto m-3">
-                    <a href="{{ path('admin_post_create') }}">
-                        <button class="btn btn-success btn-block">Create a post</button>
-                    </a>
-                </div>
-                <div class="col-12 col-sm-auto m-3">
-                    <form method="GET">
-                        <div class="form-row">
-                            <div class="col-12 col-sm-auto">
-                                <input type="text" class="form-control" name="q"  id="q" value="{{ searchTerms }}" required>
-                            </div>
-                            <div class="col-12 col-sm-auto">
-                                <button type="submit" class="btn btn-secondary btn-block">Search</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <div class="row justify-content-center">
+        <aside class="col-12 mb-5">
+            <ul class="nav nav-tabs justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_comment') %} active{% endif %}" href="#">Comments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_post_draft') %} active{% endif %}" href="{{ path('admin_dashboard_post_draft') }}">Draft Posts</a>
+                </li>
+            </ul>
         </aside>
-        <section class="col mx-auto">
+        <div class="col-12 col-md-10">
             <table class="table table-hover">
                 <thead>
                     <tr>
                         <th scope="col">#</th>
                         <th scope="col">Title</th>
                         <th scope="col">Last Modified</th>
-                        <th scope="col">Published</th>
+                        <th scope="col">Author</th>
                         <th scope="col"><i class="bi bi-gear-fill"></i></th>
                     </tr>
                 </thead>
@@ -42,13 +32,7 @@
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
                             <td>{{ post.title }}</td>
                             <td>{{ post.updatedAt|date('Y-m-d H:i:s') }}</td>
-                            <td>
-                                {%- if post.isPublished is same as(true) -%}
-                                    Yes
-                                {%- else -%}
-                                    No
-                                {%- endif -%}
-                            </td>
+                            <td>{{ post.user.username }}</td>
                             <td>
                                 <div class="row">
                                     <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
@@ -57,7 +41,9 @@
                                         </a>
                                     </div>
                                     <div class="col-12 col-sm-auto p-0">
-                                        <button class="btn btn-danger js-button-delete" data-url="{{ path('admin_post_delete', {uuid: post.uuid}) }}"><i class="bi bi-trash"></i></button>
+                                        <button type="button" class="btn btn-danger js-button-delete" data-url="{{ path('admin_post_delete', {uuid: post.uuid}) }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
                                     </div>
                                 </div>
                             </td>
@@ -65,13 +51,13 @@
                     {% else %}
                         <tr>
                             <th scope="row"></th>
-                            <td colspan="3">No posts created</td>
+                            <td colspan="3">No drafts</td>
                         </tr>
                     {% endfor %}
                 </tbody>
             </table>
             {% include 'pagination/_pagination.html.twig' %}
-        </section>
+        </div>
     </div>
     {% include 'modal/_confirm_delete.html.twig' %}
 {% endblock %}

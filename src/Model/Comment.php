@@ -4,32 +4,16 @@ namespace App\Model;
 
 use App\Model\Post;
 use App\Model\User;
-use App\Model\TimestampTrait;
 
 class Comment
 {
+    use IdentifierTrait;
     use TimestampTrait;
 
-    public const SQL_TABLE = 'comment';
-    public const SQL_COLUMNS = ['id', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
-
-    private string $id;
     private string $content;
     private bool $isValidated;
     private User $user;
     private Post $post;
-
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
-    public function setId(string $id): self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
 
     public function getContent(): string
     {

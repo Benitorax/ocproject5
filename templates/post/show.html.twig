@@ -10,7 +10,7 @@
             <p class="lead my-5">{{ post.lead }}</p>
             <p>{{ post.content|nl2br }}</p>
             <hr class="mt-5">
-            <p>By {{ post.user.username }}</p>
+            <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
             <p>
                 {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
                     Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}

@@ -24,6 +24,7 @@ class TwigExtension extends AbstractExtension
             new TwigFunction('path', [$this, 'generatePath']),
             new TwigFunction('url', [$this, 'generateUrl']),
             new TwigFunction('csrf_token', [$this, 'generateCsrfToken']),
+            new TwigFunction('queryWithParams', [$this, 'generateQueryStringWithParams'])
         ];
     }
 
@@ -46,5 +47,13 @@ class TwigExtension extends AbstractExtension
     public function generateCsrfToken(): string
     {
         return $this->csrfTokenManager->generateToken();
+    }
+
+    public function generateQueryStringWithParams(string $queryString, array $params): string
+    {
+        parse_str($queryString, $queryArray);
+        $queryArray = array_merge($queryArray, $params);
+
+        return http_build_query($queryArray);
     }
 }

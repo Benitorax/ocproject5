@@ -2,10 +2,11 @@
 
 namespace App\Service;
 
+use DateTime;
 use App\Model\Post;
 use App\DAO\PostDAO;
+use Ramsey\Uuid\Uuid;
 use App\Service\Pagination\Paginator;
-use DateTime;
 
 class PostManager
 {
@@ -28,7 +29,7 @@ class PostManager
         }
 
         $dateTime = new DateTime('now');
-        $post->setId(IdGenerator::generate())
+        $post->setUuid(Uuid::uuid4())
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime);
         $this->postDAO->add($post);
@@ -62,7 +63,7 @@ class PostManager
         // creates the pagination for the template
         return $this->paginator->paginate(
             $this->postDAO,
-            $pageNumber,
+            $pageNumber < 1 ? 1 : $pageNumber,
             15
         );
     }
@@ -78,8 +79,24 @@ class PostManager
         // creates the pagination for the template
         return $this->paginator->paginate(
             $this->postDAO,
-            $pageNumber,
+            $pageNumber < 1 ? 1 : $pageNumber,
             5
+        );
+    }
+
+    /**
+     * Returns Paginator
+     */
+    public function getPaginationForDraftPosts(int $pageNumber): Paginator
+    {
+        // sets the query for the pagination
+        $this->postDAO->setNeverPublishedQuery();
+
+        // creates the pagination for the template
+        return $this->paginator->paginate(
+            $this->postDAO,
+            $pageNumber < 1 ? 1 : $pageNumber,
+            15
         );
     }
 
@@ -91,6 +108,18 @@ class PostManager
         return $this->postDAO->getOneBySlug($slug);
     }
 
+    /**
+     * @return null|object|Post
+     */
+    public function getPostByUuid(string $uuid)
+    {
+        return $this->postDAO->getOneByUuid($uuid);
+    }
+
+    public function deletePostByUuid(string $uuid): void
+    {
+        $this->postDAO->deleteByUuid($uuid);
+    }
 
     /**
      * Adds a slug to the post.

@@ -3,12 +3,16 @@
 namespace App\DAO;
 
 use DateTime;
+use Ramsey\Uuid\Uuid;
 use App\Model\Comment;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 
 class CommentDAO extends AbstractDAO
 {
+    public const SQL_TABLE = 'comment';
+    public const SQL_COLUMNS = ['id', 'uuid', 'content', 'created_at', 'updated_at', 'is_validated', 'user_id', 'post_id'];
+
     private QueryExpression $query;
 
     public function __construct()
@@ -23,6 +27,7 @@ class CommentDAO extends AbstractDAO
     {
         $comment = new Comment();
         $comment->setId($o->c_id)
+            ->setUuid(Uuid::fromString($o->c_uuid))
             ->setContent($o->c_content)
             ->setCreatedAt(new DateTime($o->c_created_at))
             ->setUpdatedAt(new DateTime($o->c_updated_at))
@@ -40,6 +45,7 @@ class CommentDAO extends AbstractDAO
     {
         $this->insert('comment', [
             'id' => $comment->getId(),
+            'uuid' => $comment->getUuid(),
             'content' => $comment->getContent(),
             'created_at' => ($comment->getCreatedAt())->format('Y-m-d H:i:s'),
             'updated_at' => ($comment->getUpdatedAt())->format('Y-m-d H:i:s'),

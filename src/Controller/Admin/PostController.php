@@ -2,41 +2,35 @@
 
 namespace App\Controller\Admin;
 
-use App\DAO\PostDAO;
 use App\Form\PostForm;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
-class AdminPostController extends AbstractController
+class PostController extends AbstractController
 {
     private PostManager $postManager;
-    private PostDAO $postDAO;
 
-    public function __construct(PostManager $postManager, PostDAO $postDAO)
+    public function __construct(PostManager $postManager)
     {
         $this->postManager = $postManager;
-        $this->postDAO = $postDAO;
     }
 
     /**
-     * Displays a list of posts.
+     * Displays a list of all the posts.
      */
     public function index(): Response
     {
         $this->denyAccessUnlessGranted(['admin']);
 
         // retrieves the page number and search terms of the query string
-        $pageNumber = (int) $this->request->query->get('page') ?: 1;
+        $pageNumber = (int) $this->request->query->get('page');
         $searchTerms = $this->request->query->get('q');
 
-        // get the pagination
-        $pagination = $this->postManager->getPaginationForAllPosts($searchTerms, $pageNumber);
-
         return $this->render('admin/post/index.html.twig', [
-            'pagination' => $pagination,
+            'pagination' => $this->postManager->getPaginationForAllPosts($searchTerms, $pageNumber),
             'searchTerms' => $searchTerms,
-            'searchQueryString' => http_build_query(['q' => $searchTerms])
+            'queryString' => http_build_query($this->request->query->all())
         ]);
     }
 
@@ -64,11 +58,11 @@ class AdminPostController extends AbstractController
     /**
      * Displays a form page to create a post.
      */
-    public function edit(string $id): Response
+    public function edit(string $uuid): Response
     {
         $this->denyAccessUnlessGranted(['admin']);
 
-        $post = $this->postDAO->getOneById($id);
+        $post = $this->postManager->getPostByUuid($uuid);
         $form = $this->createForm(PostForm::class, $post);
         $form->handleRequest($this->request);
 
@@ -80,21 +74,24 @@ class AdminPostController extends AbstractController
             return $this->redirectToRoute('admin_post_index');
         }
 
-        return $this->render('admin/post/edit.html.twig', ['form' => $form]);
+        return $this->render('admin/post/edit.html.twig', [
+            'form' => $form,
+            'post' => $post
+        ]);
     }
 
     /**
      * Deletes a post.
      */
-    public function delete(string $id): Response
+    public function delete(string $uuid): Response
     {
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->postDAO->deleteById($id);
+            $this->postManager->deletePostByUuid($uuid);
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 
-        return $this->redirectToRoute('admin_post_index');
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
     }
 }
