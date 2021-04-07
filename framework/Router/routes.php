@@ -33,11 +33,6 @@ return [
         'callable' => 'App\Controller\PostController::index'
     ],
     // Admin
-    '/admin/login' => [
-        'name' => 'admin_login',
-        'method' => ['GET', 'POST'],
-        'callable' => 'App\Controller\Admin\SecurityController::login'
-    ],
     '/admin/dashboard' => [
         'name' => 'admin_dashboard',
         'callable' => 'App\Controller\Admin\DashboardController::index'
