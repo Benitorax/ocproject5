@@ -3,17 +3,21 @@
 namespace App\Controller;
 
 use App\Service\Auth;
+use App\Form\EmailForm;
 use App\Form\LoginForm;
+use App\Service\ResetPasswordManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
 class SecurityController extends AbstractController
 {
     private Auth $auth;
+    private ResetPasswordManager $resetPasswordManager;
 
-    public function __construct(Auth $auth)
+    public function __construct(Auth $auth, ResetPasswordManager $resetPasswordManager)
     {
         $this->auth = $auth;
+        $this->resetPasswordManager = $resetPasswordManager;
     }
 
     /**
@@ -70,5 +74,34 @@ class SecurityController extends AbstractController
         }
 
         return $this->redirectToRoute('home');
+    }
+
+    /**
+     * Displays the page to request a reset password.
+     */
+    public function resetPasswordRequest(): Response
+    {
+        if ($this->isGranted(['user'])) {
+            return $this->redirectToRoute('home');
+        }
+
+        $form = $this->createForm(EmailForm::class);
+        $form->handleRequest($this->request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->resetPasswordManager->manage($form->getEmail());
+
+            $this->addFlash(
+                'info',
+                sprintf(
+                    'If you have registered with %s, an email has been sent to this address to reset your password.',
+                    $form->getEmail()
+                )
+            );
+
+            return $this->redirectToRoute('login');
+        }
+
+        return $this->render('security/request_reset_password.html.twig', ['form' => $form]);
     }
 }

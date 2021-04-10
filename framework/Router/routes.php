@@ -22,6 +22,16 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\SecurityController::login'
     ],
+    '/password/reset-request' => [
+        'name' => 'password_reset_request',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\SecurityController::resetPasswordRequest'
+    ],
+    '/password/reset/{token}' => [
+        'name' => 'password_reset',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\SecurityController::resetPassword'
+    ],
     // Post
     '/post/{slug}' => [
         'name' => 'post_show',

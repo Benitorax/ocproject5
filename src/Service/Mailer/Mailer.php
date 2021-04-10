@@ -7,6 +7,7 @@ use Swift_Message;
 use App\Model\User;
 use Framework\View\View;
 use App\Form\ContactForm;
+use App\Model\ResetPasswordToken;
 
 class Mailer
 {
@@ -39,6 +40,26 @@ class Mailer
                 $this->view->renderEmail('mail/contact.html.twig', [
                         'form' => $form,
                         'recipient' => $recipient
+                    ]),
+                'text/html'
+            )
+        ;
+
+        return $this->mailer->send($message);
+    }
+
+    /**
+     * Send email to user to reset password.
+     */
+    public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
+    {
+        $message = (new Swift_Message('Reset password request'))
+            ->setFrom(['example@mail.com' => 'MyWebsite'])
+            ->setTo([$user->getEmail() => $user->getUsername()])
+            ->setBody(
+                $this->view->renderEmail('mail/reset_password_request.html.twig', [
+                        'token' => $token,
+                        'recipient' => $user
                     ]),
                 'text/html'
             )

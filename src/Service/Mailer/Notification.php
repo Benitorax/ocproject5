@@ -6,6 +6,7 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use App\Service\Mailer\Mailer;
 use App\Form\ContactForm;
+use App\Model\ResetPasswordToken;
 
 class Notification
 {
@@ -31,6 +32,16 @@ class Notification
         foreach ($admins as $admin) {
             $count += $this->mailer->notifyContact($form, $admin);
         }
+
+        return $count;
+    }
+
+    /**
+     * Send email to user to reset password.
+     */
+    public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
+    {
+        $count = $this->mailer->notifyResetPasswordRequest($user, $token);
 
         return $count;
     }
