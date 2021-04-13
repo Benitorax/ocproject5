@@ -6,6 +6,7 @@ use DateTime;
 use App\Model\User;
 use App\DAO\UserDAO;
 use Ramsey\Uuid\Uuid;
+use App\Service\Mailer\Notification;
 use App\Service\Pagination\Paginator;
 use Framework\Security\Encoder\PasswordEncoder;
 
@@ -14,15 +15,18 @@ class UserManager
     private UserDAO $userDAO;
     private PasswordEncoder $encoder;
     private Paginator $paginator;
+    private Notification $notification;
 
     public function __construct(
         UserDAO $userDAO,
         PasswordEncoder $encoder,
-        Paginator $paginator
+        Paginator $paginator,
+        Notification $notification
     ) {
         $this->userDAO = $userDAO;
         $this->encoder = $encoder;
         $this->paginator = $paginator;
+        $this->notification = $notification;
     }
 
     public function saveNewUser(User $user): User
@@ -37,6 +41,16 @@ class UserManager
         $this->userDAO->add($user);
 
         return $user;
+    }
+
+    public function addPasswordToUser(User $user, string $password): void
+    {
+        $user->setPassword((string) $this->encoder->encode($password))
+            ->setUpdatedAt(new DateTime())
+        ;
+
+        $this->userDAO->updateUser($user);
+        $this->notification->notifyResetPassword($user);
     }
 
     /**

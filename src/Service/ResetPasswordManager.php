@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use Exception;
 use App\Model\User;
 use App\DAO\UserDAO;
 use DateTimeImmutable;
@@ -11,6 +12,10 @@ use App\Model\ResetPasswordToken;
 use App\DAO\ResetPasswordTokenDAO;
 use App\Service\Mailer\Notification;
 
+/**
+ * Some of the cryptographic strategies were taken from SymfonyCasts/reset-password-bundle and
+ * https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels
+ */
 class ResetPasswordManager
 {
     /**
@@ -28,6 +33,7 @@ class ResetPasswordManager
     private UserDAO $userDAO;
     private ResetPasswordTokenDAO $resetPasswordTokenDAO;
     private Notification $notification;
+    private Session $session;
 
     public function __construct(
         UserDAO $userDAO,
@@ -46,6 +52,8 @@ class ResetPasswordManager
      */
     public function manage(string $email): void
     {
+        // TODO: Add delete expired tokens.
+
         $user = $this->userDAO->getOneByEmail($email);
 
         if (!$user instanceof User) {
@@ -65,7 +73,7 @@ class ResetPasswordManager
      */
     public function generateToken(User $user): ResetPasswordToken
     {
-        $expiredAt = new DateTimeImmutable(\sprintf('+%d seconds', $this->resetRequestLifetime));
+        $expiredAt = new DateTimeImmutable(sprintf('+%d seconds', $this->resetRequestLifetime));
         $selector = $this->getRandomAlphaNumStr();
         $verifier = $this->getRandomAlphaNumStr();
         $hashedToken = $this->getHashedToken($expiredAt, $user->getId(), $verifier);
@@ -76,6 +84,42 @@ class ResetPasswordManager
         $this->resetPasswordTokenDAO->ensureOneTokenInDatabase($token);
 
         return $token;
+    }
+
+    /**
+     * Validates token and fetchs user from token.
+     */
+    public function validateTokenAndFetchUser(string $fullToken): User
+    {
+        // $this->resetPasswordCleaner->handleGarbageCollection();
+
+        if (40 !== \strlen($fullToken)) {
+            throw new Exception('The reset password link is invalid.');
+        }
+
+        $resetToken = $this->getResetPasswordToken($fullToken);
+
+        if (null === $resetToken) {
+            throw new Exception('The reset password link is invalid.');
+        }
+
+        if ($resetToken->isExpired()) {
+            throw new Exception('The link in your email is expired.');
+        }
+
+        $user = $resetToken->getUser();
+
+        $hashedTokenFromVerifier = $this->getHashedToken(
+            $resetToken->getExpiredAt(),
+            $user->getId(),
+            substr($fullToken, self::SELECTOR_LENGTH)
+        );
+
+        if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
+            throw new Exception('The reset password link is invalid.');
+        }
+
+        return $user;
     }
 
     /**
@@ -110,5 +154,23 @@ class ResetPasswordManager
         $encodedData = json_encode([$verifier, $userId, $expiredAt->getTimestamp()]);
 
         return base64_encode(hash_hmac('sha256', (string) $encodedData, self::SIGNING_KEY, true));
+    }
+
+    /**
+     * Returns a ResetPasswordToken or null.
+     */
+    private function getResetPasswordToken(string $token): ?ResetPasswordToken
+    {
+        $selector = substr($token, 0, self::SELECTOR_LENGTH);
+
+        return $this->resetPasswordTokenDAO->getOneBySelector($selector);
+    }
+
+    /**
+     * Deletes ResetPasswordTokens of the user.
+     */
+    public function deleteTokensFromUser(User $user): void
+    {
+        $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
     }
 }

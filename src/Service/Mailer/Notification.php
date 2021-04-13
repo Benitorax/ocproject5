@@ -45,4 +45,14 @@ class Notification
 
         return $count;
     }
+
+    /**
+     * Send email to user to reset password.
+     */
+    public function notifyResetPassword(User $user): int
+    {
+        $count = $this->mailer->notifyResetPassword($user);
+
+        return $count;
+    }
 }

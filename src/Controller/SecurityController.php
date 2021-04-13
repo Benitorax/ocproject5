@@ -2,22 +2,30 @@
 
 namespace App\Controller;
 
+use Exception;
 use App\Service\Auth;
 use App\Form\EmailForm;
 use App\Form\LoginForm;
-use App\Service\ResetPasswordManager;
+use App\Service\UserManager;
+use App\Form\ResetPasswordForm;
 use Framework\Response\Response;
+use App\Service\ResetPasswordManager;
 use Framework\Controller\AbstractController;
 
 class SecurityController extends AbstractController
 {
     private Auth $auth;
     private ResetPasswordManager $resetPasswordManager;
+    private UserManager $userManager;
 
-    public function __construct(Auth $auth, ResetPasswordManager $resetPasswordManager)
-    {
+    public function __construct(
+        Auth $auth,
+        ResetPasswordManager $resetPasswordManager,
+        UserManager $userManager
+    ) {
         $this->auth = $auth;
         $this->resetPasswordManager = $resetPasswordManager;
+        $this->userManager = $userManager;
     }
 
     /**
@@ -95,5 +103,36 @@ class SecurityController extends AbstractController
         }
 
         return $this->render('security/request_reset_password.html.twig', ['form' => $form]);
+    }
+
+    /**
+     * Displays the page to reset password.
+     */
+    public function resetPassword(string $token): Response
+    {
+        if ($this->isGranted(['user'])) {
+            return $this->redirectToRoute('home');
+        }
+
+        try {
+            $user = $this->resetPasswordManager->validateTokenAndFetchUser($token);
+        } catch (Exception $e) {
+            $this->addFlash('danger', $e->getMessage() . ' Please try to reset your password again.');
+
+            return $this->redirectToRoute('password_reset_request');
+        }
+
+        $form = $this->createForm(ResetPasswordForm::class);
+        $form->handleRequest($this->request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $this->resetPasswordManager->deleteTokensFromUser($user);
+            $this->userManager->addPasswordToUser($user, $form->getPassword1());
+            $this->addFlash('success', 'The password has been reset with success!');
+
+            return $this->redirectToRoute('login');
+        }
+
+        return $this->render('security/reset_password.html.twig', ['form' => $form]);
     }
 }

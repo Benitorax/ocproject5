@@ -14,7 +14,7 @@ class ResetPasswordTokenDAO extends AbstractDAO
 {
     public const SQL_TABLE = 'reset_password_token';
     public const SQL_COLUMNS = [
-        'id', 'user_id', 'selector', 'hashed_token', 'request_at', 'expired_at'
+        'id', 'user_id', 'selector', 'hashed_token', 'requested_at', 'expired_at'
     ];
 
     private QueryExpression $query;
@@ -38,7 +38,13 @@ class ResetPasswordTokenDAO extends AbstractDAO
             ->setIsBlocked($o->u_is_blocked);
         }
 
-        $token = new ResetPasswordToken($user, new DateTimeImmutable($o->r_expired_at), $o->r_selector, $o->r_hashed_token);
+        $token = new ResetPasswordToken(
+            $user,
+            new DateTimeImmutable($o->r_expired_at),
+            $o->r_selector,
+            $o->r_hashed_token
+        );
+
         $token->setRequestedAt(new DateTimeImmutable($o->r_requested_at));
 
         return $token;
@@ -77,7 +83,7 @@ class ResetPasswordTokenDAO extends AbstractDAO
             'user_id' => $token->getUser()->getId(),
             'selector' => $token->getSelector(),
             'hashed_token' => $token->getHashedToken(),
-            'request_at' => $token->getRequestedAt()->format('Y-m-d H:i:s'),
+            'requested_at' => $token->getRequestedAt()->format('Y-m-d H:i:s'),
             'expired_at' => $token->getExpiredAt()->format('Y-m-d H:i:s'),
         ]);
     }

@@ -10,6 +10,7 @@ use App\Model\Post;
 use App\Model\User;
 use App\Model\Comment;
 use Framework\DAO\DAOInterface;
+use App\Model\ResetPasswordToken;
 use Framework\DAO\QueryExpression;
 use Framework\Security\RememberMe\PersistentToken;
 
@@ -62,7 +63,7 @@ abstract class AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|User|Comment|Post|PersistentToken
+     * @return null|User|Comment|Post|PersistentToken|ResetPasswordToken
      */
     public function getOneResult(
         DAOInterface $dao,
