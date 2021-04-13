@@ -6,6 +6,7 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use DateTimeImmutable;
 use DateTimeInterface;
+use Framework\Session\Session;
 use App\Model\ResetPasswordToken;
 use App\DAO\ResetPasswordTokenDAO;
 use App\Service\Mailer\Notification;
@@ -31,13 +32,18 @@ class ResetPasswordManager
     public function __construct(
         UserDAO $userDAO,
         ResetPasswordTokenDAO $resetPasswordTokenDAO,
-        Notification $notification
+        Notification $notification,
+        Session $session
     ) {
         $this->userDAO = $userDAO;
         $this->resetPasswordTokenDAO = $resetPasswordTokenDAO;
         $this->notification = $notification;
+        $this->session = $session;
     }
 
+    /**
+     * Generates a token and sends an email with a url to reset password.
+     */
     public function manage(string $email): void
     {
         $user = $this->userDAO->getOneByEmail($email);
@@ -46,24 +52,30 @@ class ResetPasswordManager
             return;
         }
 
-        $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
-
-        $resetPasswordToken = $this->generateResetPasswordToken($user);
-        $this->resetPasswordTokenDAO->add($resetPasswordToken);
-        $this->notification->notifyResetPasswordRequest($user, $resetPasswordToken);
+        $token = $this->generateToken($user);
+        $this->notification->notifyResetPasswordRequest($user, $token);
+        $this->session->getFlashes()->add(
+            'info',
+            sprintf('An email has been sent to %s to reset your password.', $email)
+        );
     }
 
-    public function generateResetPasswordToken(User $user): ResetPasswordToken
+    /**
+     * Generates a ResetPasswordToken and persists it in database.
+     */
+    public function generateToken(User $user): ResetPasswordToken
     {
         $expiredAt = new DateTimeImmutable(\sprintf('+%d seconds', $this->resetRequestLifetime));
         $selector = $this->getRandomAlphaNumStr();
         $verifier = $this->getRandomAlphaNumStr();
         $hashedToken = $this->getHashedToken($expiredAt, $user->getId(), $verifier);
 
-        $resetPasswordToken = new ResetPasswordToken($user, $expiredAt, $selector, $hashedToken);
-        $resetPasswordToken->setVerifier($verifier);
+        $token = new ResetPasswordToken($user, $expiredAt, $selector, $hashedToken);
+        $token->setVerifier($verifier);
 
-        return $resetPasswordToken;
+        $this->resetPasswordTokenDAO->ensureOneTokenInDatabase($token);
+
+        return $token;
     }
 
     /**
@@ -71,7 +83,7 @@ class ResetPasswordManager
      *
      * String length is 20 characters
      */
-    public function getRandomAlphaNumStr(): string
+    private function getRandomAlphaNumStr(): string
     {
         $string = '';
 
@@ -90,6 +102,9 @@ class ResetPasswordManager
         return $string;
     }
 
+    /**
+     * Returns a hashed token.
+     */
     private function getHashedToken(DateTimeInterface $expiredAt, int $userId, string $verifier = null): string
     {
         $encodedData = json_encode([$verifier, $userId, $expiredAt->getTimestamp()]);

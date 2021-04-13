@@ -89,4 +89,13 @@ class ResetPasswordTokenDAO extends AbstractDAO
     {
         $this->delete(self::SQL_TABLE, ['user_id' => $userId]);
     }
+
+    /**
+     * Deletes previous tokens of the user if exist and inserts the new one.
+     */
+    public function ensureOneTokenInDatabase(ResetPasswordToken $token): void
+    {
+        $this->deleteByUserId($token->getUser()->getId());
+        $this->add($token);
+    }
 }

@@ -91,14 +91,6 @@ class SecurityController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $this->resetPasswordManager->manage($form->getEmail());
 
-            $this->addFlash(
-                'info',
-                sprintf(
-                    'If you have registered with %s, an email has been sent to this address to reset your password.',
-                    $form->getEmail()
-                )
-            );
-
             return $this->redirectToRoute('login');
         }
 
