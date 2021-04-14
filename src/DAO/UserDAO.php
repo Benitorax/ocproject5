@@ -3,6 +3,7 @@
 namespace App\DAO;
 
 use DateTime;
+use stdClass;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
@@ -21,7 +22,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Returns an User object from stdClass.
      */
-    public function buildObject(\stdClass $o): User
+    public function buildObject(stdClass $o): User
     {
         $user = new User();
         $user->setId($o->u_id)

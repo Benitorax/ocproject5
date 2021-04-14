@@ -4,6 +4,7 @@ namespace App\DAO;
 
 use PDO;
 use DateTime;
+use stdClass;
 use App\Model\Post;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
@@ -23,7 +24,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Returns a Post object from stdClass.
      */
-    public function buildObject(\stdClass $o): Post
+    public function buildObject(stdClass $o): Post
     {
         $user = new User();
 
@@ -142,9 +143,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function updatePost(Post $post): void
     {
-        $this->update(
-            'post',
-            [
+        $this->update(self::SQL_TABLE, [
                 'title' => $post->getTitle(),
                 'slug' => $post->getSlug(),
                 'lead' => $post->getLead(),
@@ -152,9 +151,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
                 'updated_at' => ($post->getUpdatedAt())->format('Y-m-d H:i:s'),
                 'is_published' => intval($post->getIsPublished()),
                 'user_id' => $post->getUser()->getId(),
-            ],
-            ['id' => $post->getId()]
-        );
+            ], ['id' => $post->getId()]);
     }
 
     /**
@@ -162,7 +159,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function add(Post $post): void
     {
-        $this->insert('post', [
+        $this->insert(self::SQL_TABLE, [
             'uuid' => $post->getUuid(),
             'title' => $post->getTitle(),
             'slug' => $post->getSlug(),
@@ -186,18 +183,13 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Returns the list of slugs by slug of a SQL command.
      */
-    public function getSlugsBy(string $value): ?array
+    public function getPostsBySlug(string $slug): ?array
     {
-        $sql = 'SELECT slug FROM post WHERE slug LIKE :slug';
-        $stmt = $this->createQuery($sql, ['slug' => $value . '%']);
-        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
-        $stmt->closeCursor();
+        $this->prepareQuery()
+            ->where('slug LIKE :slug')
+            ->setParameter('slug', $slug . '%');
 
-        if ($result === false) {
-            return null;
-        }
-
-        return $result;
+        return $this->getResult($this, $this->query);
     }
 
     /**

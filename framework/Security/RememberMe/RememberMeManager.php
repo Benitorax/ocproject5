@@ -10,6 +10,9 @@ use Framework\Request\Request;
 use Framework\Security\TokenStorage;
 use Framework\Security\User\UserInterface;
 
+/**
+ * Some of the cryptographic strategies were taken from Symfony/Security-Bundle
+ */
 class RememberMeManager
 {
     public const COOKIE_DELIMITER = ':';
@@ -72,6 +75,9 @@ class RememberMeManager
         return $this->userDAO->getOneByUsername($persistentToken->getUsername());
     }
 
+    /**
+     * Logs in the user with remember me cookie.
+     */
     public function autoLogin(Request $request): ?RememberMeToken
     {
         if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
@@ -92,6 +98,9 @@ class RememberMeManager
         return new RememberMeToken($user);
     }
 
+    /**
+     * Creates a token and saves it in database.
+     */
     public function createNewToken(UserInterface $user, Request $request): void
     {
         $series = base64_encode(random_bytes(64));
@@ -110,6 +119,9 @@ class RememberMeManager
         $this->setCookieToRequest($request, $series, $tokenValue);
     }
 
+    /**
+     * Sets Cookie to Request's attributes.
+     */
     public function setCookieToRequest(Request $request, string $series, string $tokenValue): void
     {
         $request->attributes->set(
@@ -128,6 +140,9 @@ class RememberMeManager
         );
     }
 
+    /**
+     * Deletes Token from database.
+     */
     public function deleteToken(Request $request): void
     {
         if (!empty($this->tokenStorage->getToken())) {
@@ -136,6 +151,9 @@ class RememberMeManager
         $this->cancelCookie($request);
     }
 
+    /**
+     * Deletes Token by its series from database.
+     */
     public function deleteTokenBySeries(Request $request): void
     {
         if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
@@ -155,6 +173,9 @@ class RememberMeManager
         $this->cancelCookie($request);
     }
 
+    /**
+     * Encodes the cookie value.
+     */
     protected function encodeCookie(array $cookieParts): string
     {
         foreach ($cookieParts as $cookiePart) {
@@ -168,11 +189,17 @@ class RememberMeManager
         return base64_encode(implode(self::COOKIE_DELIMITER, $cookieParts));
     }
 
+    /**
+     * Decodes the cookie value.
+     */
     protected function decodeCookie(string $rawCookie): array
     {
         return explode(self::COOKIE_DELIMITER, base64_decode($rawCookie));
     }
 
+    /**
+     * Cancels a cookie by changing its lifetime to minimum (1).
+     */
     protected function cancelCookie(Request $request): void
     {
         $request->attributes->set(

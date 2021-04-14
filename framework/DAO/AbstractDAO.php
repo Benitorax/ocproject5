@@ -63,7 +63,9 @@ abstract class AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|User|Comment|Post|PersistentToken|ResetPasswordToken
+     * Returns an instance of the class returned by buildObject method.
+     *
+     * @return null|object
      */
     public function getOneResult(
         DAOInterface $dao,

@@ -143,15 +143,22 @@ class PostManager
         );
 
         // retrieves identical slugs from database
-        $slugs = (array) $this->postDAO->getSlugsBy($slug);
+        $posts = (array) $this->postDAO->getPostsBySlug($slug);
 
-        if (count($slugs) === 0) {
+        // If not already exists, returns the slug without index
+        if (count($posts) === 0) {
             return $slug;
+        }
+
+        $slugs = [];
+
+        foreach ($posts as $post) {
+            $slugs[] = $post->getSlug();
         }
 
         // get only the index character of the slugs and sort them in ascending
         $slugs = array_map(function ($element) use ($title) {
-            return substr($element['slug'], strlen($title) + 1);
+            return substr($element, strlen($title) + 1);
         }, $slugs);
 
         asort($slugs, SORT_NUMERIC);

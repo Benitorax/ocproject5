@@ -3,12 +3,13 @@
 namespace App\DAO;
 
 use DateTime;
+use stdClass;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
+use DateTimeImmutable;
 use Framework\DAO\AbstractDAO;
 use App\Model\ResetPasswordToken;
 use Framework\DAO\QueryExpression;
-use DateTimeImmutable;
 
 class ResetPasswordTokenDAO extends AbstractDAO
 {
@@ -22,7 +23,7 @@ class ResetPasswordTokenDAO extends AbstractDAO
     /**
      * Returns an User object from stdClass.
      */
-    public function buildObject(\stdClass $o): ResetPasswordToken
+    public function buildObject(stdClass $o): ResetPasswordToken
     {
         $user = new User();
 
@@ -51,7 +52,7 @@ class ResetPasswordTokenDAO extends AbstractDAO
     }
 
     /**
-     * @return null|object|ResetPasswordToken the object is instance of ResetPasswordToken class
+     * @return null|ResetPasswordToken the object is instance of ResetPasswordToken class
      */
     public function getOneBySelector(string $selector)
     {
@@ -59,7 +60,10 @@ class ResetPasswordTokenDAO extends AbstractDAO
             ->where('r.selector = :selector')
             ->setParameter('selector', $selector);
 
-        return $this->getOneResult($this, $this->query);
+        /** @var ResetPasswordToken $token */
+        $token = $this->getOneResult($this, $this->query);
+
+        return $token;
     }
 
     /**
@@ -79,7 +83,7 @@ class ResetPasswordTokenDAO extends AbstractDAO
      */
     public function add(ResetPasswordToken $token): void
     {
-        $this->insert('reset_password_token', [
+        $this->insert(self::SQL_TABLE, [
             'user_id' => $token->getUser()->getId(),
             'selector' => $token->getSelector(),
             'hashed_token' => $token->getHashedToken(),

@@ -3,6 +3,7 @@
 namespace Framework\Security\RememberMe;
 
 use DateTime;
+use stdClass;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\DAOInterface;
 use Framework\DAO\QueryExpression;
@@ -10,6 +11,11 @@ use Framework\Security\RememberMe\PersistentToken;
 
 class RememberMeDAO extends AbstractDAO implements DAOInterface
 {
+    public const SQL_TABLE = 'rememberme_token';
+    public const SQL_COLUMNS = [
+        'class', 'username', 'series', 'value', 'last_used'
+    ];
+
     private QueryExpression $query;
 
     public function __construct()
@@ -17,7 +23,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         $this->query = new QueryExpression();
     }
 
-    public function buildObject(\stdClass $object): PersistentToken
+    public function buildObject(stdClass $object): PersistentToken
     {
         return new PersistentToken(
             $object->p_class,
@@ -30,8 +36,8 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
 
     public function loadTokenBySeries(string $series): ?PersistentToken
     {
-        $this->query->select(PersistentToken::SQL_COLUMNS, 'p')
-            ->from(PersistentToken::SQL_TABLE, 'p')
+        $this->query->select(self::SQL_COLUMNS, 'p')
+            ->from(self::SQL_TABLE, 'p')
             ->where('series = :series')
             ->setParameter('series', $series);
 
@@ -47,13 +53,13 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
     public function deleteTokenBySeries(string $series): void
     {
         $params = ['series' => $series];
-        $this->delete(PersistentToken::SQL_TABLE, $params);
+        $this->delete(self::SQL_TABLE, $params);
     }
 
     public function deleteTokenByUsername(string $username): void
     {
         $params = ['username' => $username];
-        $this->delete(PersistentToken::SQL_TABLE, $params);
+        $this->delete(self::SQL_TABLE, $params);
     }
 
     public function updateToken(string $series, string $tokenValue, DateTime $lastUsed): void
@@ -63,12 +69,12 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
             'last_used' => $lastUsed->format('Y-m-d H:i:s')
         ];
         $where = ['series' => $series];
-        $this->update(PersistentToken::SQL_TABLE, $params, $where);
+        $this->update(self::SQL_TABLE, $params, $where);
     }
 
     public function insertToken(PersistentToken $token): void
     {
-        $this->insert(PersistentToken::SQL_TABLE, [
+        $this->insert(self::SQL_TABLE, [
             'class' => $token->getClass(),
             'username' => $token->getUsername(),
             'series' => $token->getSeries(),
