@@ -52,8 +52,7 @@ class ResetPasswordManager
      */
     public function manage(string $email): void
     {
-        // TODO: Add delete expired tokens.
-
+        $this->resetPasswordTokenDAO->deleteExpiredTokens();
         $user = $this->userDAO->getOneByEmail($email);
 
         if (!$user instanceof User) {

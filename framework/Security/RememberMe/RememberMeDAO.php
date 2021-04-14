@@ -52,14 +52,12 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
 
     public function deleteTokenBySeries(string $series): void
     {
-        $params = ['series' => $series];
-        $this->delete(self::SQL_TABLE, $params);
+        $this->delete(self::SQL_TABLE, ['series' => $series]);
     }
 
     public function deleteTokenByUsername(string $username): void
     {
-        $params = ['username' => $username];
-        $this->delete(self::SQL_TABLE, $params);
+        $this->delete(self::SQL_TABLE, ['username' => $username]);
     }
 
     public function updateToken(string $series, string $tokenValue, DateTime $lastUsed): void

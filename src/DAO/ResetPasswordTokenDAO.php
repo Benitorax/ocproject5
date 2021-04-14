@@ -101,6 +101,17 @@ class ResetPasswordTokenDAO extends AbstractDAO
     }
 
     /**
+     * Deletes expired tokens.
+     */
+    public function deleteExpiredTokens(): void
+    {
+        $sql =  'DELETE FROM ' . self::SQL_TABLE .
+                ' WHERE expired_at < \'' . (new DateTime('-1 week'))->format('Y-m-d H:i:s') . '\'';
+        $stmt = $this->createQuery($sql);
+        $stmt->closeCursor();
+    }
+
+    /**
      * Deletes previous tokens of the user if exist and inserts the new one.
      */
     public function ensureOneTokenInDatabase(ResetPasswordToken $token): void

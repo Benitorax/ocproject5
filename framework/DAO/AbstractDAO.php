@@ -67,10 +67,8 @@ abstract class AbstractDAO implements DAOInterface
      *
      * @return null|object
      */
-    public function getOneResult(
-        DAOInterface $dao,
-        QueryExpression $query
-    ) {
+    public function getOneResult(DAOInterface $dao, QueryExpression $query)
+    {
         $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
@@ -85,10 +83,8 @@ abstract class AbstractDAO implements DAOInterface
     /**
      * @return null|User[]|Comment[]|Post[]|PersistentToken[]
      */
-    public function getResult(
-        DAOInterface $dao,
-        QueryExpression $query
-    ) {
+    public function getResult(DAOInterface $dao, QueryExpression $query)
+    {
         $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();
