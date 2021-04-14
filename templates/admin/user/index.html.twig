@@ -40,10 +40,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Username</th>
-                        <th scope="col">Email</th>
-                        <th scope="col">Blocked</th>
-                        <th scope="col">Created</th>
+                        <th scope="col">User</th>
                         <th scope="col"><i class="bi bi-gear-fill"></i></th>
                     </tr>
                 </thead>
@@ -51,10 +48,14 @@
                     {% for user in pagination %}
                         <tr>
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
-                            <td>{{ user.username }}</td>
-                            <td>{{ user.email }}</td>
-                            <td>{% if user.isBlocked is same as(true) %}Yes{% else %}No{% endif %}</td>
-                            <td>{{ user.createdAt|date('Y-m-d H:i:s') }}</td>
+                            <td><b style="color: dimgrey">{{ user.username -}}</b>
+                                {%- if 'admin' in user.roles %}
+                                    <span class="badge bg-success text-white">Admin</span>
+                                {%- endif %}<br>
+                                {{ user.email }}<br>
+                                {% if user.isBlocked is same as(true) %}Blocked{% else %}Unblocked{% endif %}<br>
+                                Created: {{ user.createdAt|date('Y-m-d H:i:s') }}
+                            </td>
                             <td>
                                 <div class="row">
                                     {% import "form/_form.html.twig" as _form %}

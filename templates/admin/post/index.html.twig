@@ -30,9 +30,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Title</th>
-                        <th scope="col">Last Modified</th>
-                        <th scope="col">Published</th>
+                        <th scope="col">Post</th>
                         <th scope="col"><i class="bi bi-gear-fill"></i></th>
                     </tr>
                 </thead>
@@ -40,14 +38,15 @@
                     {% for post in pagination %}
                         <tr>
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
-                            <td>{{ post.title }}</td>
-                            <td>{{ post.updatedAt|date('Y-m-d H:i:s') }}</td>
                             <td>
-                                {%- if post.isPublished is same as(true) -%}
+                                <b style="color: slategrey">{{ post.title }}</b><br>
+                                By <i>{{ post.user.username ?: 'Deleted account' }}</i><br>
+                                Last updated: {{ post.updatedAt|date('Y/m/d \\a\\t H:i:s') }}<br>
+                                Published: {% if post.isPublished is same as(true) -%}
                                     Yes
                                 {%- else -%}
                                     No
-                                {%- endif -%}
+                                {%- endif -%}<br>
                             </td>
                             <td>
                                 <div class="row">
