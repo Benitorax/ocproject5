@@ -48,9 +48,10 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         if (null !== $search && '' !== $search) {
             $this->query->addWhere(
                 'username LIKE :search'
-                    . ' OR email LIKE :search'
+                        . ' OR email LIKE :search'
             )
-            ->setParameter('search', '%' . $search . '%');
+                ->setParameter('search', '%' . $search . '%')
+            ;
         }
 
         if ($filter === 'blocked') {
@@ -68,6 +69,18 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         $this->prepareQuery()
             ->where('username = :username')
             ->setParameter('username', $username);
+
+        return $this->getOneResult($this, $this->query);
+    }
+
+    /**
+     * @return null|object|User the object is instance of User class
+     */
+    public function getOneByUuid(string $uuid)
+    {
+        $this->prepareQuery()
+            ->where('uuid = :uuid')
+            ->setParameter('uuid', $uuid);
 
         return $this->getOneResult($this, $this->query);
     }
@@ -103,7 +116,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         return $this->query = (new QueryExpression())
             ->select(self::SQL_COLUMNS, 'u')
             ->from(self::SQL_TABLE, 'u')
-            ->orderBy('created_at', 'DESC');
+            ->orderBy('username', 'ASC');
     }
 
     /**
@@ -157,9 +170,9 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Deletes a user.
      */
-    public function deleteByUuid(string $uuid): void
+    public function deleteUser(User $user): void
     {
-        $this->delete(self::SQL_TABLE, ['uuid' => $uuid]);
+        $this->delete(self::SQL_TABLE, ['id' => $user->getId()]);
     }
 
     /**

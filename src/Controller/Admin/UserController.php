@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Model\User;
 use App\Service\UserManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
@@ -72,8 +73,15 @@ class UserController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->userManager->deleteUserByUuid($uuid);
-            $this->addFlash('success', 'The user has been deleted with success!');
+            /** @var User */
+            $user = $this->getUser();
+
+            if ($uuid === $user->getUuid()->toString()) {
+                $this->addFlash('danger', 'You can\'t delete your own account!');
+            } else {
+                $this->userManager->deleteUserByUuid($uuid);
+                $this->addFlash('success', 'The user has been deleted with success!');
+            }
         }
 
         return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));

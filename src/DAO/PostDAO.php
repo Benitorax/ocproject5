@@ -181,6 +181,16 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Sets user_id column to null for Posts of the user.
+     */
+    public function setAuthorToNull(User $user): void
+    {
+        $sql = 'UPDATE ' . self::SQL_TABLE . ' SET user_id = NULL WHERE user_id = :user_id';
+        $stmt = $this->createQuery($sql, ['user_id' => $user->getId()]);
+        $stmt->closeCursor();
+    }
+
+    /**
      * Returns the list of slugs by slug of a SQL command.
      */
     public function getPostsBySlug(string $slug): ?array
