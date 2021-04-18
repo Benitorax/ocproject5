@@ -115,13 +115,11 @@ abstract class AbstractController
      */
     public function isGranted(array $roles): bool
     {
-        if (null === $user = $this->getUser()) {
-            return false;
-        }
-
-        foreach ($roles as $role) {
-            if (in_array($role, $user->getRoles())) {
-                return true;
+        if (null !== $user = $this->getUser()) {
+            foreach ($roles as $role) {
+                if (in_array($role, $user->getRoles())) {
+                    return true;
+                }
             }
         }
 
@@ -145,17 +143,11 @@ abstract class AbstractController
      */
     public function getUser(): ?UserInterface
     {
-        $tokenStorage = $this->container->get(TokenStorage::class);
-
-        if (null === $token = $tokenStorage->getToken()) {
-            return null;
+        if (null !== $token = $this->container->get(TokenStorage::class)->getToken()) {
+            return $token->getUser();
         }
 
-        if (null === $user = $token->getUser()) {
-            return null;
-        }
-
-        return $user;
+        return null;
     }
 
     /**

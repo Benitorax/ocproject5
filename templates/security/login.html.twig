@@ -26,8 +26,11 @@
                             <label class="form-check-label" for="rememberme">Remember me</label>
                         </div>
                         {{ _form.input_csrf(csrf_token()) }}
-                        <button type="submit" class="btn btn-primary">Submit</button>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Submit</button>
+                        </div>
                     </form>
+                    <p class="mt-4"><a href="{{ path('password_reset_request') }}">Forgot your password?</a></p>
                 </div>
             </div>    
         </div>

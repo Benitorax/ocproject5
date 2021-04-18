@@ -3,6 +3,7 @@
 namespace App\DAO;
 
 use DateTime;
+use stdClass;
 use Ramsey\Uuid\Uuid;
 use App\Model\Comment;
 use Framework\DAO\AbstractDAO;
@@ -23,7 +24,7 @@ class CommentDAO extends AbstractDAO
     /**
      * Returns a Comment object from stdClass.
      */
-    public function buildObject(\stdClass $o): Comment
+    public function buildObject(stdClass $o): Comment
     {
         $comment = new Comment();
         $comment->setId($o->c_id)
@@ -43,7 +44,7 @@ class CommentDAO extends AbstractDAO
      */
     public function add(Comment $comment): void
     {
-        $this->insert('comment', [
+        $this->insert(self::SQL_TABLE, [
             'id' => $comment->getId(),
             'uuid' => $comment->getUuid(),
             'content' => $comment->getContent(),

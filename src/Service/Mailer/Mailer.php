@@ -7,6 +7,7 @@ use Swift_Message;
 use App\Model\User;
 use Framework\View\View;
 use App\Form\ContactForm;
+use App\Model\ResetPasswordToken;
 
 class Mailer
 {
@@ -32,18 +33,63 @@ class Mailer
      */
     public function notifyContact(ContactForm $form, User $recipient): int
     {
-        $message = (new Swift_Message('You have receive a message'))
+        $message = $this->prepareMessage('You have receive a message')
             ->setFrom(['example@mail.com' => 'MyWebsite'])
             ->setTo([$recipient->getEmail() => $recipient->getUsername()])
             ->setBody(
                 $this->view->renderEmail('mail/contact.html.twig', [
                         'form' => $form,
                         'recipient' => $recipient
-                    ]),
+                ]),
                 'text/html'
             )
         ;
 
         return $this->mailer->send($message);
+    }
+
+    /**
+     * Send email to user to reset password.
+     */
+    public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
+    {
+        $message = $this->prepareMessage('Reset password request')
+            ->setFrom(['example@mail.com' => 'MyWebsite'])
+            ->setTo([$user->getEmail() => $user->getUsername()])
+            ->setBody(
+                $this->view->renderEmail('mail/reset_password_request.html.twig', [
+                        'token' => $token,
+                        'recipient' => $user
+                ]),
+                'text/html'
+            )
+        ;
+
+        return $this->mailer->send($message);
+    }
+
+    /**
+     * Send email to user to reset password.
+     */
+    public function notifyResetPassword(User $user): int
+    {
+        $message = $this->prepareMessage('Reset password')
+            ->setTo([$user->getEmail() => $user->getUsername()])
+            ->setBody(
+                $this->view->renderEmail('mail/reset_password.html.twig', ['recipient' => $user]),
+                'text/html'
+            )
+        ;
+
+        return $this->mailer->send($message);
+    }
+
+    /**
+     * Creates an instance of Swift_Message and adds sender email address.
+     */
+    private function prepareMessage(string $title): Swift_Message
+    {
+        return (new Swift_Message($title))
+            ->setFrom(['example@mail.com' => 'MyWebsite']);
     }
 }

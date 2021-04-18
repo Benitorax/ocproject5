@@ -3,6 +3,7 @@
 namespace App\DAO;
 
 use DateTime;
+use stdClass;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
@@ -21,7 +22,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Returns an User object from stdClass.
      */
-    public function buildObject(\stdClass $o): User
+    public function buildObject(stdClass $o): User
     {
         $user = new User();
         $user->setId($o->u_id)
@@ -47,9 +48,10 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         if (null !== $search && '' !== $search) {
             $this->query->addWhere(
                 'username LIKE :search'
-                    . ' OR email LIKE :search'
+                        . ' OR email LIKE :search'
             )
-            ->setParameter('search', '%' . $search . '%');
+                ->setParameter('search', '%' . $search . '%')
+            ;
         }
 
         if ($filter === 'blocked') {
@@ -67,6 +69,18 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         $this->prepareQuery()
             ->where('username = :username')
             ->setParameter('username', $username);
+
+        return $this->getOneResult($this, $this->query);
+    }
+
+    /**
+     * @return null|object|User the object is instance of User class
+     */
+    public function getOneByUuid(string $uuid)
+    {
+        $this->prepareQuery()
+            ->where('uuid = :uuid')
+            ->setParameter('uuid', $uuid);
 
         return $this->getOneResult($this, $this->query);
     }
@@ -102,7 +116,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         return $this->query = (new QueryExpression())
             ->select(self::SQL_COLUMNS, 'u')
             ->from(self::SQL_TABLE, 'u')
-            ->orderBy('created_at', 'DESC');
+            ->orderBy('username', 'ASC');
     }
 
     /**
@@ -110,7 +124,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
      */
     public function add(User $user): void
     {
-        $this->insert('user', [
+        $this->insert(self::SQL_TABLE, [
             'uuid' => $user->getUuid()->toString(),
             'email' => $user->getEmail(),
             'password' => $user->getPassword(),
@@ -123,27 +137,42 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
-     * Update a blocked user.
+     * Updates user.
      */
-    public function blockByUuid(string $uuid): void
+    public function updateUser(User $user): void
     {
-        $this->update('user', ['is_blocked' => 1], ['uuid' => $uuid]);
+        $this->update(self::SQL_TABLE, [
+            'email' => $user->getEmail(),
+            'password' => $user->getPassword(),
+            'username' => $user->getUsername(),
+            'updated_at' => ($user->getUpdatedAt())->format('Y-m-d H:i:s'),
+            'roles' => json_encode($user->getRoles()),
+            'is_blocked' => intval($user->getIsBlocked())
+        ], ['id' => $user->getId()]);
     }
 
     /**
-     * Update a unblocked user.
+     * Updates a blocked user.
+     */
+    public function blockByUuid(string $uuid): void
+    {
+        $this->update(self::SQL_TABLE, ['is_blocked' => 1], ['uuid' => $uuid]);
+    }
+
+    /**
+     * Updates a unblocked user.
      */
     public function unblockByUuid(string $uuid): void
     {
-        $this->update('user', ['is_blocked' => 0], ['uuid' => $uuid]);
+        $this->update(self::SQL_TABLE, ['is_blocked' => 0], ['uuid' => $uuid]);
     }
 
     /**
      * Deletes a user.
      */
-    public function deleteByUuid(string $uuid): void
+    public function deleteUser(User $user): void
     {
-        $this->delete('user', ['uuid' => $uuid]);
+        $this->delete(self::SQL_TABLE, ['id' => $user->getId()]);
     }
 
     /**

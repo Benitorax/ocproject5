@@ -4,25 +4,33 @@ namespace App\Service;
 
 use DateTime;
 use App\Model\User;
+use App\DAO\PostDAO;
 use App\DAO\UserDAO;
 use Ramsey\Uuid\Uuid;
+use App\Service\Mailer\Notification;
 use App\Service\Pagination\Paginator;
 use Framework\Security\Encoder\PasswordEncoder;
 
 class UserManager
 {
     private UserDAO $userDAO;
+    private PostDAO $postDAO;
     private PasswordEncoder $encoder;
     private Paginator $paginator;
+    private Notification $notification;
 
     public function __construct(
         UserDAO $userDAO,
+        PostDAO $postDAO,
         PasswordEncoder $encoder,
-        Paginator $paginator
+        Paginator $paginator,
+        Notification $notification
     ) {
         $this->userDAO = $userDAO;
+        $this->postDAO = $postDAO;
         $this->encoder = $encoder;
         $this->paginator = $paginator;
+        $this->notification = $notification;
     }
 
     public function saveNewUser(User $user): User
@@ -37,6 +45,16 @@ class UserManager
         $this->userDAO->add($user);
 
         return $user;
+    }
+
+    public function addPasswordToUser(User $user, string $password): void
+    {
+        $user->setPassword((string) $this->encoder->encode($password))
+            ->setUpdatedAt(new DateTime())
+        ;
+
+        $this->userDAO->updateUser($user);
+        $this->notification->notifyResetPassword($user);
     }
 
     /**
@@ -76,6 +94,16 @@ class UserManager
      */
     public function deleteUserByUuid(string $uuid): void
     {
-        $this->userDAO->deleteByUuid($uuid);
+        $user = $this->userDAO->getOneByUuid($uuid);
+
+        if (!$user instanceof User) {
+            return;
+        }
+
+        if (in_array('admin', $user->getRoles())) {
+            $this->postDAO->setAuthorToNull($user);
+        }
+
+        $this->userDAO->deleteUser($user);
     }
 }

@@ -10,6 +10,7 @@ use App\Model\Post;
 use App\Model\User;
 use App\Model\Comment;
 use Framework\DAO\DAOInterface;
+use App\Model\ResetPasswordToken;
 use Framework\DAO\QueryExpression;
 use Framework\Security\RememberMe\PersistentToken;
 
@@ -62,12 +63,12 @@ abstract class AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|User|Comment|Post|PersistentToken
+     * Returns an instance of the class returned by buildObject method.
+     *
+     * @return null|object
      */
-    public function getOneResult(
-        DAOInterface $dao,
-        QueryExpression $query
-    ) {
+    public function getOneResult(DAOInterface $dao, QueryExpression $query)
+    {
         $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchObject(stdClass::class);
         $stmt->closeCursor();
@@ -82,10 +83,8 @@ abstract class AbstractDAO implements DAOInterface
     /**
      * @return null|User[]|Comment[]|Post[]|PersistentToken[]
      */
-    public function getResult(
-        DAOInterface $dao,
-        QueryExpression $query
-    ) {
+    public function getResult(DAOInterface $dao, QueryExpression $query)
+    {
         $stmt = $this->createQuery($query->generateSQL(), $query->getParameters());
         $result = $stmt->fetchAll(PDO::FETCH_CLASS, stdClass::class);
         $stmt->closeCursor();

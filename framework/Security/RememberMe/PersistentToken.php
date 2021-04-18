@@ -10,11 +10,6 @@ use Exception;
  */
 class PersistentToken
 {
-    public const SQL_TABLE = 'rememberme_token';
-    public const SQL_COLUMNS = [
-        'class', 'username', 'series', 'value', 'last_used'
-    ];
-
     private string $class;
     private string $username;
     private string $series;
