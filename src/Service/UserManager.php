@@ -33,6 +33,17 @@ class UserManager
         $this->notification = $notification;
     }
 
+    /**
+     * Returns one User by email.
+     */
+    public function getOneByEmail(string $email): ?User
+    {
+        return $this->userDAO->getOneByEmail($email);
+    }
+
+    /**
+     * Saves a User in database and returns it.
+     */
     public function saveNewUser(User $user): User
     {
         $dateTime = new DateTime();
@@ -47,7 +58,10 @@ class UserManager
         return $user;
     }
 
-    public function addPasswordToUser(User $user, string $password): void
+    /**
+     * Saves the new encoded password in database and notify the user.
+     */
+    public function updatePasswordToUser(User $user, string $password): void
     {
         $user->setPassword((string) $this->encoder->encode($password))
             ->setUpdatedAt(new DateTime())

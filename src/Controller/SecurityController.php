@@ -97,7 +97,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->resetPasswordManager->manage($form->getEmail());
+            $this->resetPasswordManager->manageResetRequest($form->getEmail());
 
             return $this->redirectToRoute('login');
         }
@@ -126,9 +126,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->resetPasswordManager->deleteTokensFromUser($user);
-            $this->userManager->addPasswordToUser($user, $form->getPassword1());
-            $this->addFlash('success', 'The password has been reset with success!');
+            $this->resetPasswordManager->manageReset($user, $form->getPassword1());
 
             return $this->redirectToRoute('login');
         }
