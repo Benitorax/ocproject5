@@ -98,13 +98,13 @@ class ResetPasswordManager
     /**
      * Validates token and fetchs user from token.
      */
-    public function validateTokenAndFetchUser(string $fullToken): User
+    public function validateTokenAndFetchUser(string $token): User
     {
-        if (40 !== \strlen($fullToken)) {
+        if (40 !== \strlen($token)) {
             throw new Exception('The reset password link is invalid.');
         }
 
-        $resetToken = $this->getResetPasswordToken($fullToken);
+        $resetToken = $this->getResetPasswordToken($token);
 
         if (null === $resetToken) {
             throw new Exception('The reset password link is invalid.');
@@ -119,7 +119,7 @@ class ResetPasswordManager
         $hashedTokenFromVerifier = $this->getHashedToken(
             $resetToken->getExpiredAt(),
             $user->getId(),
-            substr($fullToken, self::SELECTOR_LENGTH)
+            substr($token, self::SELECTOR_LENGTH)
         );
 
         if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
