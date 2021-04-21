@@ -10,8 +10,8 @@ class Comment
     use IdentifierTrait;
     use TimestampTrait;
 
-    private string $content;
-    private bool $isValidated;
+    private string $content = '';
+    private bool $isValidated = false;
     private User $user;
     private Post $post;
 

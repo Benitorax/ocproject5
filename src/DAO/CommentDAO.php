@@ -45,7 +45,6 @@ class CommentDAO extends AbstractDAO
     public function add(Comment $comment): void
     {
         $this->insert(self::SQL_TABLE, [
-            'id' => $comment->getId(),
             'uuid' => $comment->getUuid(),
             'content' => $comment->getContent(),
             'created_at' => ($comment->getCreatedAt())->format('Y-m-d H:i:s'),

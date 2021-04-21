@@ -48,7 +48,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         if (null !== $search && '' !== $search) {
             $this->query->addWhere(
                 'username LIKE :search'
-                        . ' OR email LIKE :search'
+                . ' OR email LIKE :search'
             )
                 ->setParameter('search', '%' . $search . '%')
             ;

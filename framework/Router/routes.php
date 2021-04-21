@@ -35,7 +35,7 @@ return [
     // Post
     '/post/{slug}' => [
         'name' => 'post_show',
-        'method' => 'GET',
+        'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\PostController::show'
     ],
     '/post' => [
@@ -106,6 +106,12 @@ return [
         'name' => 'home',
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::home'
+    ],
+    // Error
+    '/error-404' => [
+        'name' => 'error_404',
+        'method' => 'GET',
+        'callable' => 'Framework\Controller\ErrorController::notFound'
     ],
     // Fixtures
     '/fixtures' => [

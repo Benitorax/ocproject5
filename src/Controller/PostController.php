@@ -2,8 +2,11 @@
 
 namespace App\Controller;
 
-use Framework\Response\Response;
+use App\Form\CommentForm;
 use App\Service\PostManager;
+use App\Service\CommentManager;
+use Exception;
+use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
 class PostController extends AbstractController
@@ -32,12 +35,26 @@ class PostController extends AbstractController
     }
 
     /**
-     * Displays a single post.
+     * Displays a single post and eventually creates a Comment.
      */
     public function show(string $slug): Response
     {
+        if (null === $post = $this->postManager->getOneBySlug($slug)) {
+            throw new Exception('Post doesn\'t exist.', 404);
+        }
+
+        $form = $this->createForm(CommentForm::class);
+        $form->handleRequest($this->request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $comment = $form->getData();
+            $this->get(CommentManager::class)->manageNewComment($comment, $post);
+            $this->addFlash('success', 'The comment has been submitted with success!');
+        }
+
         return $this->render('post/show.html.twig', [
-            'post' => $this->postManager->getOneBySlug($slug),
+            'post' => $post,
+            'form' => $form
         ]);
     }
 }

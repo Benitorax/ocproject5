@@ -56,7 +56,7 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
-     * @return null|object|Post the object is instance of Post class
+     * @return null|Post the object is instance of Post class
      */
     public function getOneBySlug(string $slug)
     {
@@ -64,7 +64,10 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
             ->where('slug = :slug')
             ->setParameter('slug', $slug);
 
-        return $this->getOneResult($this, $this->query);
+        /** @var null|Post */
+        $post = $this->getOneResult($this, $this->query);
+
+        return $post;
     }
 
     /**
