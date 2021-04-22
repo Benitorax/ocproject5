@@ -38,7 +38,7 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\PostController::show'
     ],
-    '/post' => [
+    '/posts' => [
         'name' => 'post_index',
         'callable' => 'App\Controller\PostController::index'
     ],
@@ -53,7 +53,7 @@ return [
         'callable' => 'App\Controller\Admin\DashboardController::showDraftPosts'
     ],
     // Admin > Post
-    '/admin/post' => [
+    '/admin/posts' => [
         'name' => 'admin_post_index',
         'callable' => 'App\Controller\Admin\PostController::index'
     ],
@@ -73,7 +73,7 @@ return [
         'callable' => 'App\Controller\Admin\PostController::delete'
     ],
     // Admin > User
-    '/admin/user' => [
+    '/admin/users' => [
         'name' => 'admin_user_index',
         'callable' => 'App\Controller\Admin\UserController::index'
     ],
@@ -106,12 +106,6 @@ return [
         'name' => 'home',
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::home'
-    ],
-    // Error
-    '/error-404' => [
-        'name' => 'error_404',
-        'method' => 'GET',
-        'callable' => 'Framework\Controller\ErrorController::notFound'
     ],
     // Fixtures
     '/fixtures' => [
