@@ -49,13 +49,15 @@ class PostController extends AbstractController
         $form = $this->createForm(CommentForm::class);
         $form->handleRequest($this->request);
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            $comment = $form->getData();
-            $this->get(CommentManager::class)->manageNewComment($comment, $post);
-            $form->clear();
-            $this->addFlash('success', 'The comment has been submitted with success!');
-        } else {
-            $this->addFlash('danger', 'The comment was not submitted, please check error in the form.');
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $comment = $form->getData();
+                $this->get(CommentManager::class)->manageNewComment($comment, $post);
+                $form->clear();
+                $this->addFlash('success', 'The comment has been submitted with success!');
+            } else {
+                $this->addFlash('danger', 'The comment was not submitted, please check error in the form.');
+            }
         }
 
         return $this->render('post/show.html.twig', [

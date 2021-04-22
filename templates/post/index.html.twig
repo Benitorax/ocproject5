@@ -10,7 +10,7 @@
                     <div class="media-body">
                         <h4><a href="{{ path('post_show', {slug: post.slug}) }}">{{ post.title }}</a></h4>
                         <p>{{ post.lead }}</p>
-                        <small class="form-text text-muted">
+                        <small class="form-text text-muted text-right">
                             {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
                                 Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}
                             {% else %}
