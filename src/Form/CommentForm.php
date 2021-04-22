@@ -40,6 +40,12 @@ class CommentForm extends AbstractForm
     public function setContent(string $content): self
     {
         $this->comment->setContent($content);
+
         return $this;
+    }
+
+    public function clear(): void
+    {
+        $this->comment->setContent('');
     }
 }

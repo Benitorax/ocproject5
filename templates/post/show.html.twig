@@ -30,9 +30,11 @@
                         <form method="POST">
                             {{ _form.message_csrf(form) }}
                             <div class="form-group">
-                                <textarea class="form-control" rows="3" name="content" minlength="10" maxlength="1000" required>{{ form.content }}</textarea>
-                                <small id="isPublishedHelp" class="form-text text-muted">The comment will be submitted to validation before publication.</small>
                                 {% if form.errors.content is not null %}<div class="invalid-feedback">{{ form.errors.content }}</div>{% endif %}
+                                <textarea class="form-control" rows="3" name="content" minlength="10" maxlength="1000" required>{{ form.content }}</textarea>
+                                {% if 'admin' not in app.user.roles %}
+                                    <small id="isPublishedHelp" class="form-text text-muted">The comment will be submitted to validation before publication.</small>
+                                {% endif %}  
                             </div>
                             {{ _form.input_csrf(csrf_token()) }}
                             <button type="submit" class="btn btn-primary float-right">Submit</button>
