@@ -1,3 +1,4 @@
+<a href="https://codeclimate.com/github/Benitorax/ocproject5/maintainability"><img src="https://api.codeclimate.com/v1/badges/d6c4613ad1927f13e5a8/maintainability" /></a>
 <h1>Project as part of OpenClassrooms training</h1>
 
 <p>The project is developed with PHP but without any framework.</p>
@@ -16,7 +17,7 @@
   Only logged users can:
   <ul>
     <li>submit a comment below each post.</li>
-    <li>can see the contact form on the home page.</li>
+    <li>can see the contact form in the home page.</li>
     <li>fill out and submit the contact form, then an email is sent to administrators.</li>
   </ul>
 </p>
@@ -49,6 +50,8 @@
       <li>user: id, email, password, username, roles, is_blocked</li>
       <li>post: id, title, slug, lead, content, is_published, user_id</li>
       <li>comment: id, content, is_validated, user_id, post_id</li>
+      <li>rememberme_token: class, username, series, value, last_used</li>
+      <li>reset_password_token: id, user_id, selector, hashed_token, requested_at, expired_at</li>
     </ul>
   </li>
   <li>Go to path "/fixtures" to load fixtures.</li>
