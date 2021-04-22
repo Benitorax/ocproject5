@@ -2,11 +2,13 @@
 
 namespace App\Controller;
 
+use App\DAO\CommentDAO;
 use Faker\Factory;
 use App\Model\Post;
 use App\Model\User;
 use App\DAO\PostDAO;
 use App\DAO\UserDAO;
+use App\Model\Comment;
 use Faker\Generator;
 use Ramsey\Uuid\Uuid;
 use App\Service\PostManager;
@@ -16,22 +18,31 @@ use Framework\Security\Encoder\PasswordEncoder;
 
 class FixturesController extends AbstractController
 {
+    /**
+     * User[]: array of users and admins.
+     */
+    private array $users;
+
     private PasswordEncoder $encoder;
     private PostManager $postManager;
     private PostDAO $postDAO;
     private UserDAO $userDAO;
+    private CommentDAO $commentDAO;
+
     private Generator $faker;
 
     public function __construct(
         PasswordEncoder $encoder,
         PostManager $postManager,
         PostDAO $postDAO,
-        UserDAO $userDAO
+        UserDAO $userDAO,
+        CommentDAO $commentDAO
     ) {
         $this->encoder = $encoder;
         $this->postManager = $postManager;
         $this->postDAO = $postDAO;
         $this->userDAO = $userDAO;
+        $this->commentDAO = $commentDAO;
 
         $this->faker = Factory::create('en_GB');
     }
@@ -59,7 +70,12 @@ class FixturesController extends AbstractController
     public function createPosts(User $user, int $numberOfPosts): void
     {
         for ($i = 0; $i < $numberOfPosts; $i++) {
-            $this->createPost($user);
+            $post = $this->createPost($user);
+            $commentCount = mt_rand(5, 10);
+
+            for ($j = 0; $j < $commentCount; $j++) {
+                $this->addCommentToPost($post);
+            }
         }
     }
 
@@ -104,9 +120,10 @@ class FixturesController extends AbstractController
         }
 
         $this->userDAO->add($user);
-        $user = $this->userDAO->getOneByUsername($firstName . ' ' . $lastName);
-
         /** @var User */
+        $user = $this->userDAO->getOneByUsername($firstName . ' ' . $lastName); // returns User with Id
+        $this->users[] = $user;
+
         return $user;
     }
 
@@ -142,6 +159,47 @@ class FixturesController extends AbstractController
 
         $this->postDAO->add($post);
 
-        return $post;
+        return $this->postDAO->getOneByUuid($post->getUuid()); // returns Post with Id
+    }
+
+    /**
+     * Adds comment attached to post.
+     */
+    public function addCommentToPost(Post $post): Comment
+    {
+        $dateTime1 = $this->faker->dateTimeBetween('-2 years', '-10 months');
+        $user = $this->getRandomUser();
+
+        $comment =  new Comment();
+        $comment->setUuid(Uuid::uuid4())
+            ->setContent($this->faker->realText(mt_rand(200, 800), 3))
+            ->setPost($post)
+            ->setUser($user)
+            ->setCreatedAt($dateTime1)
+            ->setUpdatedAt($dateTime1);
+
+        if (in_array('admin', $user->getRoles())) {
+            $comment->setIsValidated(true);
+        } else {
+            // sets randomly updatedAt different from createdAt
+            // if updatedAt !== createdAt then isValidated = true
+            if (mt_rand(1, 5) > 1) {
+                $dateTime2 = $this->faker->dateTimeBetween($dateTime1->format('Y-m-d H:i:s'), 'now');
+                $comment->setIsValidated(true)
+                    ->setUpdatedAt($dateTime2);
+            }
+        }
+
+        $this->commentDAO->add($comment);
+
+        return $comment;
+    }
+
+    /**
+     * Returns a random user.
+     */
+    public function getRandomUser(): User
+    {
+        return $this->users[array_rand($this->users)];
     }
 }

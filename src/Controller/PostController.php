@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\DAO\CommentDAO;
 use App\Form\CommentForm;
 use App\Service\PostManager;
 use App\Service\CommentManager;
@@ -12,10 +13,12 @@ use Framework\Controller\AbstractController;
 class PostController extends AbstractController
 {
     private PostManager $postManager;
+    private CommentDAO $commentDAO;
 
-    public function __construct(PostManager $postManager)
+    public function __construct(PostManager $postManager, CommentDAO $commentDAO)
     {
         $this->postManager = $postManager;
+        $this->commentDAO = $commentDAO;
     }
 
     /**
@@ -54,6 +57,7 @@ class PostController extends AbstractController
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
+            'comments' => $this->commentDAO->getCommentsByPostId($post->getId()),
             'form' => $form
         ]);
     }

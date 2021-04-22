@@ -2,7 +2,6 @@
 
 namespace App\DAO;
 
-use PDO;
 use DateTime;
 use stdClass;
 use App\Model\Post;
