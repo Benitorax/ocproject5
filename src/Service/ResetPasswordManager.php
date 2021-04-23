@@ -30,18 +30,18 @@ class ResetPasswordManager
      */
     private int $resetRequestLifetime = 60 * 60;
 
-    private UserDAO $userDAO;
+    private UserManager $userManager;
     private ResetPasswordTokenDAO $resetPasswordTokenDAO;
     private Notification $notification;
     private Session $session;
 
     public function __construct(
-        UserDAO $userDAO,
+        UserManager $userManager,
         ResetPasswordTokenDAO $resetPasswordTokenDAO,
         Notification $notification,
         Session $session
     ) {
-        $this->userDAO = $userDAO;
+        $this->userManager = $userManager;
         $this->resetPasswordTokenDAO = $resetPasswordTokenDAO;
         $this->notification = $notification;
         $this->session = $session;
@@ -50,10 +50,10 @@ class ResetPasswordManager
     /**
      * Generates a token and sends an email with a url to reset password.
      */
-    public function manage(string $email): void
+    public function manageResetRequest(string $email): void
     {
         $this->resetPasswordTokenDAO->deleteExpiredTokens();
-        $user = $this->userDAO->getOneByEmail($email);
+        $user = $this->userManager->getOneByEmail($email);
 
         if (!$user instanceof User) {
             return;
@@ -62,9 +62,19 @@ class ResetPasswordManager
         $token = $this->generateToken($user);
         $this->notification->notifyResetPasswordRequest($user, $token);
         $this->session->getFlashes()->add(
-            'info',
+            'success',
             sprintf('An email has been sent to %s to reset your password.', $email)
         );
+    }
+
+    /**
+     * Deletes ResetPasswordToken from database and updates password of the user.
+     */
+    public function manageReset(User $user, string $password): void
+    {
+        $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
+        $this->userManager->updatePasswordToUser($user, $password);
+        $this->session->getFlashes()->add('success', 'The password has been reset with success!');
     }
 
     /**
@@ -88,15 +98,13 @@ class ResetPasswordManager
     /**
      * Validates token and fetchs user from token.
      */
-    public function validateTokenAndFetchUser(string $fullToken): User
+    public function validateTokenAndFetchUser(string $token): User
     {
-        // $this->resetPasswordCleaner->handleGarbageCollection();
-
-        if (40 !== \strlen($fullToken)) {
+        if (40 !== \strlen($token)) {
             throw new Exception('The reset password link is invalid.');
         }
 
-        $resetToken = $this->getResetPasswordToken($fullToken);
+        $resetToken = $this->getResetPasswordToken($token);
 
         if (null === $resetToken) {
             throw new Exception('The reset password link is invalid.');
@@ -111,7 +119,7 @@ class ResetPasswordManager
         $hashedTokenFromVerifier = $this->getHashedToken(
             $resetToken->getExpiredAt(),
             $user->getId(),
-            substr($fullToken, self::SELECTOR_LENGTH)
+            substr($token, self::SELECTOR_LENGTH)
         );
 
         if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
@@ -163,13 +171,5 @@ class ResetPasswordManager
         $selector = substr($token, 0, self::SELECTOR_LENGTH);
 
         return $this->resetPasswordTokenDAO->getOneBySelector($selector);
-    }
-
-    /**
-     * Deletes ResetPasswordTokens of the user.
-     */
-    public function deleteTokensFromUser(User $user): void
-    {
-        $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
     }
 }

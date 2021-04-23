@@ -6,7 +6,6 @@ use Exception;
 use App\Service\Auth;
 use App\Form\EmailForm;
 use App\Form\LoginForm;
-use App\Service\UserManager;
 use App\Form\ResetPasswordForm;
 use Framework\Response\Response;
 use App\Service\ResetPasswordManager;
@@ -14,18 +13,16 @@ use Framework\Controller\AbstractController;
 
 class SecurityController extends AbstractController
 {
+    private const REDIRECT_MESSAGE =
+        'You have been redirected from reset password page'
+        . ' because you\'re already logged in.';
     private Auth $auth;
     private ResetPasswordManager $resetPasswordManager;
-    private UserManager $userManager;
 
-    public function __construct(
-        Auth $auth,
-        ResetPasswordManager $resetPasswordManager,
-        UserManager $userManager
-    ) {
+    public function __construct(Auth $auth, ResetPasswordManager $resetPasswordManager)
+    {
         $this->auth = $auth;
         $this->resetPasswordManager = $resetPasswordManager;
-        $this->userManager = $userManager;
     }
 
     /**
@@ -90,6 +87,7 @@ class SecurityController extends AbstractController
     public function resetPasswordRequest(): Response
     {
         if ($this->isGranted(['user'])) {
+            $this->addFlash('danger', self::REDIRECT_MESSAGE);
             return $this->redirectToRoute('home');
         }
 
@@ -97,7 +95,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->resetPasswordManager->manage($form->getEmail());
+            $this->resetPasswordManager->manageResetRequest($form->getEmail());
 
             return $this->redirectToRoute('login');
         }
@@ -111,6 +109,7 @@ class SecurityController extends AbstractController
     public function resetPassword(string $token): Response
     {
         if ($this->isGranted(['user'])) {
+            $this->addFlash('danger', self::REDIRECT_MESSAGE);
             return $this->redirectToRoute('home');
         }
 
@@ -118,7 +117,6 @@ class SecurityController extends AbstractController
             $user = $this->resetPasswordManager->validateTokenAndFetchUser($token);
         } catch (Exception $e) {
             $this->addFlash('danger', $e->getMessage() . ' Please try to reset your password again.');
-
             return $this->redirectToRoute('password_reset_request');
         }
 
@@ -126,9 +124,7 @@ class SecurityController extends AbstractController
         $form->handleRequest($this->request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $this->resetPasswordManager->deleteTokensFromUser($user);
-            $this->userManager->addPasswordToUser($user, $form->getPassword1());
-            $this->addFlash('success', 'The password has been reset with success!');
+            $this->resetPasswordManager->manageReset($user, $form->getPassword1());
 
             return $this->redirectToRoute('login');
         }

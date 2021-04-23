@@ -101,7 +101,7 @@ class PostManager
     }
 
     /**
-     * @return null|object|Post
+     * @return null|Post
      */
     public function getOneBySlug(string $slug)
     {

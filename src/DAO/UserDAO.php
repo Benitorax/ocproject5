@@ -48,7 +48,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
         if (null !== $search && '' !== $search) {
             $this->query->addWhere(
                 'username LIKE :search'
-                        . ' OR email LIKE :search'
+                . ' OR email LIKE :search'
             )
                 ->setParameter('search', '%' . $search . '%')
             ;
@@ -86,7 +86,7 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
-     * @return null|object|User the object is instance of User class
+     * @return null|User the object is instance of User class
      */
     public function getOneByEmail(string $email)
     {
@@ -94,7 +94,10 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
             ->where('email = :email')
             ->setParameter('email', $email);
 
-        return $this->getOneResult($this, $this->query);
+        /** @var null|User */
+        $user = $this->getOneResult($this, $this->query);
+
+        return $user;
     }
 
     /**
