@@ -62,11 +62,15 @@ class CommentDAO extends AbstractDAO
      * Get comments by Post id.
      * @return null|Comment[]
      */
-    public function getCommentsByPostId(int $postId)
+    public function getValidatedCommentsByPostId(int $postId)
     {
         $this->prepareQuery()
             ->where('post_id = :post_id')
-            ->setParameter('post_id', $postId);
+            ->addWhere('is_validated = :is_validated')
+            ->setParameters([
+                'post_id' => $postId,
+                'is_validated' => true
+            ]);
 
         /** @var null|Comment[] */
         $comments = $this->getResult($this, $this->query);

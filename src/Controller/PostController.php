@@ -55,6 +55,9 @@ class PostController extends AbstractController
                 $this->get(CommentManager::class)->manageNewComment($comment, $post);
                 $form->clear();
                 $this->addFlash('success', 'The comment has been submitted with success!');
+
+                // retrieves Post with updated Comments
+                $post = $this->postManager->getOneBySlug($slug);
             } else {
                 $this->addFlash('danger', 'The comment was not submitted, please check error in the form.');
             }
@@ -62,7 +65,6 @@ class PostController extends AbstractController
 
         return $this->render('post/show.html.twig', [
             'post' => $post,
-            'comments' => $this->commentDAO->getCommentsByPostId($post->getId()),
             'form' => $form
         ]);
     }

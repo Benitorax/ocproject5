@@ -46,7 +46,7 @@
         <div class="col-12 col-md-8 my-5">
             <h2>Comments</h2>
             <hr>
-            {% for comment in comments %}
+            {% for comment in post.comments %}
                 <div class="media my-3">
                     <div class="media-body">
                         <h5 class="mb-0"><b>{{ comment.user.username }}</b></h5>

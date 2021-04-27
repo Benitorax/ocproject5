@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\DAO\CommentDAO;
 use DateTime;
 use App\Model\Post;
 use App\DAO\PostDAO;
@@ -11,11 +12,13 @@ use App\Service\Pagination\Paginator;
 class PostManager
 {
     private PostDAO $postDAO;
+    private CommentDAO $commentDAO;
     private Paginator $paginator;
 
-    public function __construct(PostDAO $postDAO, Paginator $paginator)
+    public function __construct(PostDAO $postDAO, CommentDAO $commentDAO, Paginator $paginator)
     {
         $this->postDAO = $postDAO;
+        $this->commentDAO = $commentDAO;
         $this->paginator = $paginator;
     }
 
@@ -105,7 +108,15 @@ class PostManager
      */
     public function getOneBySlug(string $slug)
     {
-        return $this->postDAO->getOneBySlug($slug);
+        $post = $this->postDAO->getOneBySlug($slug);
+        if (null !== $post) {
+            $comments = $this->commentDAO->getValidatedCommentsByPostId($post->getId());
+            if (null !== $comments) {
+                $post->setComments($comments);
+            }
+        }
+
+        return $post;
     }
 
     /**
