@@ -8,7 +8,7 @@
         <aside class="col-12 mb-5">
             <ul class="nav nav-tabs justify-content-center">
                 <li class="nav-item">
-                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_comment') %} active{% endif %}" href="#">Comments</a>
+                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_comment') %} active{% endif %}" href="{{ path('admin_dashboard_comment') }}">Comments</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link{% if currentRoute is same as('admin_dashboard_post_draft') %} active{% endif %}" href="{{ path('admin_dashboard_post_draft') }}">Draft Posts</a>

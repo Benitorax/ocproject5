@@ -2,6 +2,7 @@
 
 namespace App\Controller\Admin;
 
+use App\Service\CommentManager;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
@@ -9,10 +10,12 @@ use Framework\Controller\AbstractController;
 class DashboardController extends AbstractController
 {
     private PostManager $postManager;
+    private CommentManager $commentManager;
 
-    public function __construct(PostManager $postManager)
+    public function __construct(PostManager $postManager, CommentManager $commentManager)
     {
         $this->postManager = $postManager;
+        $this->commentManager = $commentManager;
     }
 
     /**
@@ -26,7 +29,7 @@ class DashboardController extends AbstractController
 
         $this->denyAccessUnlessGranted(['admin']);
 
-        return $this->redirectToRoute('admin_dashboard_post_draft');
+        return $this->redirectToRoute('admin_dashboard_comment');
     }
 
     /**
@@ -39,7 +42,23 @@ class DashboardController extends AbstractController
         $pageNumber = (int) $this->request->query->get('page');
         $pagination = $this->postManager->getPaginationForDraftPosts($pageNumber);
 
-        return $this->render('admin/dashboard/index.html.twig', [
+        return $this->render('admin/dashboard/post_index.html.twig', [
+            'pagination' => $pagination,
+            'queryString' => http_build_query($this->request->query->all())
+        ]);
+    }
+
+    /**
+     * Displays the dashboard page with comments which need to be validated or invalidated.
+     */
+    public function showComments(): Response
+    {
+        $this->denyAccessUnlessGranted(['admin']);
+
+        $pageNumber = (int) $this->request->query->get('page');
+        $pagination = $this->commentManager->getPaginationForCommentsToValidate($pageNumber);
+
+        return $this->render('admin/dashboard/comment_index.html.twig', [
             'pagination' => $pagination,
             'queryString' => http_build_query($this->request->query->all())
         ]);

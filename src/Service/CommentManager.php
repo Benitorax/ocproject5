@@ -8,17 +8,22 @@ use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use App\Model\Comment;
 use App\DAO\CommentDAO;
+use App\Service\Pagination\Paginator;
 use Framework\Security\TokenStorage;
-use Framework\Security\AbstractToken;
 
 class CommentManager
 {
     private CommentDAO $commentDAO;
+    private Paginator $paginator;
     private User $user;
 
-    public function __construct(CommentDAO $commentDAO, TokenStorage $tokenStorage)
-    {
+    public function __construct(
+        CommentDAO $commentDAO,
+        Paginator $paginator,
+        TokenStorage $tokenStorage
+    ) {
         $this->commentDAO = $commentDAO;
+        $this->paginator = $paginator;
 
         if (null !== $token = $tokenStorage->getToken()) {
             if (null !== $user = $token->getUser()) {
@@ -44,5 +49,21 @@ class CommentManager
         $this->commentDAO->add($comment);
 
         return $comment;
+    }
+
+    /**
+     * Returns Paginator
+     */
+    public function getPaginationForCommentsToValidate(int $pageNumber): Paginator
+    {
+        // sets the query for the pagination
+        $this->commentDAO->setCommentsToValidateQuery();
+
+        // creates the pagination for the template
+        return $this->paginator->paginate(
+            $this->commentDAO,
+            $pageNumber < 1 ? 1 : $pageNumber,
+            15
+        );
     }
 }
