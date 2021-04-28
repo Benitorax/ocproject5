@@ -26,7 +26,7 @@ class ResetPasswordManager
     private const SIGNING_KEY = 'reset_password';
     private const INVALID_TOKEN_MESSAGE = 'The reset password link is invalid.';
     private const EXPIRED_TOKEN_MESSAGE = 'The link in your email is expired.';
-    
+
     /**
      * How long a token is valid in seconds
      */
@@ -103,20 +103,17 @@ class ResetPasswordManager
     public function validateTokenAndFetchUser(string $token): User
     {
         if (40 !== \strlen($token)) {
-            $this->addFlash('success', self::INVALID_TOKEN_MESSAGE);
-            throw new Exception(self::INVALID_TOKEN_MESSAGE);
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         $resetToken = $this->getResetPasswordToken($token);
 
         if (null === $resetToken) {
-            $this->addFlash('success', self::INVALID_TOKEN_MESSAGE);
-            throw new Exception(self::INVALID_TOKEN_MESSAGE);
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         if ($resetToken->isExpired()) {
-            $this->addFlash('success', self::EXPIRED_TOKEN_MESSAGE);
-            throw new Exception(self::EXPIRED_TOKEN_MESSAGE);
+            throw $this->addFlashAndReturnException(self::EXPIRED_TOKEN_MESSAGE);
         }
 
         $user = $resetToken->getUser();
@@ -128,12 +125,22 @@ class ResetPasswordManager
         );
 
         if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
-            $this->addFlash('success', self::INVALID_TOKEN_MESSAGE);
-            throw new Exception(self::INVALID_TOKEN_MESSAGE);
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         return $user;
     }
+
+    /**
+     * Adds flash message and returns an Exception with the message.
+     */
+    public function addFlashAndReturnException(string $message): Exception
+    {
+        $this->addFlash('danger', $message);
+
+        return new Exception($message);
+    }
+
 
     /**
      * Adds flash message.
