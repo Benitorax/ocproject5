@@ -72,6 +72,14 @@ class CommentManager
      */
     public function validateCommentByUuid(string $uuid): void
     {
-        $this->commentDAO->validateCommentByUuid($uuid);
+        $this->commentDAO->validateByUuid($uuid);
+    }
+
+    /**
+     * Deletes comment by uuid.
+     */
+    public function deleteCommentByUuid(string $uuid): void
+    {
+        $this->commentDAO->deleteByUuid($uuid);
     }
 }

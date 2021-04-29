@@ -116,9 +116,17 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Validates comment by uuid in database.
      */
-    public function validateCommentByUuid(string $uuid): void
+    public function validateByUuid(string $uuid): void
     {
         $this->update(self::SQL_TABLE, ['is_validated' => true], ['uuid' => $uuid]);
+    }
+
+    /**
+     * Deletes comment by uuid.
+     */
+    public function deleteByUuid(string $uuid): void
+    {
+        $this->delete(self::SQL_TABLE, ['uuid' => $uuid]);
     }
 
     /**

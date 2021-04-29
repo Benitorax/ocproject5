@@ -57,10 +57,16 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\DashboardController::showComments'
     ],
+    // Admin > Comment
     '/admin/dashboard/comment/{uuid}/validate' => [
         'name' => 'admin_comment_validate',
-        'method' => ['GET', 'POST'],
+        'method' => 'POST',
         'callable' => 'App\Controller\Admin\CommentController::validate'
+    ],
+    '/admin/dashboard/comment/{uuid}/delete' => [
+        'name' => 'admin_comment_delete',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\CommentController::delete'
     ],
     // Admin > Post
     '/admin/posts' => [
