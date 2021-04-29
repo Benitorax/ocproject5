@@ -57,6 +57,11 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\DashboardController::showComments'
     ],
+    '/admin/dashboard/comment/{uuid}/validate' => [
+        'name' => 'admin_comment_validate',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\Admin\CommentController::validate'
+    ],
     // Admin > Post
     '/admin/posts' => [
         'name' => 'admin_post_index',

@@ -66,4 +66,12 @@ class CommentManager
             15
         );
     }
+
+    /**
+     * Validates comment by uuid in database.
+     */
+    public function validateCommentByUuid(string $uuid): void
+    {
+        $this->commentDAO->validateCommentByUuid($uuid);
+    }
 }

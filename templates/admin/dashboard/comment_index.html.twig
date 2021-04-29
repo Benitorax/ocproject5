@@ -38,9 +38,10 @@
                             <td>
                                 <div class="row">
                                     <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
-                                        <a href="{{ path('admin_post_edit', {uuid: post.uuid}) }}">
-                                            <button class="btn btn-success"><i class="bi bi-check2"></i></button>
-                                        </a>
+                                        <form method="POST" action='{{ path('admin_comment_validate', {uuid: comment.uuid}) }}'>
+                                            <button type="submit" class="btn btn-success"><i class="bi bi-check2"></i></button>
+                                            {{ _form.input_csrf(csrf_token()) }}
+                                        </form>
                                     </div>
                                     <div class="col-12 col-sm-auto p-0">
                                         <button type="button" class="btn btn-danger js-button-delete" data-url="{{ path('admin_post_delete', {uuid: post.uuid}) }}">
