@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 {% import "form/_form.html.twig" as _form %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - Comments to validate{% endblock %}
 
 {% block body %}
     <div class="row justify-content-center">
@@ -16,6 +16,9 @@
             </ul>
         </aside>
         <div class="col-12 col-md-10">
+            <div>
+                <p class="text-center">Recent comments to validate or delete</p>
+            </div>
             <table class="table table-hover">
                 <thead>
                     <tr>

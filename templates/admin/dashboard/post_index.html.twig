@@ -1,7 +1,7 @@
 {% extends 'admin/base.html.twig' %}
 {% import "form/_form.html.twig" as _form %}
 
-{% block title %}Dashboard{% endblock %}
+{% block title %}Dashboard - Draft Posts{% endblock %}
 
 {% block body %}
     <div class="row justify-content-center">
@@ -20,7 +20,7 @@
                 <thead>
                     <tr>
                         <th scope="col">#</th>
-                        <th scope="col">Post</th>
+                        <th scope="col">Draft Post</th>
                         <th scope="col"><i class="bi bi-gear-fill"></i></th>
                     </tr>
                 </thead>
@@ -42,7 +42,7 @@
                                 <div class="row">
                                     <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
                                         <a href="{{ path('admin_post_edit', {uuid: post.uuid}) }}">
-                                            <button class="btn btn-info"><i class="bi bi-pen"></i></button>
+                                            <button class="btn btn-primary"><i class="bi bi-pen"></i></button>
                                         </a>
                                     </div>
                                     <div class="col-12 col-sm-auto p-0">
