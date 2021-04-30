@@ -35,7 +35,7 @@
                                 By <b style="color: slategrey">{{ comment.user.username ?: 'Deleted account' }}</b>,
                                 <span class="text-secondary font-weight-light">{{ comment.updatedAt|date('Y/m/d \\a\\t H:i:s') }}</span>
                                 <br><br>
-                                Content: {{ comment.content }}<br><br>
+                                Content: {{ comment.content|nl2br }}<br><br>
                                 <b>Post</b>: <a href="{{ path('post_show', {slug: comment.post.slug}) }}">{{ comment.post.title }}</a>
                             </td>
                             <td>
