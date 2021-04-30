@@ -14,7 +14,7 @@ use Ramsey\Uuid\Uuid;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
-use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\Hasher\PasswordHasher;
 
 class FixturesController extends AbstractController
 {
@@ -23,7 +23,7 @@ class FixturesController extends AbstractController
      */
     private array $users;
 
-    private PasswordEncoder $encoder;
+    private PasswordHasher $hasher;
     private PostManager $postManager;
     private PostDAO $postDAO;
     private UserDAO $userDAO;
@@ -32,13 +32,13 @@ class FixturesController extends AbstractController
     private Generator $faker;
 
     public function __construct(
-        PasswordEncoder $encoder,
+        PasswordHasher $hasher,
         PostManager $postManager,
         PostDAO $postDAO,
         UserDAO $userDAO,
         CommentDAO $commentDAO
     ) {
-        $this->encoder = $encoder;
+        $this->hasher = $hasher;
         $this->postManager = $postManager;
         $this->postDAO = $postDAO;
         $this->userDAO = $userDAO;
@@ -112,7 +112,7 @@ class FixturesController extends AbstractController
 
         $user = (new User())->setUuid(Uuid::uuid4())
             ->setEmail(strtolower($firstName . '.' . $lastName) . '@yopmail.com')
-            ->setPassword((string) $this->encoder->encode('123456'))
+            ->setPassword((string) $this->hasher->hash('123456'))
             ->setUsername($firstName . ' ' . $lastName)
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)

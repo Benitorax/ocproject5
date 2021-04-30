@@ -1,10 +1,10 @@
 <?php
 
-namespace Framework\Security\Encoder;
+namespace Framework\Security\Hasher;
 
 use Framework\Security\User\UserInterface;
 
-class PasswordEncoder
+class PasswordHasher
 {
     private const OPTIONS = [
         'cost' => 12
@@ -15,7 +15,7 @@ class PasswordEncoder
      *
      * @return false|string
      */
-    public function encode(string $password)
+    public function hash(string $password)
     {
         return password_hash($password, PASSWORD_BCRYPT, self::OPTIONS);
     }

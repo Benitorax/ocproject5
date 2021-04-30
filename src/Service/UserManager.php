@@ -9,26 +9,26 @@ use App\DAO\UserDAO;
 use Ramsey\Uuid\Uuid;
 use App\Service\Mailer\Notification;
 use App\Service\Pagination\Paginator;
-use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\Hasher\PasswordHasher;
 
 class UserManager
 {
     private UserDAO $userDAO;
     private PostDAO $postDAO;
-    private PasswordEncoder $encoder;
+    private PasswordHasher $hasher;
     private Paginator $paginator;
     private Notification $notification;
 
     public function __construct(
         UserDAO $userDAO,
         PostDAO $postDAO,
-        PasswordEncoder $encoder,
+        PasswordHasher $hasher,
         Paginator $paginator,
         Notification $notification
     ) {
         $this->userDAO = $userDAO;
         $this->postDAO = $postDAO;
-        $this->encoder = $encoder;
+        $this->hasher = $hasher;
         $this->paginator = $paginator;
         $this->notification = $notification;
     }
@@ -48,7 +48,7 @@ class UserManager
     {
         $dateTime = new DateTime();
         $user->setUuid(Uuid::uuid4())
-            ->setPassword((string) $this->encoder->encode($user->getPassword()))
+            ->setPassword((string) $this->hasher->hash($user->getPassword()))
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)
         ;
@@ -63,7 +63,7 @@ class UserManager
      */
     public function updatePasswordToUser(User $user, string $password): void
     {
-        $user->setPassword((string) $this->encoder->encode($password))
+        $user->setPassword((string) $this->hasher->hash($password))
             ->setUpdatedAt(new DateTime())
         ;
 
