@@ -24,10 +24,26 @@ class CsrfTokenManager
         if (null !== $this->token) {
             return $this->token;
         }
-        $this->token = $this->generator->generate();
-        $this->session->set(self::NAMESPACE, $this->token);
 
-        return $this->token;
+        $this->token = $this->generator->generate();
+        $this->addTokenInSession($this->token);
+
+        return (string) $this->token;
+    }
+
+    /**
+     * Adds token in session and ensures to have only the last 10 tokens in session.
+     */
+    public function addTokenInSession(string $token): void
+    {
+        $tokens = $this->getTokens();
+        $tokens[] = $token;
+
+        while (count($tokens) > 10) {
+            array_shift($tokens);
+        }
+
+        $this->session->set(self::NAMESPACE, $tokens);
     }
 
     public function removeToken(): void
@@ -37,21 +53,23 @@ class CsrfTokenManager
 
     public function isTokenValid(?string $token): bool
     {
-        $sessionToken = $this->getToken();
+        $tokens = $this->getTokens();
 
-        if (hash_equals((string) $sessionToken, $token ?? '')) {
-            return true;
+        foreach ($tokens as $sessionToken) {
+            if (hash_equals((string) $sessionToken, $token ?? '')) {
+                return true;
+            }
         }
 
         return false;
     }
 
-    public function getToken(): ?string
+    public function getTokens(): array
     {
         if ($this->session->has(self::NAMESPACE)) {
             return $this->session->get(self::NAMESPACE);
         }
 
-        return null;
+        return [];
     }
 }
