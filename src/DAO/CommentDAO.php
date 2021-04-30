@@ -130,6 +130,14 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Deletes Comment by post id.
+     */
+    public function deleteByPostId(int $id): void
+    {
+        $this->delete(self::SQL_TABLE, ['post_id' => $id]);
+    }
+
+    /**
      * Inserts a new row in the database.
      */
     public function add(Comment $comment): void

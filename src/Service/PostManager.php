@@ -127,9 +127,17 @@ class PostManager
         return $this->postDAO->getOneByUuid($uuid);
     }
 
+    /**
+     * Deletes post and its comments by post id.
+     */
     public function deletePostByUuid(string $uuid): void
     {
-        $this->postDAO->deleteByUuid($uuid);
+        $post = $this->getPostByUuid($uuid);
+
+        if ($post instanceof Post) {
+            $this->commentDAO->deleteByPostId($post->getId());
+            $this->postDAO->deleteById($post->getId());
+        }
     }
 
     /**
