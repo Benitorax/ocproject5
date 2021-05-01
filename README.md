@@ -1,4 +1,6 @@
 <a href="https://codeclimate.com/github/Benitorax/ocproject5/maintainability"><img src="https://api.codeclimate.com/v1/badges/d6c4613ad1927f13e5a8/maintainability" /></a>
+<a href="https://www.codacy.com/gh/Benitorax/ocproject5/dashboard?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=Benitorax/ocproject5&amp;utm_campaign=Badge_Grade"><img src="https://app.codacy.com/project/badge/Grade/8a6e2a716ac04a6087353ccb101791d3"/></a>
+
 <h1>Project as part of OpenClassrooms training</h1>
 
 <p>The project is developed with PHP but without any framework.</p>
