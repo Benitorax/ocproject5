@@ -45,7 +45,7 @@
 <ul>
   <li>Create a .env.local file or configure the .env file but don't commit it.</li>
   <li>
-    Create a database and those tables:
+    Create a database, then execute the SQL file <b>ocproject5.sql</b> located in the project's root to create schemas and those tables:
     <ul>
       <li>user: id, email, password, username, roles, is_blocked</li>
       <li>post: id, title, slug, lead, content, is_published, user_id</li>
@@ -53,8 +53,6 @@
       <li>rememberme_token: class, username, series, value, last_used</li>
       <li>reset_password_token: id, user_id, selector, hashed_token, requested_at, expired_at</li>
     </ul>
-    <br>
-    Execute the SQL file <code>ocproject5.sql</code> in the project's root to create schemas.<br><br>
   </li>
   <li>Execute in your terminal:<br>
     <code>php -S 127.0.0.1:8000 -t public</code><br><br>
