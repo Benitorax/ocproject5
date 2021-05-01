@@ -9,6 +9,7 @@ use App\Service\Pagination\PaginationDAOInterface as DAOInterface;
 
 class Paginator implements IteratorAggregate, Countable
 {
+    private int $itemsTotal;
     private int $pageNumber;
     private float $pagesTotal;
     private int $offset;
@@ -60,9 +61,9 @@ class Paginator implements IteratorAggregate, Countable
 
     public function setPagesTotal(): void
     {
-        $publishedCount = $this->dao->getPaginationCount();
+        $this->itemsTotal = $this->dao->getPaginationCount();
 
-        $this->pagesTotal = ceil($publishedCount / $this->limitPerPage);
+        $this->pagesTotal = ceil($this->itemsTotal / $this->limitPerPage);
     }
 
     public function getOffset(): int
@@ -73,6 +74,11 @@ class Paginator implements IteratorAggregate, Countable
     public function getItems(): array
     {
         return $this->items;
+    }
+
+    public function getItemsTotal(): int
+    {
+        return $this->itemsTotal;
     }
 
     public function count(): int

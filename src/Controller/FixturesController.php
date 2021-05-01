@@ -14,7 +14,7 @@ use Ramsey\Uuid\Uuid;
 use App\Service\PostManager;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
-use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\Hasher\PasswordHasher;
 
 class FixturesController extends AbstractController
 {
@@ -23,7 +23,7 @@ class FixturesController extends AbstractController
      */
     private array $users;
 
-    private PasswordEncoder $encoder;
+    private PasswordHasher $hasher;
     private PostManager $postManager;
     private PostDAO $postDAO;
     private UserDAO $userDAO;
@@ -32,13 +32,13 @@ class FixturesController extends AbstractController
     private Generator $faker;
 
     public function __construct(
-        PasswordEncoder $encoder,
+        PasswordHasher $hasher,
         PostManager $postManager,
         PostDAO $postDAO,
         UserDAO $userDAO,
         CommentDAO $commentDAO
     ) {
-        $this->encoder = $encoder;
+        $this->hasher = $hasher;
         $this->postManager = $postManager;
         $this->postDAO = $postDAO;
         $this->userDAO = $userDAO;
@@ -54,7 +54,7 @@ class FixturesController extends AbstractController
     {
         $this->createUsers(20);
 
-        for ($i = 0; $i < 3; $i++) {
+        for ($i = 0; $i < 5; $i++) {
             $user = $this->createAdminUser();
             $this->createPosts($user, 15);
         }
@@ -71,10 +71,13 @@ class FixturesController extends AbstractController
     {
         for ($i = 0; $i < $numberOfPosts; $i++) {
             $post = $this->createPost($user);
-            $commentCount = mt_rand(5, 10);
 
-            for ($j = 0; $j < $commentCount; $j++) {
-                $this->addCommentToPost($post);
+            if ($post->getIsPublished()) {
+                $commentCount = mt_rand(5, 10);
+
+                for ($j = 0; $j < $commentCount; $j++) {
+                    $this->addCommentToPost($post);
+                }
             }
         }
     }
@@ -109,7 +112,7 @@ class FixturesController extends AbstractController
 
         $user = (new User())->setUuid(Uuid::uuid4())
             ->setEmail(strtolower($firstName . '.' . $lastName) . '@yopmail.com')
-            ->setPassword((string) $this->encoder->encode('123456'))
+            ->setPassword((string) $this->hasher->hash('123456'))
             ->setUsername($firstName . ' ' . $lastName)
             ->setCreatedAt($dateTime)
             ->setUpdatedAt($dateTime)
@@ -183,7 +186,7 @@ class FixturesController extends AbstractController
         } else {
             // sets randomly updatedAt different from createdAt
             // if updatedAt !== createdAt then isValidated = true
-            if (mt_rand(1, 5) > 1) {
+            if (mt_rand(1, 6) > 1) {
                 $dateTime2 = $this->faker->dateTimeBetween($dateTime1->format('Y-m-d H:i:s'), 'now');
                 $comment->setIsValidated(true)
                     ->setUpdatedAt($dateTime2);

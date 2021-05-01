@@ -8,10 +8,11 @@ use App\Model\Post;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use App\Model\Comment;
+use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 
-class CommentDAO extends AbstractDAO
+class CommentDAO extends AbstractDAO implements PaginationDAOInterface
 {
     public const SQL_TABLE = 'comment';
     public const SQL_COLUMNS = [
@@ -31,18 +32,30 @@ class CommentDAO extends AbstractDAO
     public function buildObject(stdClass $o): Comment
     {
         $post = new Post();
+        $post->setId($o->p_id)
+        ->setUuid(Uuid::fromString($o->p_uuid))
+        ->setTitle($o->p_title)
+        ->setSlug($o->p_slug)
+        ->setLead($o->p_lead)
+        ->setContent($o->p_content)
+        ->setCreatedAt(new DateTime($o->p_created_at))
+        ->setUpdatedAt(new DateTime($o->p_updated_at))
+        ->setIsPublished($o->p_is_published)
+        ->setUser(new User());
+
         $user = new User();
 
         if (!empty($o->u_id)) {
             $user->setId($o->u_id)
-            ->setUuid(Uuid::fromString($o->u_uuid))
-            ->setEmail($o->u_email)
-            ->setPassword($o->u_password)
-            ->setUsername($o->u_username)
-            ->setCreatedAt(new DateTime($o->u_created_at))
-            ->setUpdatedAt(new DateTime($o->u_updated_at))
-            ->setRoles(json_decode($o->u_roles))
-            ->setIsBlocked($o->u_is_blocked);
+                ->setUuid(Uuid::fromString($o->u_uuid))
+                ->setEmail($o->u_email)
+                ->setPassword($o->u_password)
+                ->setUsername($o->u_username)
+                ->setCreatedAt(new DateTime($o->u_created_at))
+                ->setUpdatedAt(new DateTime($o->u_updated_at))
+                ->setRoles(json_decode($o->u_roles))
+                ->setIsBlocked($o->u_is_blocked)
+            ;
         }
 
         $comment = new Comment();
@@ -53,20 +66,31 @@ class CommentDAO extends AbstractDAO
             ->setUpdatedAt(new DateTime($o->c_updated_at))
             ->setIsValidated($o->c_is_validated)
             ->setUser($user)
-            ->setPost($post);
+            ->setPost($post)
+        ;
 
         return $comment;
+    }
+
+    public function setCommentsToValidateQuery(): void
+    {
+        $this->prepareQuery()
+            ->where('is_validated IS FALSE');
     }
 
     /**
      * Get comments by Post id.
      * @return null|Comment[]
      */
-    public function getCommentsByPostId(int $postId)
+    public function getValidatedCommentsByPostId(int $postId)
     {
         $this->prepareQuery()
             ->where('post_id = :post_id')
-            ->setParameter('post_id', $postId);
+            ->addWhere('is_validated = :is_validated')
+            ->setParameters([
+                'post_id' => $postId,
+                'is_validated' => true
+            ]);
 
         /** @var null|Comment[] */
         $comments = $this->getResult($this, $this->query);
@@ -90,6 +114,30 @@ class CommentDAO extends AbstractDAO
     }
 
     /**
+     * Validates comment by uuid in database.
+     */
+    public function validateByUuid(string $uuid): void
+    {
+        $this->update(self::SQL_TABLE, ['is_validated' => true], ['uuid' => $uuid]);
+    }
+
+    /**
+     * Deletes comment by uuid.
+     */
+    public function deleteByUuid(string $uuid): void
+    {
+        $this->delete(self::SQL_TABLE, ['uuid' => $uuid]);
+    }
+
+    /**
+     * Deletes Comment by post id.
+     */
+    public function deleteByPostId(int $id): void
+    {
+        $this->delete(self::SQL_TABLE, ['post_id' => $id]);
+    }
+
+    /**
      * Inserts a new row in the database.
      */
     public function add(Comment $comment): void
@@ -103,5 +151,27 @@ class CommentDAO extends AbstractDAO
             'user_id' => $comment->getUser()->getId(),
             'post_id' => $comment->getPost()->getId()
         ]);
+    }
+
+    /**
+     * Returns the total count of comments.
+     */
+    public function getPaginationCount(): int
+    {
+        $stmt = $this->createQuery($this->query->generateCountSQL(), $this->query->getParameters());
+        $result = $stmt->fetchColumn();
+        $stmt->closeCursor();
+
+        return (int) $result;
+    }
+
+    /**
+     * @return null|object[]|Comment[] Array of comments
+     */
+    public function getPaginationResult(int $offset, int $range)
+    {
+        $this->query->limit($offset, $range);
+
+        return $this->getResult($this, $this->query);
     }
 }

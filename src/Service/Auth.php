@@ -7,24 +7,24 @@ use App\DAO\UserDAO;
 use App\Form\LoginForm;
 use Framework\Request\Request;
 use Framework\Session\Session;
-use Framework\Security\Encoder\PasswordEncoder;
+use Framework\Security\Hasher\PasswordHasher;
 use Framework\Security\RememberMe\RememberMeManager;
 
 class Auth
 {
     private Session $session;
     private UserDAO $userDAO;
-    private PasswordEncoder $encoder;
+    private PasswordHasher $hasher;
     private RememberMeManager $rememberMeManager;
 
     public function __construct(
         Session $session,
         UserDAO $userDAO,
-        PasswordEncoder $encoder,
+        PasswordHasher $hasher,
         RememberMeManager $rememberMeManager
     ) {
         $this->userDAO = $userDAO;
-        $this->encoder = $encoder;
+        $this->hasher = $hasher;
         $this->session = $session;
         $this->rememberMeManager = $rememberMeManager;
     }
@@ -38,7 +38,7 @@ class Auth
             return null;
         }
 
-        if (!$this->encoder->isPasswordValid($user, $password)) {
+        if (!$this->hasher->isPasswordValid($user, $password)) {
             return null;
         }
 

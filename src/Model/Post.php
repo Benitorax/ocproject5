@@ -3,6 +3,7 @@
 namespace App\Model;
 
 use App\Model\User;
+use App\Model\Comment;
 
 class Post
 {
@@ -15,6 +16,11 @@ class Post
     private string $content = '';
     private bool $isPublished = false;
     private User $user;
+
+    /**
+     * @var null|Comment[]
+     */
+    private $comments;
 
     public function getTitle(): string
     {
@@ -84,6 +90,24 @@ class Post
     public function setUser(User $user): self
     {
         $this->user = $user;
+
+        return $this;
+    }
+
+    /**
+     * @return null|Comment[]
+     */
+    public function getComments()
+    {
+        return $this->comments;
+    }
+
+    /**
+     * @param null|Comment[] $comments
+     */
+    public function setComments($comments): self
+    {
+        $this->comments = $comments;
 
         return $this;
     }

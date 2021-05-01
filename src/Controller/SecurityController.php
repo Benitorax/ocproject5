@@ -110,13 +110,13 @@ class SecurityController extends AbstractController
     {
         if ($this->isGranted(['user'])) {
             $this->addFlash('danger', self::REDIRECT_MESSAGE);
+
             return $this->redirectToRoute('home');
         }
 
         try {
             $user = $this->resetPasswordManager->validateTokenAndFetchUser($token);
         } catch (Exception $e) {
-            $this->addFlash('danger', $e->getMessage() . ' Please try to reset your password again.');
             return $this->redirectToRoute('password_reset_request');
         }
 

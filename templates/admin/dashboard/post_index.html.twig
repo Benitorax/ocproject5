@@ -1,0 +1,74 @@
+{% extends 'admin/base.html.twig' %}
+{% import "form/_form.html.twig" as _form %}
+
+{% block title %}Dashboard - Draft Posts{% endblock %}
+
+{% block body %}
+    <div class="row justify-content-center">
+        <aside class="col-12 mb-5">
+            <ul class="nav nav-tabs justify-content-center">
+                <li class="nav-item">
+                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_comment') %} active{% endif %}" href="{{ path('admin_dashboard_comment') }}">Comments</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link{% if currentRoute is same as('admin_dashboard_post_draft') %} active{% endif %}" href="{{ path('admin_dashboard_post_draft') }}">Draft Posts</a>
+                </li>
+            </ul>
+        </aside>
+        <div class="col-12 col-md-10">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">#</th>
+                        <th scope="col">Draft Post</th>
+                        <th scope="col"><i class="bi bi-gear-fill"></i></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for post in pagination %}
+                        <tr>
+                            <th scope="row">{{ loop.index + pagination.offset }}</th>
+                            <td>
+                                <b style="color: slategrey">{{ post.title }}</b><br>
+                                By <i>{{ post.user.username ?: 'Deleted account' }}</i><br>
+                                Last updated: {{ post.updatedAt|date('Y/m/d \\a\\t H:i:s') }}<br>
+                                Published: {% if post.isPublished is same as(true) -%}
+                                    Yes
+                                {%- else -%}
+                                    No
+                                {%- endif -%}<br>
+                            </td>
+                            <td>
+                                <div class="row">
+                                    <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
+                                        <a href="{{ path('admin_post_edit', {uuid: post.uuid}) }}">
+                                            <button class="btn btn-primary"><i class="bi bi-pen"></i></button>
+                                        </a>
+                                    </div>
+                                    <div class="col-12 col-sm-auto p-0">
+                                        <button type="button" class="btn btn-danger js-button-delete" data-url="{{ path('admin_post_delete', {uuid: post.uuid}) }}">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <th scope="row"></th>
+                            <td colspan="3">No drafts</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% include 'pagination/_pagination.html.twig' %}
+        </div>
+    </div>
+    {% include 'modal/_confirm_delete.html.twig' %}
+{% endblock %}
+
+{% block stylesheets %}
+    {{ parent() }}
+
+    <script src="/js/modal.js"></script>
+{% endblock %}

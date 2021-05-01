@@ -177,9 +177,9 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * Deletes a Post by id.
      */
-    public function deleteByUuid(string $uuid): void
+    public function deleteById(int $id): void
     {
-        $this->delete(self::SQL_TABLE, ['uuid' => $uuid]);
+        $this->delete(self::SQL_TABLE, ['id' => $id]);
     }
 
     /**

@@ -24,6 +24,8 @@ class ResetPasswordManager
     private const SELECTOR_LENGTH = 20;
 
     private const SIGNING_KEY = 'reset_password';
+    private const INVALID_TOKEN_MESSAGE = 'The reset password link is invalid.';
+    private const EXPIRED_TOKEN_MESSAGE = 'The link in your email is expired.';
 
     /**
      * How long a token is valid in seconds
@@ -61,7 +63,7 @@ class ResetPasswordManager
 
         $token = $this->generateToken($user);
         $this->notification->notifyResetPasswordRequest($user, $token);
-        $this->session->getFlashes()->add(
+        $this->addFlash(
             'success',
             sprintf('An email has been sent to %s to reset your password.', $email)
         );
@@ -74,7 +76,7 @@ class ResetPasswordManager
     {
         $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
         $this->userManager->updatePasswordToUser($user, $password);
-        $this->session->getFlashes()->add('success', 'The password has been reset with success!');
+        $this->addFlash('success', 'The password has been reset with success!');
     }
 
     /**
@@ -101,17 +103,17 @@ class ResetPasswordManager
     public function validateTokenAndFetchUser(string $token): User
     {
         if (40 !== \strlen($token)) {
-            throw new Exception('The reset password link is invalid.');
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         $resetToken = $this->getResetPasswordToken($token);
 
         if (null === $resetToken) {
-            throw new Exception('The reset password link is invalid.');
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         if ($resetToken->isExpired()) {
-            throw new Exception('The link in your email is expired.');
+            throw $this->addFlashAndReturnException(self::EXPIRED_TOKEN_MESSAGE);
         }
 
         $user = $resetToken->getUser();
@@ -123,10 +125,29 @@ class ResetPasswordManager
         );
 
         if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
-            throw new Exception('The reset password link is invalid.');
+            throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
         return $user;
+    }
+
+    /**
+     * Adds flash message and returns an Exception with the message.
+     */
+    public function addFlashAndReturnException(string $message): Exception
+    {
+        $this->addFlash('danger', $message);
+
+        return new Exception($message);
+    }
+
+
+    /**
+     * Adds flash message.
+     */
+    public function addFlash(string $type, string $message): void
+    {
+        $this->session->getFlashes()->add($type, $message . ' Please try to reset your password again.');
     }
 
     /**

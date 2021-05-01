@@ -42,7 +42,7 @@ return [
         'name' => 'post_index',
         'callable' => 'App\Controller\PostController::index'
     ],
-    // Admin
+    // Admin > Dashboard
     '/admin/dashboard' => [
         'name' => 'admin_dashboard',
         'callable' => 'App\Controller\Admin\DashboardController::index'
@@ -51,6 +51,22 @@ return [
         'name' => 'admin_dashboard_post_draft',
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\Admin\DashboardController::showDraftPosts'
+    ],
+    '/admin/dashboard/comments' => [
+        'name' => 'admin_dashboard_comment',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\Admin\DashboardController::showComments'
+    ],
+    // Admin > Comment
+    '/admin/dashboard/comment/{uuid}/validate' => [
+        'name' => 'admin_comment_validate',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\CommentController::validate'
+    ],
+    '/admin/dashboard/comment/{uuid}/delete' => [
+        'name' => 'admin_comment_delete',
+        'method' => 'POST',
+        'callable' => 'App\Controller\Admin\CommentController::delete'
     ],
     // Admin > Post
     '/admin/posts' => [
