@@ -77,9 +77,9 @@ class Router
     {
         if (in_array($method, $requiredMethods)) {
             return true;
-        } else {
-            return false;
         }
+
+        return false;
     }
 
     /**

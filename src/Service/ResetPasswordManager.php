@@ -33,18 +33,18 @@ class ResetPasswordManager
     private int $resetRequestLifetime = 60 * 60;
 
     private UserManager $userManager;
-    private ResetPasswordTokenDAO $resetPasswordTokenDAO;
+    private ResetPasswordTokenDAO $tokenDAO;
     private Notification $notification;
     private Session $session;
 
     public function __construct(
         UserManager $userManager,
-        ResetPasswordTokenDAO $resetPasswordTokenDAO,
+        ResetPasswordTokenDAO $tokenDAO,
         Notification $notification,
         Session $session
     ) {
         $this->userManager = $userManager;
-        $this->resetPasswordTokenDAO = $resetPasswordTokenDAO;
+        $this->tokenDAO = $tokenDAO;
         $this->notification = $notification;
         $this->session = $session;
     }
@@ -54,7 +54,7 @@ class ResetPasswordManager
      */
     public function manageResetRequest(string $email): void
     {
-        $this->resetPasswordTokenDAO->deleteExpiredTokens();
+        $this->tokenDAO->deleteExpiredTokens();
         $user = $this->userManager->getOneByEmail($email);
 
         if (!$user instanceof User) {
@@ -74,7 +74,7 @@ class ResetPasswordManager
      */
     public function manageReset(User $user, string $password): void
     {
-        $this->resetPasswordTokenDAO->deleteByUserId($user->getId());
+        $this->tokenDAO->deleteByUserId($user->getId());
         $this->userManager->updatePasswordToUser($user, $password);
         $this->addFlash('success', 'The password has been reset with success!');
     }
@@ -92,7 +92,7 @@ class ResetPasswordManager
         $token = new ResetPasswordToken($user, $expiredAt, $selector, $hashedToken);
         $token->setVerifier($verifier);
 
-        $this->resetPasswordTokenDAO->ensureOneTokenInDatabase($token);
+        $this->tokenDAO->ensureOneTokenInDatabase($token);
 
         return $token;
     }
@@ -118,13 +118,13 @@ class ResetPasswordManager
 
         $user = $resetToken->getUser();
 
-        $hashedTokenFromVerifier = $this->getHashedToken(
+        $hashedToken = $this->getHashedToken(
             $resetToken->getExpiredAt(),
             $user->getId(),
             substr($token, self::SELECTOR_LENGTH)
         );
 
-        if (false === hash_equals($resetToken->getHashedToken(), $hashedTokenFromVerifier)) {
+        if (false === hash_equals($resetToken->getHashedToken(), $hashedToken)) {
             throw $this->addFlashAndReturnException(self::INVALID_TOKEN_MESSAGE);
         }
 
@@ -191,6 +191,6 @@ class ResetPasswordManager
     {
         $selector = substr($token, 0, self::SELECTOR_LENGTH);
 
-        return $this->resetPasswordTokenDAO->getOneBySelector($selector);
+        return $this->tokenDAO->getOneBySelector($selector);
     }
 }

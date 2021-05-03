@@ -27,9 +27,9 @@ class FlashMessages
     {
         if ($this->has($type)) {
             return !empty($this->flashes) ? $this->flashes[$type] : $default;
-        } else {
-            return $default;
         }
+
+        return $default;
     }
 
     public function peekAll(): ?array

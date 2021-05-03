@@ -20,11 +20,12 @@ class DAO extends AbstractDAO
      */
     public function getCountBy(string $table, string $colName, $value, string $mode = null): int
     {
+        $sqlMode = ' = :';
+
         if ('LIKE' === strtoupper((string) $mode)) {
             $sqlMode = ' LIKE :';
-        } else {
-            $sqlMode = ' = :';
         }
+
         $sql = 'SELECT COUNT(id) AS count FROM ' . $table . ' WHERE ' . $colName . $sqlMode . $colName;
         $count = 0;
         $stmt = $this->createQuery($sql, [$colName => $value]);
