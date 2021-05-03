@@ -70,10 +70,12 @@ class User implements UserInterface
     {
         if (is_string($roles)) {
             $this->roles[] = $roles;
-        } else {
-            foreach ($roles as $role) {
-                $this->roles[] = $role;
-            }
+
+            return $this;
+        }
+
+        foreach ($roles as $role) {
+            $this->roles[] = $role;
         }
 
         return $this;

@@ -135,12 +135,13 @@ class Constraint
                     return 'The box "' . $name . '" must be checked';
                 }
                 return 'The box must be checked';
-            } else {
-                if (!empty($name)) {
-                    return 'The box "' . $name . '" must be unchecked';
-                }
-                return 'The box must be unchecked';
             }
+
+            if (!empty($name)) {
+                return 'The box "' . $name . '" must be unchecked';
+            }
+
+            return 'The box must be unchecked';
         }
 
         return null;

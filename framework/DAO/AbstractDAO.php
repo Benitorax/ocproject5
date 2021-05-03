@@ -54,12 +54,12 @@ abstract class AbstractDAO implements DAOInterface
 
             /** @var PDOStatement */
             return $stmt;
-        } else {
-            $stmt = $this->checkConnection()->query($sql);
-
-            /** @var PDOStatement */
-            return $stmt;
         }
+
+        $stmt = $this->checkConnection()->query($sql);
+
+        /** @var PDOStatement */
+        return $stmt;
     }
 
     /**

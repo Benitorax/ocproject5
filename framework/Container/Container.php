@@ -24,9 +24,9 @@ class Container
         if ($this->has($className)) {
             /** @var T */
             return $this->services[$className];
-        } else {
-            return $this->create($className);
         }
+
+        return $this->create($className);
     }
 
     /**

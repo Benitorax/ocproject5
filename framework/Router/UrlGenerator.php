@@ -35,10 +35,10 @@ class UrlGenerator
                 if (count((array) $routeParams)) {
                     $url = $this->hydrateRouteParams($route->getPath(), (array) $routeParams);
                     break;
-                } else {
-                    $url = $route->getPath();
-                    break;
                 }
+
+                $url = $route->getPath();
+                break;
             }
         }
 
