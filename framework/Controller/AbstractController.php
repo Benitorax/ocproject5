@@ -9,6 +9,7 @@ use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Router\UrlGenerator;
+use Framework\Response\JsonResponse;
 use Framework\Security\TokenStorage;
 use Framework\Security\User\UserInterface;
 use Framework\Security\Csrf\CsrfTokenManager;
@@ -169,5 +170,14 @@ abstract class AbstractController
         }
 
         return $form;
+    }
+
+    /**
+     * Returns a JsonResponse that uses json_encode if $data is not encoded yet.
+     * @param mixed $data
+     */
+    protected function json($data, int $status = 200, array $headers = [], bool $json = false): JsonResponse
+    {
+        return new JsonResponse($data, $status, $headers, $json);
     }
 }
