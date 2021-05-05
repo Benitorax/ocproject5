@@ -43,26 +43,8 @@ class PostController extends AbstractController
             throw new Exception('Post doesn\'t exist.', 404);
         }
 
-        $form = $this->createForm(CommentForm::class);
-        $form->handleRequest($this->request);
-
-        if ($form->isSubmitted()) {
-            if ($form->isValid()) {
-                $comment = $form->getData();
-                $this->get(CommentManager::class)->manageNewComment($comment, $post);
-                $form->clear();
-                $this->addFlash('success', 'The comment has been submitted with success!');
-
-                // retrieves Post with updated Comments
-                $post = $this->postManager->getOneBySlug($slug);
-            } else {
-                $this->addFlash('danger', 'The comment was not submitted, please check error in the form.');
-            }
-        }
-
         return $this->render('post/show.html.twig', [
             'post' => $post,
-            'form' => $form
         ]);
     }
 }

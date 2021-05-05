@@ -35,12 +35,17 @@ return [
     // Post
     '/post/{slug}' => [
         'name' => 'post_show',
-        'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\PostController::show'
     ],
     '/posts' => [
         'name' => 'post_index',
         'callable' => 'App\Controller\PostController::index'
+    ],
+    // Comment
+    '/post/{uuid}/comment/create' => [
+        'name' => 'comment_create',
+        'method' => 'POST',
+        'callable' => 'App\Controller\CommentController::create'
     ],
     // Admin > Dashboard
     '/admin/dashboard' => [
