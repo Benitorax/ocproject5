@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Model\Post;
 use App\Form\CommentForm;
+use App\Model\User;
 use App\Service\PostManager;
 use App\Service\CommentManager;
 use Framework\Response\Response;
@@ -37,8 +38,14 @@ class CommentController extends AbstractController
     public function create(string $uuid): Response
     {
         $post = $this->postManager->getPostByUuid($uuid);
+        $user = $this->getUser();
+
         if (!$post instanceof Post) {
-            return $this->json(['error' => 'Post doesn\'t exist.'], 404);
+            return $this->json(['error' => 'Post does not exist.'], 404);
+        }
+
+        if ($user instanceof User && $user->getIsBlocked()) {
+            return $this->json(['error' => 'You are not allowed to submit comment.'], 403);
         }
 
         $form = $this->createForm(CommentForm::class);

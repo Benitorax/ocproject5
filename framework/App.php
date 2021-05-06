@@ -3,16 +3,17 @@
 namespace Framework;
 
 use Exception;
+use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Security\TokenStorage;
 use Framework\Router\RequestContext;
+use Framework\Security\TokenStorage;
 use Framework\Security\AbstractToken;
-use Framework\Security\RememberMe\RememberMeManager;
 use Framework\Security\User\UserInterface;
+use Framework\Security\RememberMe\RememberMeManager;
 
 class App
 {
@@ -57,13 +58,25 @@ class App
     {
         $tokenStorage = $this->container->get(TokenStorage::class);
 
-        // check User from session
-        if ($this->session->get('user') instanceof UserInterface) {
-            $tokenStorage->setUserFromSession($this->session);
+        // checks User from session
+        try {
+            $user = $this->session->get('user');
+
+            if (!$user instanceof UserInterface) {
+                throw new Exception('User from session does not implements UserInterface');
+            }
+            // gets a fresh User from database
+            $user = $this->container->get(UserDAO::class)->getOneByUsername($user->getUsername());
+        } catch (Exception $e) {
+            $user = null;
+        }
+
+        if ($user instanceof UserInterface) {
+            $tokenStorage->setUser($user);
             return;
         }
 
-        // check remember me cookie
+        // checks remember me cookie
         try {
             $rememberMeManager = $this->container->get(RememberMeManager::class);
             $token = $rememberMeManager->autoLogin($request);
@@ -78,7 +91,7 @@ class App
     }
 
     /**
-     * Add environment variables from env file
+     * Adds environment variables from env file
      */
     public function addEnvVariables(string $path): void
     {
