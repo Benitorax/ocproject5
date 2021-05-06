@@ -22,8 +22,12 @@ class View
         $this->tokenStorage = $tokenStorage;
 
         $loader = new FilesystemLoader(\dirname(__DIR__, 2) . '\templates');
-        $this->twig = new Environment($loader, /*['cache' => \dirname(__DIR__, 2).'\var\cache\twig']*/);
+        $this->twig = new Environment($loader, [
+                // 'debug' => true,
+                // 'cache' => \dirname(__DIR__, 2).'\var\cache\twig'
+        ]);
         $this->twig->addExtension($twigExtension);
+        // $this->twig->addExtension(new \Twig\Extension\DebugExtension());
     }
 
     public function render(string $template, ?array $parameters = [], ?Response $response = null): Response
