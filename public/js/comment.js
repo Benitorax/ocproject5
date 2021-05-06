@@ -3,12 +3,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let buttonEl = formEl.querySelector(".js-button");
     let alertEl = formEl.querySelector(".js-alert");
     let errorEl = formEl.querySelector(".js-error");
+    let contentTextarea = formEl.querySelector("textarea[name=content]");
     let csrfInput = formEl.querySelector("input[name=csrf_token]");
 
     formEl.addEventListener("submit", async(e) => {
         e.preventDefault();
         resetFormError();
         buttonEl.disabled = true;
+        contentTextarea.readOnly = true;
 
         try {
             let response = await fetch(formEl.getAttribute("action"), {
@@ -36,6 +38,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
                 }
 
                 buttonEl.disabled = false;
+                contentTextarea.readOnly = false;
 
             } else if (response.status === 303) {
                 document.location.href = data.url;
@@ -46,12 +49,14 @@ document.addEventListener("DOMContentLoaded", (event) => {
             alertEl.textContent = "Sorry, the website can't currently submit your comment. Please, try again later.";
             alertEl.hidden = false;
         }
-
     });
 
     const resetFormError = function() {
+        // error message element
         errorEl.textContent = "";
         errorEl.hidden = true;
+
+        // alert message Element
         alertEl.textContent = "";
         alertEl.hidden = true;
     };
