@@ -6,12 +6,8 @@ use PDO;
 use stdClass;
 use Exception;
 use PDOStatement;
-use App\Model\Post;
-use App\Model\User;
-use App\Model\Comment;
 use Framework\DAO\DAOInterface;
 use Framework\DAO\QueryExpression;
-use Framework\Security\RememberMe\PersistentToken;
 
 abstract class AbstractDAO implements DAOInterface
 {
@@ -80,7 +76,7 @@ abstract class AbstractDAO implements DAOInterface
     }
 
     /**
-     * @return null|User[]|Comment[]|Post[]|PersistentToken[]
+     * @return null|object[]
      */
     public function getResult(DAOInterface $dao, QueryExpression $query)
     {
