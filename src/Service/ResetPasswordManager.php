@@ -4,7 +4,6 @@ namespace App\Service;
 
 use Exception;
 use App\Model\User;
-use App\DAO\UserDAO;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Framework\Session\Session;

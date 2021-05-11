@@ -17,7 +17,7 @@ class CommentValidation extends Validation
     public function validate(AbstractForm $form): void
     {
         /** @var CommentForm $form */
-        $form->addError('content', $this->check(self::CONTENT, $form->getContent(), 'content'));
+        $form->addError('content', $this->check(self::CONTENT, $form->getContent()));
         $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
     }
 }

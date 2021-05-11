@@ -3,7 +3,6 @@
 namespace Framework\Security;
 
 use Framework\Security\User\UserInterface;
-use Framework\Session\Session;
 
 /**
  * Contains an user object if the user is authenticated
@@ -27,13 +26,9 @@ class TokenStorage
         $this->setToken(null);
     }
 
-    public function setUserFromSession(Session $session): void
+    public function setUser(UserInterface $user): void
     {
-        $user = $session->get('user');
-
-        if ($user instanceof UserInterface) {
-            $token = new PreAuthenticatedToken($user);
-            $this->setToken($token);
-        }
+        $token = new PreAuthenticatedToken($user);
+        $this->setToken($token);
     }
 }
