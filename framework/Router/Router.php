@@ -45,7 +45,7 @@ class Router
     }
 
     /**
-     * Returns a Route from the path info and the method
+     * Returns a Route from the path info and the method.
      */
     public function match(string $pathInfo, string $requestMethod): Route
     {
@@ -55,6 +55,8 @@ class Router
             $routePath = $route->getPath();
 
             // creates a pattern for the preg_match
+            // which replaces every "{wildcard}" of the route,
+            // e.g. '/path/{info}/user/{id}' will return '/path/[\w\-]+/user/[\w\-]+'.
             $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
             // checks if the path info matches with the pattern of the route
@@ -140,11 +142,15 @@ class Router
 
         // retrieves every route's params and hydrates them with values of the url
         foreach ($pathElements as $key => $element) {
+            // checks if there is a {wildcard}
+            // the matches $matches0 are unused.
             if (preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
                 // get the name of the param
+                // e.g. 'post-{id}' will return 'id'.
                 $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);
 
                 // prepares the pattern for the preg_match
+                // e.g. 'post-{id}-2021' will returns 'post-([-\w]+)-2021'
                 $start = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$1', $element);
                 $end = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$3', $element);
                 preg_match('#^' . $start . '([-\w]+)' . $end . '$#', $urlElements[$key], $matches);
@@ -161,7 +167,7 @@ class Router
             }
         }
 
-        // add $routeParams in the attributes
+        // add $routeParams in the Request's attributes
         if (!empty($routeParams)) {
             $this->request->attributes->set('route_params', $routeParams);
         }

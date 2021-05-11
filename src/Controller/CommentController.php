@@ -37,17 +37,22 @@ class CommentController extends AbstractController
      */
     public function create(string $uuid): Response
     {
+        // checks if post exists
         $post = $this->postManager->getPostByUuid($uuid);
-        $user = $this->getUser();
-
         if (!$post instanceof Post) {
             return $this->json(['error' => 'Post does not exist.'], 404);
         }
 
-        if ($user instanceof User && $user->getIsBlocked()) {
+        // checks if users exists and is not blocked
+        $user = $this->getUser();
+        if (
+            null === $user ||
+            ($user instanceof User && $user->getIsBlocked())
+        ) {
             return $this->json(['error' => 'You are not allowed to submit comment.'], 403);
         }
 
+        // handles form
         $form = $this->createForm(CommentForm::class);
         $form->handleRequest($this->request);
 
@@ -56,6 +61,7 @@ class CommentController extends AbstractController
             $this->commentManager->manageNewComment($comment, $post);
             $this->addFlash('success', 'The comment has been submitted with success!');
 
+            // returns a success JSON response
             return $this->json([
                 'url' => $this->urlGenerator->generate('post_show', [
                     'slug' => $post->getSlug()
@@ -63,8 +69,10 @@ class CommentController extends AbstractController
             ], 303);
         }
 
+        // returns a JSON response with errors
         return $this->json([
             'error' => $form->getErrors(),
+            // sends a new token if the previous token is invalid
             'csrf_token' => null === $form->getErrors()['csrf'] ? null : $this->tokenManager->generateToken()
         ], 422);
     }
