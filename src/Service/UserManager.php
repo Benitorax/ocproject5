@@ -7,6 +7,7 @@ use App\Model\User;
 use App\DAO\PostDAO;
 use App\DAO\UserDAO;
 use Ramsey\Uuid\Uuid;
+use App\DAO\CommentDAO;
 use App\Service\Mailer\Notification;
 use App\Service\Pagination\Paginator;
 use Framework\Security\Hasher\PasswordHasher;
@@ -15,6 +16,7 @@ class UserManager
 {
     private UserDAO $userDAO;
     private PostDAO $postDAO;
+    private CommentDAO $commentDAO;
     private PasswordHasher $hasher;
     private Paginator $paginator;
     private Notification $notification;
@@ -22,12 +24,14 @@ class UserManager
     public function __construct(
         UserDAO $userDAO,
         PostDAO $postDAO,
+        CommentDAO $commentDAO,
         PasswordHasher $hasher,
         Paginator $paginator,
         Notification $notification
     ) {
         $this->userDAO = $userDAO;
         $this->postDAO = $postDAO;
+        $this->commentDAO = $commentDAO;
         $this->hasher = $hasher;
         $this->paginator = $paginator;
         $this->notification = $notification;
@@ -114,6 +118,9 @@ class UserManager
             return;
         }
 
+        $this->commentDAO->setAuthorToNull($user);
+
+        // if User is admin then set author to null in user's Posts
         if (in_array('admin', $user->getRoles())) {
             $this->postDAO->setAuthorToNull($user);
         }

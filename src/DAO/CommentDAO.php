@@ -154,6 +154,16 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Sets user_id column to null for Comments of the user.
+     */
+    public function setAuthorToNull(User $user): void
+    {
+        $sql = 'UPDATE ' . self::SQL_TABLE . ' SET user_id = NULL WHERE user_id = :user_id';
+        $stmt = $this->createQuery($sql, ['user_id' => $user->getId()]);
+        $stmt->closeCursor();
+    }
+
+    /**
      * Returns the total count of comments.
      */
     public function getPaginationCount(): int
