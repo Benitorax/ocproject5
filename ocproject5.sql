@@ -21,12 +21,12 @@ CREATE TABLE IF NOT EXISTS `comment` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `is_validated` tinyint(1) NOT NULL,
-  `user_id` int(4) UNSIGNED NOT NULL,
+  `user_id` int(4) UNSIGNED DEFAULT NULL,
   `post_id` int(5) UNSIGNED NOT NULL,
   PRIMARY KEY (`id`),
   KEY `user_id` (`user_id`),
   KEY `post_id` (`post_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=429 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -45,11 +45,11 @@ CREATE TABLE IF NOT EXISTS `post` (
   `created_at` datetime NOT NULL,
   `updated_at` datetime NOT NULL,
   `is_published` tinyint(1) NOT NULL,
-  `user_id` int(4) UNSIGNED NOT NULL,
+  `user_id` int(4) UNSIGNED DEFAULT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `slug` (`slug`),
   KEY `user_id` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=76 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
@@ -66,12 +66,12 @@ CREATE TABLE IF NOT EXISTS `rememberme_token` (
   `value` varchar(100) NOT NULL,
   `last_used` datetime NOT NULL,
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Table structure `reset_password_token`
+-- Structure de la table `reset_password_token`
 --
 
 DROP TABLE IF EXISTS `reset_password_token`;
@@ -84,12 +84,12 @@ CREATE TABLE IF NOT EXISTS `reset_password_token` (
   `expired_at` datetime NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `selector` (`selector`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 -- --------------------------------------------------------
 
 --
--- Table structure `user`
+-- Structure de la table `user`
 --
 
 DROP TABLE IF EXISTS `user`;
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS `user` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `email` (`email`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=27 DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
 
 --
 --Constraints for table `comment`
