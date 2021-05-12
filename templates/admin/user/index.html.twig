@@ -49,12 +49,15 @@
                         <tr>
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
                             <td><b style="color: dimgrey">{{ user.username -}}</b>
-                                {%- if 'admin' in user.roles %}
+                                {% if 'admin' in user.roles -%}
                                     <span class="badge bg-success text-white">Admin</span>
-                                {%- endif %}<br>
+                                {%- endif %}
+                                {% if user.isBlocked is same as(true) -%}
+                                    <small class="badge bg-danger text-white">Blocked</small>
+                                {%- endif %}
+                                <br>
                                 {{ user.email }}<br>
-                                {% if user.isBlocked is same as(true) %}Blocked{% else %}Unblocked{% endif %}<br>
-                                Created: {{ user.createdAt|date('Y-m-d H:i:s') }}
+                                <small class="text-secondary">Created: {{ user.createdAt|date('M d, Y, H:i') }}</small>
                             </td>
                             <td>
                                 <div class="row">
@@ -81,7 +84,7 @@
                     {% else %}
                         <tr>
                             <th scope="row"></th>
-                            <td colspan="3">No user registered</td>
+                            <td colspan="3">None</td>
                         </tr>
                     {% endfor %}
                 </tbody>

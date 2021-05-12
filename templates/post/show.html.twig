@@ -12,13 +12,13 @@
             <p>{{ post.content|nl2br }}</p>
             <hr class="mt-5">
             <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
-            <p style="color: grey">
+            <small style="color: grey">
                 {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
-                    Published the {{ post.createdAt|date('Y-m-d \\a\\t H:i:s') }}
+                    Published: {{ post.createdAt|date('M d, Y, H:i') }}
                 {% else %}
-                    Updated the {{ post.updatedAt|date('Y-m-d \\a\\t H:i:s') }}
+                    Updated: {{ post.updatedAt|date('M d, Y, H:i') }}
                 {% endif %}
-            </p>
+            </small>
         </div>
     </div>
     <div class="row justify-content-center">
@@ -50,7 +50,7 @@
                 <div class="media my-3">
                     <div class="media-body">
                         <h5 class="mb-0"><b>{{ comment.user.username }}</b></h5>
-                        <small style="color: grey">{{ comment.updatedAt|date('Y-m-d \\a\\t H:i:s') }}</small>
+                        <small style="color: grey">{{ comment.updatedAt|date('M d, Y, H:i') }}</small>
                         <p class="mt-2">{{ comment.content|nl2br }}</p>
                     </div>
                 </div>

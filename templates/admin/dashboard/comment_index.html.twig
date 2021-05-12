@@ -33,9 +33,9 @@
                             <th scope="row">{{ loop.index + pagination.offset }}</th>
                             <td style="max-width: 760px">
                                 By <b style="color: slategrey">{{ comment.user.username ?: 'Deleted account' }}</b>,
-                                <span class="text-secondary font-weight-light">{{ comment.updatedAt|date('Y/m/d \\a\\t H:i:s') }}</span>
+                                <span class="text-secondary">{{ comment.updatedAt|date('M d, Y, H:i') }}</span>
                                 <br><br>
-                                Content: {{ comment.content|nl2br }}<br><br>
+                                {{ comment.content|nl2br }}<br><br>
                                 <b>Post</b>: <a href="{{ path('post_show', {slug: comment.post.slug}) }}">{{ comment.post.title }}</a>
                             </td>
                             <td>
