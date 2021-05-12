@@ -4,6 +4,7 @@ namespace App\Form;
 
 use App\Model\Post;
 use App\Model\User;
+use App\DAO\UserDAO;
 use Framework\Form\AbstractForm;
 use App\Validation\PostValidation;
 use Framework\Security\TokenStorage;
@@ -12,14 +13,22 @@ class PostForm extends AbstractForm
 {
     private Post $post;
 
+    /**
+     * @var User[]
+     */
+    private $adminUsers;
+
     private PostValidation $validation;
     private TokenStorage $tokenStorage;
+    private UserDAO $userDAO;
 
-    public function __construct(PostValidation $validation, TokenStorage $tokenStorage)
+    public function __construct(PostValidation $validation, TokenStorage $tokenStorage, UserDAO $userDAO)
     {
         $this->post = new Post();
         $this->tokenStorage = $tokenStorage;
         $this->validation = $validation;
+        $this->userDAO = $userDAO;
+        $this->adminUsers = $userDAO->getAllAdmin() ?: [];
 
         if (null !== $token = $tokenStorage->getToken()) {
             if (null !== $user = $token->getUser()) {
@@ -36,7 +45,7 @@ class PostForm extends AbstractForm
 
     public function newInstance(): self
     {
-        return new self($this->validation, $this->tokenStorage);
+        return new self($this->validation, $this->tokenStorage, $this->userDAO);
     }
 
     public function getTitle(): string
@@ -85,6 +94,46 @@ class PostForm extends AbstractForm
     public function setIsPublished(bool $isPublished): self
     {
         $this->post->setIsPublished($isPublished);
+
+        return $this;
+    }
+
+    /**
+     * Used only to display the <select> menu in templates.
+     *
+     * @return User[]
+     */
+    public function getAuthors()
+    {
+        return $this->adminUsers;
+    }
+
+    /**
+     * Used only to preselect the option in the <select> menu in templates.
+     *
+     * @return User
+     */
+    public function getAuthor()
+    {
+        return $this->post->getUser();
+    }
+
+    /**
+     * Sets error message and invalidate the form if no User is set in Post.
+     */
+    public function setAuthor(string $uuid): self
+    {
+        foreach ($this->adminUsers as $user) {
+            if ($uuid === $user->getUuid()->toString()) {
+                $this->post->setUser($user);
+
+                return $this;
+            }
+        }
+
+        // if no admin user is found then sets error
+        $this->isValid = false;
+        $this->errors['author'] = 'Please select the author again if not already pre-selected. ';
 
         return $this;
     }
