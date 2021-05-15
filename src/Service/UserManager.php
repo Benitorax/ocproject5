@@ -4,10 +4,8 @@ namespace App\Service;
 
 use DateTime;
 use App\Model\User;
-use App\DAO\PostDAO;
 use App\DAO\UserDAO;
 use Ramsey\Uuid\Uuid;
-use App\DAO\CommentDAO;
 use App\Service\Mailer\Notification;
 use App\Service\Pagination\Paginator;
 use Framework\Security\Hasher\PasswordHasher;
@@ -15,23 +13,17 @@ use Framework\Security\Hasher\PasswordHasher;
 class UserManager
 {
     private UserDAO $userDAO;
-    private PostDAO $postDAO;
-    private CommentDAO $commentDAO;
     private PasswordHasher $hasher;
     private Paginator $paginator;
     private Notification $notification;
 
     public function __construct(
         UserDAO $userDAO,
-        PostDAO $postDAO,
-        CommentDAO $commentDAO,
         PasswordHasher $hasher,
         Paginator $paginator,
         Notification $notification
     ) {
         $this->userDAO = $userDAO;
-        $this->postDAO = $postDAO;
-        $this->commentDAO = $commentDAO;
         $this->hasher = $hasher;
         $this->paginator = $paginator;
         $this->notification = $notification;
@@ -105,26 +97,5 @@ class UserManager
     public function unblockUserByUuid(string $uuid): void
     {
         $this->userDAO->unblockByUuid($uuid);
-    }
-
-    /**
-     * Deletes user in database by id.
-     */
-    public function deleteUserByUuid(string $uuid): void
-    {
-        $user = $this->userDAO->getOneByUuid($uuid);
-
-        if (!$user instanceof User) {
-            return;
-        }
-
-        $this->commentDAO->setAuthorToNull($user);
-
-        // if User is admin then set author to null in user's Posts
-        if (in_array('admin', $user->getRoles())) {
-            $this->postDAO->setAuthorToNull($user);
-        }
-
-        $this->userDAO->deleteUser($user);
     }
 }

@@ -4,16 +4,19 @@ namespace App\Controller\Admin;
 
 use App\Model\User;
 use App\Service\UserManager;
+use App\Service\EntityDeleter;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
 class UserController extends AbstractController
 {
     private UserManager $userManager;
+    private EntityDeleter $entityDeleter;
 
-    public function __construct(UserManager $userManager)
+    public function __construct(UserManager $userManager, EntityDeleter $entityDeleter)
     {
         $this->userManager = $userManager;
+        $this->entityDeleter = $entityDeleter;
     }
 
     /**
@@ -79,7 +82,7 @@ class UserController extends AbstractController
             if ($uuid === $user->getUuid()->toString()) {
                 $this->addFlash('danger', 'You can\'t delete your own account!');
             } else {
-                $this->userManager->deleteUserByUuid($uuid);
+                $this->entityDeleter->deleteUserByUuid($uuid);
                 $this->addFlash('success', 'The user has been deleted with success!');
             }
         }
