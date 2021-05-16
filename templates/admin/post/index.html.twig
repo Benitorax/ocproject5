@@ -7,7 +7,7 @@
         <aside class="col-12 mb-3">
             <div class="row justify-content-between">
                 <div class="col-12 col-sm-auto m-3">
-                    <a href="{{ path('admin_post_create') }}">
+                    <a class="underline-none" href="{{ path('admin_post_create') }}">
                         <button class="btn btn-success btn-block">Create a post</button>
                     </a>
                 </div>
@@ -41,11 +41,11 @@
                             <td>
                                 <b style="color: slategrey">{{ post.title }}</b><br>
                                 By <i>{{ post.user.username ?: 'Deleted account' }}</i><br>
-                                Last updated: {{ post.updatedAt|date('Y/m/d \\a\\t H:i:s') }}<br>
+                                Last updated: {{ post.updatedAt|date('M d, Y, H:i') }}<br>
                                 Published: {% if post.isPublished is same as(true) -%}
-                                    Yes
+                                    <span class="badge bg-success text-white">Yes</span>
                                 {%- else -%}
-                                    No
+                                    <span class="badge bg-danger text-white">No</span>
                                 {%- endif -%}<br>
                             </td>
                             <td>

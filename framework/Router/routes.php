@@ -8,6 +8,10 @@
  *  'method' => 'GET', # it can be a table: ['GET', POST], or a string: 'PUT'. If none it will be 'GET' by default.
  *  'callable' => 'Class::method'
  * ]
+ * 
+ * Note: Only one wildcard is allowed between each slashes:
+ * Allowed: "/{language}/{date}/{slug}".
+ * Forbidden: "/{language}-{date}/{slug}-by-{author}".
  */
 
 return [

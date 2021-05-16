@@ -101,13 +101,14 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
-     * @return null|object[]|User[] Array of admin users
+     * @return null|User[] Array of admin users
      */
     public function getAllAdmin()
     {
         $this->prepareQuery()
             ->where('roles LIKE \'%admin%\'');
 
+        /** @var null|User[] */
         return $this->getResult($this, $this->query);
     }
 

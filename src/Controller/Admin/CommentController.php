@@ -3,16 +3,19 @@
 namespace App\Controller\Admin;
 
 use App\Service\CommentManager;
+use App\Service\EntityDeleter;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
 class CommentController extends AbstractController
 {
     private CommentManager $commentManager;
+    private EntityDeleter $entityDeleter;
 
-    public function __construct(CommentManager $commentManager)
+    public function __construct(CommentManager $commentManager, EntityDeleter $entityDeleter)
     {
         $this->commentManager = $commentManager;
+        $this->entityDeleter = $entityDeleter;
     }
 
     /**
@@ -38,7 +41,7 @@ class CommentController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->commentManager->deleteCommentByUuid($uuid);
+            $this->entityDeleter->deleteCommentByUuid($uuid);
             $this->addFlash('success', 'The comment has been deleted with success!');
         }
 

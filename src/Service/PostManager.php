@@ -128,19 +128,6 @@ class PostManager
     }
 
     /**
-     * Deletes post and its comments by post id.
-     */
-    public function deletePostByUuid(string $uuid): void
-    {
-        $post = $this->getPostByUuid($uuid);
-
-        if ($post instanceof Post) {
-            $this->commentDAO->deleteByPostId($post->getId());
-            $this->postDAO->deleteById($post->getId());
-        }
-    }
-
-    /**
      * Adds a slug to the post.
      */
     public function addSlug(Post $post): Post

@@ -4,16 +4,19 @@ namespace App\Controller\Admin;
 
 use App\Form\PostForm;
 use App\Service\PostManager;
+use App\Service\EntityDeleter;
 use Framework\Response\Response;
 use Framework\Controller\AbstractController;
 
 class PostController extends AbstractController
 {
     private PostManager $postManager;
+    private EntityDeleter $entityDeleter;
 
-    public function __construct(PostManager $postManager)
+    public function __construct(PostManager $postManager, EntityDeleter $entityDeleter)
     {
         $this->postManager = $postManager;
+        $this->entityDeleter = $entityDeleter;
     }
 
     /**
@@ -88,7 +91,7 @@ class PostController extends AbstractController
         $this->denyAccessUnlessGranted(['admin']);
 
         if ($this->isCsrfTokenValid()) {
-            $this->postManager->deletePostByUuid($uuid);
+            $this->entityDeleter->deletePostByUuid($uuid);
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 

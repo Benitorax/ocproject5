@@ -110,7 +110,7 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
             ->from(self::SQL_TABLE, 'c')
             ->leftOuterJoin(UserDAO::SQL_TABLE, 'u', 'user_id = u.id')
             ->addLeftOuterJoin(PostDAO::SQL_TABLE, 'p', 'post_id = p.id')
-            ->orderBy('c.updated_at', 'DESC');
+            ->orderBy('c.updated_at', 'ASC');
     }
 
     /**
@@ -151,6 +151,16 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
             'user_id' => $comment->getUser()->getId(),
             'post_id' => $comment->getPost()->getId()
         ]);
+    }
+
+    /**
+     * Sets user_id column to null for Comments of the user.
+     */
+    public function setAuthorToNull(User $user): void
+    {
+        $sql = 'UPDATE ' . self::SQL_TABLE . ' SET user_id = NULL WHERE user_id = :user_id';
+        $stmt = $this->createQuery($sql, ['user_id' => $user->getId()]);
+        $stmt->closeCursor();
     }
 
     /**

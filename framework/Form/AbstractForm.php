@@ -7,8 +7,8 @@ use Framework\Request\Request;
 abstract class AbstractForm implements FormInterface
 {
     private string $csrfToken = '';
-    private array $errors = [];
-    private bool $isValid = false;
+    protected array $errors = [];
+    protected bool $isValid = false;
     private bool $isSubmitted = false;
 
     /**
@@ -17,12 +17,14 @@ abstract class AbstractForm implements FormInterface
     public function handleRequest(Request $request): void
     {
         if ('POST' === $request->getMethod()) {
-            $this->hydrate($this, $request);
-            $this->isSubmitted = true;
-
-            //reinitiate the errors before validation
+            //reinitiate the errors and validity before validation
             $this->errors = [];
             $this->isValid = true;
+
+            // hydrates after reinitializing to allow setting errors or change validity
+            // inside your custom setter methods.
+            $this->hydrate($this, $request);
+            $this->isSubmitted = true;
             $this->getValidation()->validate($this);
 
             foreach ($this->getErrors() as $error) {
