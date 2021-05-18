@@ -28,7 +28,6 @@ class PostForm extends AbstractForm
         $this->tokenStorage = $tokenStorage;
         $this->validation = $validation;
         $this->userDAO = $userDAO;
-        $this->adminUsers = $userDAO->getAllAdmin() ?: [];
 
         if (null !== $token = $tokenStorage->getToken()) {
             if (null !== $user = $token->getUser()) {
@@ -99,21 +98,31 @@ class PostForm extends AbstractForm
     }
 
     /**
+     * @return User[]
+     */
+    public function getAdminUsers()
+    {
+        if (null === $this->adminUsers) {
+            $this->adminUsers = $this->userDAO->getAllAdmin() ?: [];
+        }
+
+        return $this->adminUsers;
+    }
+
+    /**
      * Used only to display the <select> menu in templates.
      *
      * @return User[]
      */
     public function getAuthors()
     {
-        return $this->adminUsers;
+        return $this->getAdminUsers();
     }
 
     /**
      * Used only to preselect the option in the <select> menu in templates.
-     *
-     * @return User
      */
-    public function getAuthor()
+    public function getAuthor(): User
     {
         return $this->post->getUser();
     }
@@ -123,7 +132,7 @@ class PostForm extends AbstractForm
      */
     public function setAuthor(string $uuid): self
     {
-        foreach ($this->adminUsers as $user) {
+        foreach ($this->getAdminUsers() as $user) {
             if ($uuid === $user->getUuid()->toString()) {
                 $this->post->setUser($user);
 
