@@ -9,6 +9,7 @@ use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
+use Framework\DAO\UserDAOInterface;
 use Framework\Router\RequestContext;
 use Framework\Security\TokenStorage;
 use Framework\Security\AbstractToken;
@@ -66,7 +67,7 @@ class App
                 throw new Exception('User from session does not implements UserInterface');
             }
             // gets a fresh User from database
-            $user = $this->container->get(UserDAO::class)->getOneByUsername($user->getUsername());
+            $user = $this->container->get(UserDAOInterface::class)->getOneByUsername($user->getUsername());
         } catch (Exception $e) {
             $user = null;
         }

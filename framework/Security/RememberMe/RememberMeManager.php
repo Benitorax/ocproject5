@@ -7,6 +7,7 @@ use Exception;
 use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
+use Framework\DAO\UserDAOInterface;
 use Framework\Security\TokenStorage;
 use Framework\Security\User\UserInterface;
 
@@ -30,10 +31,10 @@ class RememberMeManager
     ];
 
     private RememberMeDAO $rememberMeDAO;
-    private UserDAO $userDAO;
+    private UserDAOInterface $userDAO;
     private TokenStorage $tokenStorage;
 
-    public function __construct(RememberMeDAO $rememberMeDAO, UserDAO $userDAO, TokenStorage $tokenStorage)
+    public function __construct(RememberMeDAO $rememberMeDAO, UserDAOInterface $userDAO, TokenStorage $tokenStorage)
     {
         $this->rememberMeDAO = $rememberMeDAO;
         $this->userDAO = $userDAO;

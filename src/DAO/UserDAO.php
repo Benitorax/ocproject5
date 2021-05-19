@@ -9,8 +9,9 @@ use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 use App\Service\Pagination\PaginationDAOInterface;
+use Framework\DAO\UserDAOInterface;
 
-class UserDAO extends AbstractDAO implements PaginationDAOInterface
+class UserDAO extends AbstractDAO implements PaginationDAOInterface, UserDAOInterface
 {
     public const SQL_TABLE = 'user';
     public const SQL_COLUMNS = [
