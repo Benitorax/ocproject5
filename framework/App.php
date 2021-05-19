@@ -3,7 +3,6 @@
 namespace Framework;
 
 use Exception;
-use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;

@@ -197,7 +197,7 @@ class Router
 
     public function initializeRoutes(): void
     {
-        $routes = require __DIR__ . '/routes.php';
+        $routes = require dirname(__DIR__, 2) . '\config\routes.php';
         foreach ($routes as $path => $data) {
             $this->routes[] = new Route($path, $data['callable'], $data['method'] ?? null, $data['name']);
         }

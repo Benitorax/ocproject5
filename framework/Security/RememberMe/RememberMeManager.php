@@ -4,7 +4,6 @@ namespace Framework\Security\RememberMe;
 
 use DateTime;
 use Exception;
-use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\DAO\UserDAOInterface;
