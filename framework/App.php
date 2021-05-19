@@ -66,7 +66,7 @@ class App
                 throw new Exception('User from session does not implements UserInterface');
             }
             // gets a fresh User from database
-            $user = $this->container->get(UserDAOInterface::class)->getOneByUsername($user->getUsername());
+            $user = $this->container->get(UserDAOInterface::class)->loadByIdentifier($user->getId());
         } catch (Exception $e) {
             $user = null;
         }

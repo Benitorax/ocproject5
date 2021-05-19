@@ -8,6 +8,13 @@ namespace Framework\Security\User;
 interface UserInterface
 {
     /**
+     * Returns an identifier.
+     *
+     * @return mixed;
+     */
+    public function getId();
+
+    /**
      * Returns the roles granted to the user: ['user', 'admin']
      */
     public function getRoles(): array;

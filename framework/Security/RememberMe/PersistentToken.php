@@ -11,18 +11,26 @@ use Exception;
 class PersistentToken
 {
     private string $class;
-    private string $username;
+
+    /**
+     *  @var mixed
+     */
+    private $identifier;
+
     private string $series;
     private string $tokenValue;
     private DateTime $lastUsed;
 
-    public function __construct(string $class, string $username, string $series, string $tokenValue, DateTime $lastUsed)
+    /**
+     * @param mixed $identifier
+     */
+    public function __construct(string $class, $identifier, string $series, string $tokenValue, DateTime $lastUsed)
     {
         if (empty($class)) {
             throw new Exception('$class must not be empty.');
         }
-        if ('' === $username) {
-            throw new Exception('$username must not be empty.');
+        if ('' === $identifier) {
+            throw new Exception('$identifier must not be empty.');
         }
         if (empty($series)) {
             throw new Exception('$series must not be empty.');
@@ -32,7 +40,7 @@ class PersistentToken
         }
 
         $this->class = $class;
-        $this->username = $username;
+        $this->identifier = $identifier;
         $this->series = $series;
         $this->tokenValue = $tokenValue;
         $this->lastUsed = $lastUsed;
@@ -43,9 +51,9 @@ class PersistentToken
         return $this->class;
     }
 
-    public function getUsername(): string
+    public function getIdentifier(): string
     {
-        return $this->username;
+        return $this->identifier;
     }
 
     public function getSeries(): string

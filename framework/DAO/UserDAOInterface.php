@@ -11,5 +11,5 @@ interface UserDAOInterface
      *
      * @return UserInterface
      */
-    public function getOneByUsername(string $username);
+    public function loadByIdentifier(string $identifier);
 }

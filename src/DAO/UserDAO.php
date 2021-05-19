@@ -77,6 +77,18 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface, UserDAOInte
     /**
      * @return null|object|User the object is instance of User class
      */
+    public function loadByIdentifier(string $identifier)
+    {
+        $this->prepareQuery()
+            ->where('id = :id')
+            ->setParameter('id', $identifier);
+
+        return $this->getOneResult($this, $this->query);
+    }
+
+    /**
+     * @return null|object|User the object is instance of User class
+     */
     public function getOneByUuid(string $uuid)
     {
         $this->prepareQuery()

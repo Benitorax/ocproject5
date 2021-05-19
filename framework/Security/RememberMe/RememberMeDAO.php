@@ -13,7 +13,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
 {
     public const SQL_TABLE = 'rememberme_token';
     public const SQL_COLUMNS = [
-        'class', 'username', 'series', 'value', 'last_used'
+        'class', 'identifier', 'series', 'value', 'last_used'
     ];
 
     private QueryExpression $query;
@@ -27,7 +27,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
     {
         return new PersistentToken(
             $object->p_class,
-            $object->p_username,
+            $object->p_identifier,
             $object->p_series,
             $object->p_value,
             new DateTime($object->p_last_used)
@@ -55,9 +55,9 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
         $this->delete(self::SQL_TABLE, ['series' => $series]);
     }
 
-    public function deleteTokenByUsername(string $username): void
+    public function deleteTokenByIdentifier(string $identifier): void
     {
-        $this->delete(self::SQL_TABLE, ['username' => $username]);
+        $this->delete(self::SQL_TABLE, ['identifier' => $identifier]);
     }
 
     public function updateToken(string $series, string $tokenValue, DateTime $lastUsed): void
@@ -74,7 +74,7 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
     {
         $this->insert(self::SQL_TABLE, [
             'class' => $token->getClass(),
-            'username' => $token->getUsername(),
+            'identifier' => $token->getIdentifier(),
             'series' => $token->getSeries(),
             'value' => $token->getTokenValue(),
             'last_used' => ($token->getLastUsed())->format('Y-m-d H:i:s'),
