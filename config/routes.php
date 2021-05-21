@@ -1,9 +1,7 @@
 <?php
 
-use Framework\Router\Route;
-
 /**
- * @return Route[]
+ * @return Framework\Router\Route[]
  *
  * /uri-path => [
  *  'name' => 'page_name',
