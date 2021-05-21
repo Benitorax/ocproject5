@@ -1,8 +1,8 @@
 section {
-    min-height: 85vh;
+  min-height: 85vh;
 }
 
 .underline-none,
 .underline-none:hover {
-    text-decoration: none;
+  text-decoration: none;
 }

@@ -25,14 +25,10 @@ abstract class AbstractDAO implements DAOInterface
 
     private function getConnection(): PDO
     {
-        try {
-            $this->connection = new PDO($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-            $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+        $this->connection = new PDO($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
+        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 
-            return $this->connection;
-        } catch (Exception $connectionError) {
-            die('Connection error:' . $connectionError->getMessage());
-        }
+        return $this->connection;
     }
 
     /** @param mixed[] $parameters for bindValue() method*/

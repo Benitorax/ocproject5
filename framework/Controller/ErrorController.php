@@ -18,11 +18,11 @@ class ErrorController extends AbstractController
     /**
      * Displays server error page.
      */
-    public function server(Exception $e): Response
+    public function server(Exception $exception): Response
     {
         return $this->render('error/error_500.html.twig', [
-            'code' => $e->getCode(),
-            'message' => $e->getMessage()
+            'code' => $exception->getCode(),
+            'message' => $exception->getMessage()
         ]);
     }
 }

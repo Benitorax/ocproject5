@@ -60,7 +60,7 @@ class Router
             $pattern = preg_replace('#\{\w+\}#', '[\w\-]+', $routePath);
 
             // checks if the path info matches with the pattern of the route
-            if (preg_match('#^' . $pattern . '$#', $pathInfo, $matches)) {
+            if (preg_match('#^' . $pattern . '$#', $pathInfo)) {
                 // checks if the method matches with a method of the route
                 if ($this->isMethodValid($requestMethod, $route->getMethods())) {
                     $matchedRoute = $route;
@@ -143,8 +143,7 @@ class Router
         // retrieves every route's params and hydrates them with values of the url
         foreach ($pathElements as $key => $element) {
             // checks if there is a {wildcard}
-            // the matches $matches0 are unused.
-            if (preg_match('#\{\w+\}#', $pathElements[$key], $matches0)) {
+            if (preg_match('#\{\w+\}#', $pathElements[$key])) {
                 // get the name of the param
                 // e.g. 'post-{id}' will return 'id'.
                 $paramName = preg_replace('#([-\w]*)\{(\w+)\}([-\w]*)#', '$2', $element);
