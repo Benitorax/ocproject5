@@ -28,6 +28,11 @@ class Container
         }
     }
 
+    public function getAliases(): array
+    {
+        return $this->aliases;
+    }
+
     /**
      * @template T
      * @param class-string<T> $className
