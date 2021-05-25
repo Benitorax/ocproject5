@@ -54,7 +54,7 @@ class FixturesController extends AbstractController
     {
         $this->createUsers(20);
 
-        for ($i = 0; $i < 5; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $user = $this->createAdminUser();
             $this->createPosts($user, 15);
         }
@@ -109,9 +109,10 @@ class FixturesController extends AbstractController
         $firstName = $this->faker->firstName();
         $lastName = $this->faker->lastName;
         $dateTime = $this->faker->dateTimeBetween('-2 years', '-10 months');
+        $email = strtolower($firstName . '.' . $lastName) . '@yopmail.com';
 
         $user = (new User())->setUuid(Uuid::uuid4())
-            ->setEmail(strtolower($firstName . '.' . $lastName) . '@yopmail.com')
+            ->setEmail($email)
             ->setPassword((string) $this->hasher->hash('123456'))
             ->setUsername($firstName . ' ' . $lastName)
             ->setCreatedAt($dateTime)
@@ -124,7 +125,7 @@ class FixturesController extends AbstractController
 
         $this->userDAO->add($user);
         /** @var User */
-        $user = $this->userDAO->getOneByUsername($firstName . ' ' . $lastName); // returns User with Id
+        $user = $this->userDAO->getOneByEmail($email); // returns User with Id
         $this->users[] = $user;
 
         return $user;

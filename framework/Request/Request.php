@@ -153,17 +153,17 @@ class Request
 
     public function getQueryString(): string
     {
-        $qs = $this->server->get('QUERY_STRING');
+        $queryString = $this->server->get('QUERY_STRING');
 
-        if ('' === ($qs ?? '')) {
+        if ('' === ($queryString ?? '')) {
             return '';
         }
 
-        parse_str($qs, $qs);
-        ksort($qs);
+        parse_str($queryString, $queryString);
+        ksort($queryString);
 
-        $qs = http_build_query($qs, '', '&', \PHP_QUERY_RFC3986);
+        $queryString = http_build_query($queryString, '', '&', \PHP_QUERY_RFC3986);
 
-        return $qs;
+        return $queryString;
     }
 }

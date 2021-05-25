@@ -4,9 +4,9 @@ namespace Framework\Security\RememberMe;
 
 use DateTime;
 use Exception;
-use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
+use Framework\DAO\UserDAOInterface;
 use Framework\Security\TokenStorage;
 use Framework\Security\User\UserInterface;
 
@@ -30,10 +30,10 @@ class RememberMeManager
     ];
 
     private RememberMeDAO $rememberMeDAO;
-    private UserDAO $userDAO;
+    private UserDAOInterface $userDAO;
     private TokenStorage $tokenStorage;
 
-    public function __construct(RememberMeDAO $rememberMeDAO, UserDAO $userDAO, TokenStorage $tokenStorage)
+    public function __construct(RememberMeDAO $rememberMeDAO, UserDAOInterface $userDAO, TokenStorage $tokenStorage)
     {
         $this->rememberMeDAO = $rememberMeDAO;
         $this->userDAO = $userDAO;
@@ -59,7 +59,7 @@ class RememberMeManager
         }
 
         if (!hash_equals($persistentToken->getTokenValue(), $tokenValue)) {
-            $this->rememberMeDAO->deleteTokenByUsername($persistentToken->getUsername());
+            $this->rememberMeDAO->deleteTokenByIdentifier($persistentToken->getIdentifier());
             throw new Exception('This token was already used. The account is possibly compromised.');
         }
 
@@ -72,7 +72,7 @@ class RememberMeManager
         $this->setCookieToRequest($request, $series, $tokenValue);
 
         /** @var UserInterface */
-        return $this->userDAO->getOneByUsername($persistentToken->getUsername());
+        return $this->userDAO->loadByIdentifier($persistentToken->getIdentifier());
     }
 
     /**
@@ -109,7 +109,7 @@ class RememberMeManager
         $this->rememberMeDAO->insertToken(
             new PersistentToken(
                 \get_class($user),
-                $user->getUsername(),
+                $user->getId(),
                 $series,
                 $tokenValue,
                 new DateTime()
@@ -146,7 +146,7 @@ class RememberMeManager
     public function deleteToken(Request $request): void
     {
         if (!empty($this->tokenStorage->getToken())) {
-            $this->rememberMeDAO->deleteTokenByUsername((string) $this->tokenStorage->getToken()->getUsername());
+            $this->rememberMeDAO->deleteTokenByIdentifier((string) $this->tokenStorage->getToken()->getIdentifier());
         }
         $this->cancelCookie($request);
     }

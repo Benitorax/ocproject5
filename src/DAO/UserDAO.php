@@ -9,8 +9,9 @@ use Ramsey\Uuid\Uuid;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 use App\Service\Pagination\PaginationDAOInterface;
+use Framework\DAO\UserDAOInterface;
 
-class UserDAO extends AbstractDAO implements PaginationDAOInterface
+class UserDAO extends AbstractDAO implements PaginationDAOInterface, UserDAOInterface
 {
     public const SQL_TABLE = 'user';
     public const SQL_COLUMNS = [
@@ -64,11 +65,11 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface
     /**
      * @return null|object|User the object is instance of User class
      */
-    public function getOneByUsername(string $username)
+    public function loadByIdentifier(string $identifier)
     {
         $this->prepareQuery()
-            ->where('username = :username')
-            ->setParameter('username', $username);
+            ->where('id = :id')
+            ->setParameter('id', $identifier);
 
         return $this->getOneResult($this, $this->query);
     }

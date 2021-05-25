@@ -2,10 +2,8 @@
 
 namespace App\Model;
 
-use DateTime;
 use App\Model\User;
 use DateTimeImmutable;
-use DateTimeInterface;
 
 class ResetPasswordToken
 {

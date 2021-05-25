@@ -9,10 +9,10 @@ abstract class AbstractToken
     private ?UserInterface $user = null;
     private bool $authenticated = false;
 
-    public function getUsername(): ?string
+    public function getIdentifier(): ?string
     {
         if (!empty($this->user)) {
-            return $this->user->getUsername();
+            return $this->user->getId();
         }
 
         return null;

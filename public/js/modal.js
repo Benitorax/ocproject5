@@ -3,7 +3,7 @@ document.addEventListener("DOMContentLoaded", (event) => {
 
     // adds click listener to delete button to show delete modal
     let deleteButtons = document.querySelectorAll(".js-button-delete");
-    deleteButtons.forEach(deleteButton => {
+    deleteButtons.forEach((deleteButton) => {
         deleteButton.addEventListener("click", (e) => {
             modalForm.action = deleteButton.dataset.url;
 

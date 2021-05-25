@@ -3,12 +3,12 @@
 namespace Framework;
 
 use Exception;
-use App\DAO\UserDAO;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
+use Framework\DAO\UserDAOInterface;
 use Framework\Router\RequestContext;
 use Framework\Security\TokenStorage;
 use Framework\Security\AbstractToken;
@@ -24,13 +24,7 @@ class App
     {
         $this->boot($request);
         $response = $this->container->getRouter()->run($request);
-
-        // Add rememberme cookie into Response if exists
-        if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
-            /** @var Cookie */
-            $cookie = $request->attributes->get(RememberMeManager::COOKIE_ATTR_NAME);
-            $response->headers->setCookie($cookie);
-        }
+        $response = $this->addCookiesToResponse($request, $response);
 
         return $response;
     }
@@ -48,7 +42,10 @@ class App
         $this->session = $session;
         $request->setSession($this->session);
 
-        $this->authenticate($request);
+        // authenticates only if a class implements UserDAOInterface
+        if (!empty($this->container->getAliases()[UserDAOInterface::class])) {
+            $this->authenticate($request);
+        }
     }
 
     /**
@@ -66,7 +63,7 @@ class App
                 throw new Exception('User from session does not implements UserInterface');
             }
             // gets a fresh User from database
-            $user = $this->container->get(UserDAO::class)->getOneByUsername($user->getUsername());
+            $user = $this->container->get(UserDAOInterface::class)->loadByIdentifier($user->getId());
         } catch (Exception $e) {
             $user = null;
         }
@@ -102,6 +99,21 @@ class App
             $_ENV[$key] = $value;
             $_SERVER[$key] = $value;
         }
+    }
+
+    /**
+     * Adds Cookies to Response.
+     */
+    public function addCookiesToResponse(Request $request, Response $response): Response
+    {
+        // Add rememberme cookie into Response if exists in Request attributes
+        if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
+            /** @var Cookie */
+            $cookie = $request->attributes->get(RememberMeManager::COOKIE_ATTR_NAME);
+            $response->headers->setCookie($cookie);
+        }
+
+        return $response;
     }
 
     public function terminate(): void

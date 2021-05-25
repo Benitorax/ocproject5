@@ -9,10 +9,7 @@ use App\Validation\RegisterValidation;
 class RegisterForm extends AbstractForm
 {
     private User $user;
-    // private string $email = '';
-    // private string $password1 = '';
     private string $password2 = '';
-    // private string $username = '';
     private bool $terms = false;
 
     private RegisterValidation $validation;
