@@ -71,7 +71,8 @@ class ResetPasswordToken
     }
 
     /**
-     * The public token consists of a concatenated random non-hashed selector string and random non-hashed verifier string.
+     * The public token consists of a concatenated random non-hashed selector string
+     * and random non-hashed verifier string.
      */
     public function getPublicToken(): string
     {

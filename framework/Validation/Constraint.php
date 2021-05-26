@@ -33,10 +33,14 @@ class Constraint
             );
         }
 
+        if (in_array($constraint[0], ['notBlank', 'email'])) {
+            return $callable($value, $name);
+        }
+
         return $callable($constraint, $value, $name);
     }
 
-    public function notBlank(array $constraint, string $value, string $name = null): ?string
+    public function notBlank(string $value, string $name = null): ?string
     {
         if (empty($value)) {
             if (!empty($name)) {
@@ -79,7 +83,7 @@ class Constraint
     /**
      * Checks if the value is a valid email format.
      */
-    public function email(array $constraint, string $value, string $name = null): ?string
+    public function email(string $value, string $name = null): ?string
     {
         if (filter_var($value, FILTER_VALIDATE_EMAIL) === false) {
             if (!empty($name)) {
