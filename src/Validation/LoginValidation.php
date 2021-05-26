@@ -4,9 +4,9 @@ namespace App\Validation;
 
 use App\Form\LoginForm;
 use Framework\Form\AbstractForm;
-use Framework\Validation\Validation;
+use Framework\Validation\AbstractValidation;
 
-class LoginValidation extends Validation
+class LoginValidation extends AbstractValidation
 {
     private const EMAIL = [
         ['notBlank'],

@@ -4,9 +4,9 @@ namespace App\Validation;
 
 use App\Form\CommentForm;
 use Framework\Form\AbstractForm;
-use Framework\Validation\Validation;
+use Framework\Validation\AbstractValidation;
 
-class CommentValidation extends Validation
+class CommentValidation extends AbstractValidation
 {
     private const CONTENT = [
         ['notBlank'],

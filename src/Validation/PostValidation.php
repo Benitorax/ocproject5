@@ -4,9 +4,9 @@ namespace App\Validation;
 
 use App\Form\PostForm;
 use Framework\Form\AbstractForm;
-use Framework\Validation\Validation;
+use Framework\Validation\AbstractValidation;
 
-class PostValidation extends Validation
+class PostValidation extends AbstractValidation
 {
     private const TITLE = [
         ['notBlank'],

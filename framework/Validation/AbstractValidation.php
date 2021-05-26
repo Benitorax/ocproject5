@@ -6,7 +6,7 @@ use Framework\Validation\Constraint;
 use Framework\Security\Csrf\CsrfTokenManager;
 use Framework\Validation\ValidationInterface;
 
-abstract class Validation implements ValidationInterface
+abstract class AbstractValidation implements ValidationInterface
 {
     private Constraint $constraint;
     private CsrfTokenManager $csrfTokenManager;

@@ -4,9 +4,9 @@ namespace App\Validation;
 
 use App\Form\ContactForm;
 use Framework\Form\AbstractForm;
-use Framework\Validation\Validation;
+use Framework\Validation\AbstractValidation;
 
-class ContactValidation extends Validation
+class ContactValidation extends AbstractValidation
 {
     private const SUBJECT = [
         ['notBlank'],
