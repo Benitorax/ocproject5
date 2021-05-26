@@ -178,17 +178,18 @@ class Router
         foreach ($reflection->getParameters() as $param) {
             if (array_key_exists($param->name, $routeParams)) {
                 $arguments[] = $routeParams[$param->name];
-            } else {
-                throw new Exception(
-                    sprintf(
-                        "The parameter {%s} for %s::%s doesn't exist inside your route",
-                        $param->name,
-                        $callable[0],
-                        $callable[1]
-                    ),
-                    500
-                );
+                continue;
             }
+
+            throw new Exception(
+                sprintf(
+                    "The parameter {%s} for %s::%s doesn't exist inside your route",
+                    $param->name,
+                    $callable[0],
+                    $callable[1]
+                ),
+                500
+            );
         }
 
         return $arguments;

@@ -37,9 +37,11 @@ class QueryExpression
     {
         if (null === $this->select) {
             $this->select($columnNames, $alias);
-        } else {
-            $this->select .= ', ' . SqlGenerator::generateColumnWithAlias($alias, $columnNames);
+
+            return $this;
         }
+
+        $this->select .= ', ' . SqlGenerator::generateColumnWithAlias($alias, $columnNames);
 
         return $this;
     }
@@ -55,10 +57,11 @@ class QueryExpression
     {
         if (null === $this->join) {
             $this->leftOuterJoin($table, $alias, $on);
-        } else {
-            $this->join .= ' LEFT OUTER JOIN ' .  $table . ' ' . $alias . ' ON ' . $on;
-            ;
+
+            return $this;
         }
+
+        $this->join .= ' LEFT OUTER JOIN ' .  $table . ' ' . $alias . ' ON ' . $on;
 
         return $this;
     }
@@ -74,9 +77,11 @@ class QueryExpression
     {
         if (null === $this->where) {
             $this->where($where);
-        } else {
-            $this->where .= ' AND (' . $where . ')';
+
+            return $this;
         }
+
+        $this->where .= ' AND (' . $where . ')';
 
         return $this;
     }
@@ -85,9 +90,11 @@ class QueryExpression
     {
         if (null === $this->where) {
             $this->where($where);
-        } else {
-            $this->where .= ' OR (' . $where . ')';
+
+            return $this;
         }
+
+        $this->where .= ' OR (' . $where . ')';
 
         return $this;
     }
@@ -103,9 +110,11 @@ class QueryExpression
     {
         if (null === $this->orderBy) {
             $this->orderBy($columnName, $sort);
-        } else {
-            $this->orderBy .= ', ' . $columnName . ' ' . $sort;
+
+            return $this;
         }
+
+        $this->orderBy .= ', ' . $columnName . ' ' . $sort;
 
         return $this;
     }

@@ -145,21 +145,11 @@ abstract class AbstractDAO implements DAOInterface
      */
     private function paramsToStrings(array $parameters): array
     {
-        $i = 1;
-        $colNameString = '';
-        $paramString = '';
-
-        // TO DO replace $parameters with array_keys($parameters) to delete $value
-        foreach (array_keys($parameters) as $key) {
-            if ($i < count($parameters)) {
-                $colNameString .= $key . ', ';
-                $paramString .= ':' . $key . ', ';
-            } else {
-                $colNameString .= $key;
-                $paramString .= ':' . $key;
-            }
-            $i++;
-        }
+        $keys = array_keys($parameters);
+        $colNameString = implode(', ', $keys);
+        $paramString = implode(', ', array_map(function ($element) {
+            return ':' . $element;
+        }, $keys));
 
         return [$colNameString, $paramString];
     }
@@ -173,17 +163,9 @@ abstract class AbstractDAO implements DAOInterface
             return $sql;
         }
 
-        $i = 1;
-        $where = ' WHERE ';
-
-        foreach (array_keys((array) $parameters) as $key) {
-            if ($i < count((array) $parameters)) {
-                $where .= $key . ' = :' . $key . ' AND ';
-            } else {
-                $where .= $key . ' = :' . $key;
-            }
-            $i++;
-        }
+        $where = ' WHERE ' . implode(' AND ', array_map(function ($element) {
+            return $element . ' = :' . $element;
+        }, array_keys($parameters)));
 
         return $sql . $where;
     }
