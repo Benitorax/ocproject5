@@ -3,14 +3,14 @@
 
 # Project as part of OpenClassrooms training
 
-The project is developed with PHP but without any framework.
+The project is developed with PHP and without any existing framework. However, I developed a tiny one for the project that I explained in detail [below](https://github.com/Benitorax/ocproject5#framework).
 
 It's a blog where administrators can: 
 - publish, edit and delete posts.
 - validate or invalidate a comment for publication.
 - block, unblock or delete users.
 
-All these pages are only accessible by administrators.
+*All these pages are only accessible by administrators*.
 
 
 Only logged users can:
@@ -32,7 +32,7 @@ Copy the `.env file`, rename it to `.env.local` and configure the following vari
 "DB_PASSWORD": ""
 ```
 
-- the emailing:
+- and the emailing:
 
 ```
 "MAILER_HOST": "smtp.example.org"
@@ -43,7 +43,7 @@ Copy the `.env file`, rename it to `.env.local` and configure the following vari
 ```
 
 ### Step 2: Create database
-Create a database, then run the commands from the SQL file `ocproject5.sql` located in the project's root to create those tables:
+Create a database, then run the SQL commands from the SQL file `ocproject5.sql` located in the project's root to create those tables:
 - user: id, email, password, username, roles, is_blocked
 - post: id, title, slug, lead, content, is_published, user_id
 - comment: id, content, is_validated, user_id, post_id
@@ -69,12 +69,32 @@ Go to url http://127.0.0.1:8000/fixtures to load fixtures. It redirects to homep
 Find a user who has admin role in your database. Then log in with this user.
  
 ## Librairies
-  - [Ramsey/Uuid](https://github.com/ramsey/uuid) for uuid inside model classes. 
-  - [Twig](https://github.com/twigphp/Twig) for the template engine.
-  - [SwiftMailer](https://github.com/swiftmailer/swiftmailer) to send emails.
-  - [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
+- [Ramsey/Uuid](https://github.com/ramsey/uuid) for uuid inside model classes. 
+- [Twig](https://github.com/twigphp/Twig) for the template engine.
+- [SwiftMailer](https://github.com/swiftmailer/swiftmailer) to send emails.
+- [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
 
-## Clean 
-  - PHPStan: level 8
-  - PHPCS: PSR1 and PSR12
+## Clean code
+- PHPStan: level 8
+- PHPCS: PSR1 and PSR12
 
+## Framework
+For the project, I couldn't use any existing framework. However, I was already used to develop with Symfony. So as for me, it would be tedious to develop a blog with this constraint. That's why I have created a tiny one to have a better DX (Developer Experience).
+
+The drawback is huge - *spending your time to develop the framework instead of the blog* - but it was an interesting challenge because, *from my level at that time*, I didn't know if I was able to do it.
+
+The framework is inspired a lot by Symfony:
+- The App handles a `Request` and returns a `Response`.
+- The AbstractController has methods similar to Symfony's controller helpers (`render()`, `addFlash()`, `isGranted()`, `json()`, etc).
+- The Form class has `handleRequest()`, `isSubmitted()` and `isValid()` methods.
+- The Twig Renderer:
+  - has access to current user, current route and flash messages.
+  - has `url` and `path` functions to generate url.
+
+Therefore the appearance of the controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
+
+Other explanations:
+- A Form class must extend `AbstractForm`.
+- A Validation class must extend `AbstractValidation`.
+- A DAO class must extend `AbstractDAO`.
+- User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user).
