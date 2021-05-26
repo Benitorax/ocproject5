@@ -3,7 +3,7 @@
 
 # Project as part of OpenClassrooms training
 
-The project is developed with PHP and without any existing framework. However, I developed a tiny one for the project that I explained in detail [below](https://github.com/Benitorax/ocproject5#framework).
+The project is developed with PHP and without any existing framework. However, I developed a tiny one for the project that I explained in detail at the [end of the page](#about-the-framework).
 
 It's a blog where administrators can: 
 - publish, edit and delete posts.
@@ -25,22 +25,20 @@ There are a register page and a login page as well.
 ### Step 1: Configure environment variables
 Copy the `.env file` in the root folder, rename it to `.env.local` and configure the following variables for:
 - the database:
-
-```
-"DB_HOST": "mysql:host=localhost;dbname=my_blog;charset=utf8"
-"DB_USERNAME": "root"
-"DB_PASSWORD": ""
-```
+  ```
+  "DB_HOST": "mysql:host=localhost;dbname=my_blog;charset=utf8"
+  "DB_USERNAME": "root"
+  "DB_PASSWORD": ""
+  ```
 
 - and the emailing:
-
-```
-"MAILER_HOST": "smtp.example.org"
-"MAILER_PORT": 25
-"MAILER_ENCRYPTION": "ssl"
-"MAILER_USERNAME": "example@email.com"
-"MAILER_PASSWORD": "password"
-```
+  ```
+  "MAILER_HOST": "smtp.example.org"
+  "MAILER_PORT": 25
+  "MAILER_ENCRYPTION": "ssl"
+  "MAILER_USERNAME": "example@email.com"
+  "MAILER_PASSWORD": "password"
+  ```
 
 ### Step 2: Create database
 Create a database, then run the SQL commands from the SQL file `ocproject5.sql` located in the project root to create those tables:
@@ -54,22 +52,21 @@ Or import `ocproject5.sql` from phpMyAdmin if you have access.
 
 ### Step 3: Launch the server
 - Run the command in your terminal from the project root:
-
-```
-php -S 127.0.0.1:8000 -t public
-```
+  ```
+  php -S 127.0.0.1:8000 -t public
+  ```
 
 - Or if you use Symfony CLI you can run:
-```
-symfony serve -d
-```
+  ```
+  symfony serve -d
+  ```
 
 ### Step 4: Load some data
 Go to url http://127.0.0.1:8000/fixtures to load fixtures. It redirects to homepage, so you can navigate on the website after loading data.
 
 ### Step 5: Access to admin area
 Find a user who has admin role in your database. Then log in with this user.
- 
+
 ## Librairies
 - [Ramsey/Uuid](https://github.com/ramsey/uuid) for uuid inside model classes. 
 - [Twig](https://github.com/twigphp/Twig) for the template engine.
@@ -80,7 +77,7 @@ Find a user who has admin role in your database. Then log in with this user.
 - [PHPStan](https://github.com/phpstan/phpstan): level 8
 - [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer): PSR1 and PSR12
 
-## Framework
+## About the framework
 For the project, I couldn't use any existing framework. However, I was already used to develop with Symfony. So as for me, it would be tedious to develop a blog with this constraint. That's why I have created a tiny one to have a better DX (Developer Experience).
 
 The drawback is huge - *spending your time to develop the framework instead of the blog* - but it was an interesting challenge because, *from my level at that time*, I didn't know if I was able to do it.
@@ -95,14 +92,33 @@ The framework is inspired a lot by Symfony:
 
 Therefore the appearance of controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
 
-Other explanations:
+### Other informations
+- Routes are defined in routes config file:
+  ```php
+  // config/routes.php
+  
+  return [
+    // Security
+    '/login' => [
+        'name' => 'login',
+        'method' => ['GET', 'POST'],
+        'callable' => 'App\Controller\SecurityController::login'
+    ],
+    '/logout' => [
+        'name' => 'logout',
+        'method' => 'POST',
+        'callable' => 'App\Controller\SecurityController::logout'
+    ],
+    // ...
+  ];
+  ```
 - A Form class must extend `AbstractForm`.
 - A Validation class must extend `AbstractValidation`.
 - A DAO class must extend `AbstractDAO`.
   - You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
-
-```php
+    ```php
     // src/DAO/UserDAO.php
+
     private function getOneByEmailQuery(string $email)
     {
         return (new QueryExpression())
@@ -111,10 +127,19 @@ Other explanations:
             ->where('email = :email')
             ->setParameter('email', $email);
     }
-
-```
+    ```
 
 - Security
-  - User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user).
+  - User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user). Then, the alias of UserDAOInterface must be set in the services config:
+     ```php
+     // config/services.php
+
+     return [ 'alias' => [
+        // Security
+        // Define the DAO class to fetch user for authentication
+        Framework\DAO\UserDAOInterface::class => App\DAO\UserDAO::class
+    ]];
+     ```
+ 
   - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
   - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
