@@ -23,7 +23,7 @@ There are a register page and a login page as well.
 
 ## Getting started
 ### Step 1: Configure environment variables
-Copy the `.env file`, rename it to `.env.local` and configure the following variables for:
+Copy the `.env file` in the root folder, rename it to `.env.local` and configure the following variables for:
 - the database:
 
 ```
@@ -43,21 +43,23 @@ Copy the `.env file`, rename it to `.env.local` and configure the following vari
 ```
 
 ### Step 2: Create database
-Create a database, then run the SQL commands from the SQL file `ocproject5.sql` located in the project's root to create those tables:
+Create a database, then run the SQL commands from the SQL file `ocproject5.sql` located in the project root to create those tables:
 - user: id, email, password, username, roles, is_blocked
 - post: id, title, slug, lead, content, is_published, user_id
 - comment: id, content, is_validated, user_id, post_id
 - rememberme_token: class, username, series, value, last_used
 - reset_password_token: id, user_id, selector, hashed_token, requested_at, expired_at
     
+Or import `ocproject5.sql` from phpMyAdmin if you have access.
+
 ### Step 3: Launch the server
-- Run the command in your terminal from the root project:
+- Run the command in your terminal from the project root:
 
 ```
 php -S 127.0.0.1:8000 -t public
 ```
 
-- Or if you use Symfony CLI you can execute:
+- Or if you use Symfony CLI you can run:
 ```
 symfony serve -d
 ```
@@ -75,8 +77,8 @@ Find a user who has admin role in your database. Then log in with this user.
 - [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
 
 ## Clean code
-- PHPStan: level 8
-- PHPCS: PSR1 and PSR12
+- [PHPStan](https://github.com/phpstan/phpstan): level 8
+- [PHPCS](https://github.com/squizlabs/PHP_CodeSniffer): PSR1 and PSR12
 
 ## Framework
 For the project, I couldn't use any existing framework. However, I was already used to develop with Symfony. So as for me, it would be tedious to develop a blog with this constraint. That's why I have created a tiny one to have a better DX (Developer Experience).
@@ -84,17 +86,35 @@ For the project, I couldn't use any existing framework. However, I was already u
 The drawback is huge - *spending your time to develop the framework instead of the blog* - but it was an interesting challenge because, *from my level at that time*, I didn't know if I was able to do it.
 
 The framework is inspired a lot by Symfony:
-- The App handles a `Request` and returns a `Response`.
+- The App handles a `Request` class and returns a `Response` class.
 - The AbstractController has methods similar to Symfony's controller helpers (`render()`, `addFlash()`, `isGranted()`, `json()`, etc).
 - The Form class has `handleRequest()`, `isSubmitted()` and `isValid()` methods.
 - The Twig Renderer:
   - has access to current user, current route and flash messages.
   - has `url` and `path` functions to generate url.
 
-Therefore the appearance of the controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
+Therefore the appearance of controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
 
 Other explanations:
 - A Form class must extend `AbstractForm`.
 - A Validation class must extend `AbstractValidation`.
 - A DAO class must extend `AbstractDAO`.
-- User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user).
+  - You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
+
+```php
+    // src/DAO/UserDAO.php
+    private function getOneByEmailQuery(string $email)
+    {
+        return (new QueryExpression())
+            ->select(self::SQL_COLUMNS, 'u')
+            ->from(self::SQL_TABLE, 'u')
+            ->where('email = :email')
+            ->setParameter('email', $email);
+    }
+
+```
+
+- Security
+  - User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user).
+  - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
+  - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
