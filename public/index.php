@@ -18,5 +18,4 @@ if (file_exists(dirname(__DIR__) . '/.env.local')) {
 
 $response = $app->handle($request);
 $response->send();
-
-// $app->terminate();
+$app->terminate();

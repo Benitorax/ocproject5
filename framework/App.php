@@ -2,6 +2,8 @@
 
 namespace Framework;
 
+use App\Service\Mailer\MailerBuilder;
+use App\Service\Mailer\TransportBuilder;
 use Exception;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
@@ -118,6 +120,20 @@ class App
 
     public function terminate(): void
     {
-        // TODO: send email
+        $mailerBuilder = $this->container->get(MailerBuilder::class);
+        $transport = $mailerBuilder->getSpoolMailer()->getTransport();
+        if ($transport instanceof \Swift_Transport_SpoolTransport) {
+            $spool = $transport->getSpool();
+            if ($spool instanceof \Swift_MemorySpool) {
+                try {
+                    $transportBuilder = $this->container->get(TransportBuilder::class);
+                    $spool->flushQueue($transportBuilder->getSmtpTransport());
+                } catch (\Swift_TransportException $exception) {
+                    // if (null !== $this->logger) {
+                    //     $this->logger->error(sprintf('Exception occurred while flushing email queue: %s', $exception->getMessage()));
+                    // }
+                }
+            }
+        }
     }
 }
