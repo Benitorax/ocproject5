@@ -1,0 +1,16 @@
+<div style="margin: 50px;">
+    <div style="margin-bottom: 10px; font-weight: bold; font-size: 150%;">{{ error.message }}</div>
+    <div style="margin-bottom: 10px;">Status code: {{ error.code }}</div>
+    <div style="margin-bottom: 10px;">File: {{ error.file }} ({{ error.line }})</div>
+    <hr>
+    <div>Trace:</div>
+    {% for index, row in error.trace %}
+        <div style="margin-top: 10px;">#{{index}} {{ row.file }}(<span style="color: blue">{{ row.line }}</span>): <span style="color: red;">{{ row.class }}</span>{{ row.type }}<span style="color: green">{{ row.function }}</span>()</div>
+    {% endfor %}
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+<div style="margin: 50px;">
