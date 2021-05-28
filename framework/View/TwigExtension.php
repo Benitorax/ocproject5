@@ -44,11 +44,17 @@ class TwigExtension extends AbstractExtension
         return $this->urlGenerator->generate($routeName, $routeParams, UrlGenerator::URL_TYPE);
     }
 
+    /**
+     * Generates a csrf token.
+     */
     public function generateCsrfToken(): string
     {
         return $this->csrfTokenManager->generateToken();
     }
 
+    /**
+     * Generates a new query string with params.
+     */
     public function generateQueryStringWithParams(string $queryString, array $params): string
     {
         parse_str($queryString, $queryArray);
