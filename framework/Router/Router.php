@@ -9,6 +9,7 @@ use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Controller\ErrorController;
+use Throwable;
 
 class Router
 {
@@ -23,7 +24,7 @@ class Router
         $this->container = $container;
     }
 
-    public function run(Request $request): Response
+    public function run(Request $request, bool $debug): Response
     {
         $this->request = $request;
         $pathInfo = $this->request->getPathInfo();
@@ -34,13 +35,8 @@ class Router
             $this->request->attributes->set('route', $route->getName());
 
             return $this->executeController($route->getCallable(), $arguments);
-        } catch (Exception $e) {
-            return $this->errorServer($e);
-            // if (5 === (int) substr($e->getCode(), 0, 1)) {
-            //     return $this->errorServer($e);
-            // } else {
-            //     return $this->errorNotFound();
-            // }
+        } catch (Throwable $e) {
+            return $this->executeErrorController($e, $debug);
         }
     }
 
@@ -85,23 +81,24 @@ class Router
     }
 
     /**
-     * Returns an error 404 page.
-     *
-     * @param Exception $error
+     * Returns a response with error page.
      */
-    public function errorNotFound($error = null): Response
+    public function executeErrorController(Throwable $error, bool $debug): Response
     {
-        return $this->executeController([ErrorController::class, 'notFound'], $error);
-    }
+        if ($debug) {
+            return $this->executeController([ErrorController::class, 'debug'], $error);
+        }
+        dd($debug);
+        $code = (int) $error->getCode();
+        $codeNumber = (int) substr($error->getCode(), 0, 1);
 
-    /**
-     * Returns an error server page.
-     *
-     * @param Exception $error
-     */
-    public function errorServer($error = null): Response
-    {
-        return $this->executeController([ErrorController::class, 'server'], $error);
+        if (5 === $codeNumber) {
+            return $this->executeController([ErrorController::class, 'server']);
+        } elseif (403 === $code) {
+            return $this->executeController([ErrorController::class, 'forbidden']);
+        }
+
+        return $this->executeController([ErrorController::class, 'notFound']);
     }
 
     /**

@@ -5,17 +5,17 @@ require dirname(__DIR__) . '/vendor/autoload.php';
 require_once dirname(__DIR__) . '/framework/Debug/Debug.php';
 
 use Framework\App;
+use Framework\Dotenv\Dotenv;
 use Framework\Request\Request;
 
-$request = (new Request())->create();
-$app = new App();
-
 if (file_exists(dirname(__DIR__) . '/.env.local')) {
-    $app->addEnvVariables(dirname(__DIR__) . '/.env.local');
+    (new Dotenv())->loadEnv(dirname(__DIR__) . '/.env.local');
 } else {
-    $app->addEnvVariables(dirname(__DIR__) . '/.env');
+    (new Dotenv())->loadEnv(dirname(__DIR__) . '/.env');
 }
 
+$app = new App($_SERVER['APP_DEBUG']);
+$request = (new Request())->create();
 $response = $app->handle($request);
 $response->send();
 $app->terminate();

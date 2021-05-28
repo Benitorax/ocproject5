@@ -21,11 +21,17 @@ class App
 {
     private Container $container;
     private Session $session;
+    private bool $debug;
+
+    public function __construct(bool $debug)
+    {
+        $this->debug = $debug;
+    }
 
     public function handle(Request $request): Response
     {
         $this->boot($request);
-        $response = $this->container->getRouter()->run($request);
+        $response = $this->container->getRouter()->run($request, $this->debug);
         $response = $this->addCookiesToResponse($request, $response);
 
         return $response;
@@ -86,20 +92,6 @@ class App
         if ($token instanceof AbstractToken) {
             $tokenStorage->setToken($token);
             $this->session->set('user', $token->getUser());
-        }
-    }
-
-    /**
-     * Adds environment variables from env file
-     */
-    public function addEnvVariables(string $path): void
-    {
-        $env = (string) file_get_contents($path);
-        $data = (array) json_decode($env);
-
-        foreach ($data as $key => $value) {
-            $_ENV[$key] = $value;
-            $_SERVER[$key] = $value;
         }
     }
 
