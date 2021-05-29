@@ -88,7 +88,7 @@ class Router
         if ($debug) {
             return $this->executeController([ErrorController::class, 'debug'], $error);
         }
-        dd($debug);
+
         $code = (int) $error->getCode();
         $codeNumber = (int) substr($error->getCode(), 0, 1);
 
