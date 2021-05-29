@@ -3,7 +3,6 @@
 namespace Framework;
 
 use Exception;
-use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;

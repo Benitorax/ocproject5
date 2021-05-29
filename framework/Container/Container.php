@@ -171,12 +171,12 @@ class Container
         $eventDispatcher = $this->create($className);
 
         // loads listeners and subscribers
-        foreach ($this->config['event'] as $eventName => $listenersAndSubscribers) {
-            foreach ($listenersAndSubscribers['listeners'] as $params) {
+        foreach ($this->config['event'] as $eventName => $listeners) {
+            foreach ($listeners['listeners'] as $params) {
                 $eventDispatcher->addListener($eventName, $params[0], $params[1]);
             }
 
-            foreach ($listenersAndSubscribers['subscribers'] as $subscriberClass) {
+            foreach ($listeners['subscribers'] as $subscriberClass) {
                 if (is_string($subscriberClass)) {
                     /**
                      * @var EventSubscriberInterface $subscriber
