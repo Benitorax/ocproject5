@@ -2,8 +2,6 @@
 
 namespace Framework;
 
-use App\Service\Mailer\MailerBuilder;
-use App\Service\Mailer\TransportBuilder;
 use Exception;
 use Framework\Cookie\Cookie;
 use Framework\Request\Request;
@@ -11,7 +9,10 @@ use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\DAO\UserDAOInterface;
+use Framework\EventDispatcher\Event\TerminateEvent;
+use Framework\EventDispatcher\EventDispatcher;
 use Framework\Router\RequestContext;
+use Framework\Router\Router;
 use Framework\Security\TokenStorage;
 use Framework\Security\AbstractToken;
 use Framework\Security\User\UserInterface;
@@ -31,7 +32,7 @@ class App
     public function handle(Request $request): Response
     {
         $this->boot($request);
-        $response = $this->container->getRouter()->run($request, $this->debug);
+        $response = $this->container->get(Router::class)->run($request, $this->debug);
         $response = $this->addCookiesToResponse($request, $response);
 
         return $response;
@@ -102,7 +103,6 @@ class App
     {
         // Add rememberme cookie into Response if exists in Request attributes
         if ($request->attributes->has(RememberMeManager::COOKIE_ATTR_NAME)) {
-            /** @var Cookie */
             $cookie = $request->attributes->get(RememberMeManager::COOKIE_ATTR_NAME);
             $response->headers->setCookie($cookie);
         }
@@ -110,22 +110,9 @@ class App
         return $response;
     }
 
-    public function terminate(): void
+    public function terminate(Request $request, Response $response): void
     {
-        $mailerBuilder = $this->container->get(MailerBuilder::class);
-        $transport = $mailerBuilder->getSpoolMailer()->getTransport();
-        if ($transport instanceof \Swift_Transport_SpoolTransport) {
-            $spool = $transport->getSpool();
-            if ($spool instanceof \Swift_MemorySpool) {
-                try {
-                    $transportBuilder = $this->container->get(TransportBuilder::class);
-                    $spool->flushQueue($transportBuilder->getSmtpTransport());
-                } catch (\Swift_TransportException $exception) {
-                    // if (null !== $this->logger) {
-                    //     $this->logger->error(sprintf('Exception occurred while flushing email queue: %s', $exception->getMessage()));
-                    // }
-                }
-            }
-        }
+        $eventDispatcher = $this->container->get(EventDispatcher::class);
+        $eventDispatcher->dispatch(new TerminateEvent($request, $response));
     }
 }

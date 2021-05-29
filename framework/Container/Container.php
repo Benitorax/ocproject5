@@ -4,7 +4,8 @@ namespace Framework\Container;
 
 use ReflectionMethod;
 use ReflectionNamedType;
-use Framework\Router\Router;
+use Framework\EventDispatcher\EventDispatcher;
+use Framework\EventDispatcher\Subscriber\EventSubscriberInterface;
 
 class Container
 {
@@ -18,12 +19,17 @@ class Container
      */
     private array $aliases = [];
 
+    /**
+     * Array of services config.
+     */
+    private array $config = [];
+
     public function __construct()
     {
         // loads service aliases
-        $config = require dirname(__DIR__, 2) . '\config\services.php';
+        $this->config = require dirname(__DIR__, 2) . '\config\services.php';
 
-        foreach ($config['alias'] as $className => $alias) {
+        foreach ($this->config['alias'] as $className => $alias) {
             $this->aliases[$className] = $alias;
         }
     }
@@ -40,6 +46,11 @@ class Container
      */
     public function get($className)
     {
+        // the EventDispatcher must be retrieved separately
+        if (EventDispatcher::class === $className) {
+            return $this->getEventDispatcher();
+        }
+
         if ($this->has($className)) {
             /** @var T */
             return $this->services[$className];
@@ -115,19 +126,6 @@ class Container
     }
 
     /**
-     * @return Router
-     */
-    public function getRouter()
-    {
-        $className = Router::class;
-        if ($this->has($className)) {
-            return $this->get($className);
-        }
-
-        return $this->create($className);
-    }
-
-    /**
      * Retrieve parameters of the class's constructor, instantiate them and return them inside an array
      *
      * @template T
@@ -155,5 +153,41 @@ class Container
         }
 
         return null;
+    }
+
+    /**
+     * Returns the EventDispatcher with its listeners declared in config.
+     * @template T
+     * @return T|EventDispatcher
+     */
+    public function getEventDispatcher()
+    {
+        $className = EventDispatcher::class;
+        if ($this->has($className)) {
+            return $this->get($className);
+        }
+
+        /** @var EventDispatcher */
+        $eventDispatcher = $this->create($className);
+
+        // loads listeners and subscribers
+        foreach ($this->config['event'] as $eventName => $listenersAndSubscribers) {
+            foreach ($listenersAndSubscribers['listeners'] as $params) {
+                $eventDispatcher->addListener($eventName, $params[0], $params[1]);
+            }
+
+            foreach ($listenersAndSubscribers['subscribers'] as $subscriberClass) {
+                if (is_string($subscriberClass)) {
+                    /**
+                     * @var EventSubscriberInterface $subscriber
+                     * @var class-string<T> $subscriberClass
+                     */
+                    $subscriber = $this->get($subscriberClass);
+                    $eventDispatcher->addSubscriber($subscriber);
+                }
+            }
+        }
+
+        return $eventDispatcher;
     }
 }

@@ -18,4 +18,4 @@ $app = new App($_SERVER['APP_DEBUG']);
 $request = (new Request())->create();
 $response = $app->handle($request);
 $response->send();
-$app->terminate();
+$app->terminate($request, $response);
