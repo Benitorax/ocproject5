@@ -43,13 +43,16 @@
                             </select>
                             {% if form.errors.author is not null %}<div class="invalid-feedback">{{ form.errors.author }}</div>{% endif %}
                         </div>
-                        <div class="form-group form-check">
-                            <input type="checkbox" class="form-check-input" name="is_published" id="is_published" aria-describedby="isPublishedHelp" {% if form.isPublished %}checked{% endif %}>
-                            <label class="form-check-label" for="is_published">Publish the post</label>
-                            <small id="isPublishedHelp" class="form-text text-muted">You can save now and publish later.</small>
-                        </div>
-                        <div>
-                            <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="is_published" id="is_published1" value="0" {% if form.isPublished == 0 %}checked{% endif %}>
+                                <label class="form-check-label" for="is_published1">Don't publish</label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="is_published" id="is_published2" value="1" {% if form.isPublished %}checked{% endif %}>
+                                <label class="form-check-label" for="is_published2">Publish</label>
+                            </div>
+                            <small class="form-text text-muted">You can save now and publish later.</small>
                         </div>
                         {{ _form.input_csrf(csrf_token()) }}
                         <div class="text-center">
