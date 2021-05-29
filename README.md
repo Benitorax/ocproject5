@@ -94,6 +94,7 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
 
 ### Other informations
 - Routes are defined in routes config file:
+
   ```php
   // config/routes.php
   
@@ -116,6 +117,7 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
 - A Validation class must extend `AbstractValidation`.
 - A DAO class must extend `AbstractDAO`.
   - You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
+
     ```php
     // src/DAO/UserDAO.php
 
@@ -131,6 +133,7 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
 
 - Security
   - User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user). Then, the alias of UserDAOInterface must be set in the services config:
+
      ```php
      // config/services.php
 
@@ -143,3 +146,35 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
  
   - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
   - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
+
+- EventDispatcher
+  - Event class must extend `Event`.
+  - Subscriber class must extend `EventSubscriberInterface`.
+  - Listener class must implement `__invoke` method.
+  - Registration: Event must be set in `events` key, listener in `listeners` key and subscriber in `subscribers` key.
+
+    ```php
+    // config/services.php
+
+     return [ 'event' => [
+        'events' => [
+            'event.terminate' => [
+                'listeners' => [
+                    // [listener::class, priority],
+                    // [EntityListener::class, 10],
+                ]
+            ]
+        ],
+        'subscribers' => [
+            App\Service\Mailer\MailerSubscriber::class
+        ]
+    ]];
+    ```
+- Mailer
+
+  Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
+  - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
+  - Spool transport: emails are sent after returning the HTTP response.
+
+- Debug
+  - If `APP_DEBUG` is set to true in `.env.local`, the browser will display a beautifier error when a bug occurs. Otherwise, it will show an error page (403, 404, 500) that you can customize.
