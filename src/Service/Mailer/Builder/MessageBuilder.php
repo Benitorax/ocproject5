@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service\Mailer\Builder;
 
 use Swift_Message;
 use App\Model\User;

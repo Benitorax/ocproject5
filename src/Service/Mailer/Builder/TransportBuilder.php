@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service\Mailer\Builder;
 
 use Swift_MemorySpool;
 use Swift_SmtpTransport;
