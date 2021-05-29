@@ -13,13 +13,16 @@ return [
         Framework\DAO\UserDAOInterface::class => App\DAO\UserDAO::class
     ],
     'event' => [
-        'event.terminate' => [
-            'listeners' => [
-                // [listener::class, priority];
-            ],
-            'subscribers' => [
-                App\Service\Mailer\MailerSubscriber::class
+        'events' => [
+            'event.terminate' => [
+                'listeners' => [
+                    // [listener::class, priority],
+                    // [EntityListener::class, 10],
+                ]
             ]
+        ],
+        'subscribers' => [
+            App\Service\Mailer\MailerSubscriber::class
         ]
     ]
 ];
