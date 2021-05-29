@@ -6,7 +6,7 @@
  * alias => ['fullyQualifiedClassName/which/is/type-hinted' => 'fullyQualifiedClassName/which/replace']
  */
 
-return [ 
+return [
     'alias' => [
         // Security
         // Define the DAO class to fetch user for authentication

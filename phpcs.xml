@@ -5,6 +5,7 @@
     <arg name="colors"/>
     <arg value="p"/>
 
+    <file>config</file>
     <file>framework</file>
     <file>public/index.php</file>
     <file>src</file>

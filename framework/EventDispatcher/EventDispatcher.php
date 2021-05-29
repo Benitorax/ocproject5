@@ -54,8 +54,8 @@ class EventDispatcher implements EventDispatcherInterface
             $listeners = [];
 
             // merges every listeners in one table by removing priority tables
-            foreach ($this->listeners[$eventName] as $listenersGroupByPriority) {
-                foreach ($listenersGroupByPriority as $listener) {
+            foreach ($this->listeners[$eventName] as $listenersByPriority) {
+                foreach ($listenersByPriority as $listener) {
                     $listeners[] = $listener;
                 }
             }
@@ -98,9 +98,9 @@ class EventDispatcher implements EventDispatcherInterface
         }
 
         foreach ($this->listeners[$eventName] as $priority => &$listeners) {
-            foreach ($listeners as $k => &$v) {
-                if ($v === $listener) {
-                    unset($listeners[$k]);
+            foreach ($listeners as $key => &$value) {
+                if ($value === $listener) {
+                    unset($listeners[$key]);
                 }
             }
 
@@ -117,7 +117,7 @@ class EventDispatcher implements EventDispatcherInterface
                 $this->addListener($eventName, [$subscriber, $params]);
             } elseif (is_string($params[0])) {
                 $this->addListener($eventName, [$subscriber, $params[0]], $params[1] ?? 25);
-            } else {
+            } elseif (is_array($params[0])) {
                 foreach ($params as $listener) {
                     $this->addListener($eventName, [$subscriber, $listener[0]], $listener[1] ?? 0);
                 }

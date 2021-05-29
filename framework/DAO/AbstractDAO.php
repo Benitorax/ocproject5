@@ -121,16 +121,11 @@ abstract class AbstractDAO implements DAOInterface
      */
     public function update(string $tableName, array $parameters, array $where): void
     {
-        $sql = 'UPDATE ' . $tableName . ' SET';
+        $sql = 'UPDATE ' . $tableName;
 
-        $i = 1;
-        foreach (array_keys($parameters) as $colName) {
-            $sql .= ' ' . $colName . '=:' . $colName;
-            if ($i < count($parameters)) {
-                $sql .= ', ';
-            }
-            $i++;
-        }
+        $sql .= ' SET ' . implode(', ', array_map(function ($colName) {
+            return $colName . '=:' . $colName;
+        }, array_keys($parameters)));
 
         $sql = $this->addWhere($sql, $where);
         $parameters = array_merge($parameters, $where);

@@ -6,6 +6,17 @@ document.addEventListener("DOMContentLoaded", (event) => {
     let contentTextarea = formEl.querySelector("textarea[name=content]");
     let csrfInput = formEl.querySelector("input[name=csrf_token]");
 
+    // resets error messages and hides elements
+    const resetFormError = function() {
+        // error message element
+        errorEl.textContent = "";
+        errorEl.hidden = true;
+
+        // alert message Element
+        alertEl.textContent = "";
+        alertEl.hidden = true;
+    };
+
     // sends ajax request when the form is submit
     formEl.addEventListener("submit", async(e) => {
         e.preventDefault();
@@ -55,15 +66,4 @@ document.addEventListener("DOMContentLoaded", (event) => {
             alertEl.hidden = false;
         }
     });
-
-    // resets error messages and hides elements
-    const resetFormError = function() {
-        // error message element
-        errorEl.textContent = "";
-        errorEl.hidden = true;
-
-        // alert message Element
-        alertEl.textContent = "";
-        alertEl.hidden = true;
-    };
 });

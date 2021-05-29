@@ -24,7 +24,7 @@ class MailerSubscriber implements EventSubscriberInterface
     /**
      * Sends emails from SpoolTransport.
      */
-    public function onTerminateEvent(TerminateEvent $event): void
+    public function onTerminateEvent(): void
     {
         $transport = $this->mailerBuilder->getSpoolMailer()->getTransport();
         if ($transport instanceof Swift_Transport_SpoolTransport) {
@@ -35,7 +35,10 @@ class MailerSubscriber implements EventSubscriberInterface
                 } catch (Swift_TransportException $exception) {
                     // TODO: possibly log the exception
                     // if (null !== $this->logger) {
-                    //     $this->logger->error(sprintf('Exception occurred while flushing email queue: %s', $exception->getMessage()));
+                    //     $this->logger->error(sprintf(
+                    //         'Exception occurred while flushing email queue: %s',
+                    //          $exception->getMessage()
+                    //     ));
                     // }
                 }
             }
