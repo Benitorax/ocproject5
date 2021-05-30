@@ -72,6 +72,7 @@ Find a user who has admin role in your database. Then log in with this user.
 - [Twig](https://github.com/twigphp/Twig) for the template engine.
 - [SwiftMailer](https://github.com/swiftmailer/swiftmailer) to send emails.
 - [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
+- [PSR/EventDispatcher](https://github.com/php-fig/event-dispatcher) to respect PSR-14 (Event Dispatcher).
 
 ## Clean code
 - [PHPStan](https://github.com/phpstan/phpstan): level 8
@@ -90,7 +91,7 @@ The framework is inspired a lot by Symfony:
   - has access to current user, current route and flash messages.
   - has `url` and `path` functions to generate url.
 
-Therefore the appearance of controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
+Therefore, the appearance of controllers and templates remind of Symfony but the internal code is different (very simple and less complex).
 
 ### Other informations
 - Routes are defined in routes config file:
@@ -116,7 +117,8 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
 - A Form class must extend `AbstractForm`.
 - A Validation class must extend `AbstractValidation`.
 - A DAO class must extend `AbstractDAO`.
-  - You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
+
+  You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
 
     ```php
     // src/DAO/UserDAO.php
@@ -131,8 +133,59 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
     }
     ```
 
+- EventDispatcher
+
+  You can create your own events, event listeners or subscribers:
+  - Event class must extend `Event`.
+  - Subscriber class must extend `EventSubscriberInterface`.
+  - Listener class must implement `__invoke` method.
+  
+  Registration: event must be set in `events` key, listener in `listeners` key and subscriber in `subscribers` key.
+
+  ```php
+  // config/services.php
+
+   return [ 'event' => [
+      'events' => [
+          'event.terminate' => [
+              'listeners' => [
+                  // [listener::class, priority],
+                  // [EntityListener::class, 10],
+              ]
+          ]
+      ],
+      'subscribers' => [
+          App\Service\Mailer\MailerSubscriber::class
+      ]
+  ]];
+  ```
+
+- Debug
+
+  If `APP_DEBUG` is set to true in `.env.local`, the browser will display a beautifier error when a bug occurs. Otherwise, it will show an error page (403, 404, 500) that you can customize.
+
+- Dotenv
+ 
+  This class is responsible for loading environment variable from `.env.local`. So you can add your own variables, then variables are retrieved from Dotenv with dependency injection:
+
+  ```php
+  // Mailer/Builder/TransportBuilder.php
+  
+      public function __construct(Dotenv $dotenv)
+    {
+        // loads config from environment variables
+        foreach ($dotenv->all() as $key => $value) {
+        // Mailer variables start with "MAILER_" like "MAILER_HOST", "MAILER_PORT", etc
+            if (0 === strpos($key, 'MAILER_')) {
+                $this->config[substr($key, 7)] = $value;
+            }
+        }
+    }
+  ```
+
 - Security
-  - User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user). Then, the alias of UserDAOInterface must be set in the services config:
+
+  User class must implement `UserInterface` and UserDAO class must implement `UserDAOInterface` (the application needs these implementations to authenticate the user). Then, the alias of UserDAOInterface must be set in the services config:
 
      ```php
      // config/services.php
@@ -143,38 +196,14 @@ Therefore the appearance of controllers and templates remind of Symfony but the 
         Framework\DAO\UserDAOInterface::class => App\DAO\UserDAO::class
     ]];
      ```
- 
+
   - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
   - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
 
-- EventDispatcher
-  - Event class must extend `Event`.
-  - Subscriber class must extend `EventSubscriberInterface`.
-  - Listener class must implement `__invoke` method.
-  - Registration: Event must be set in `events` key, listener in `listeners` key and subscriber in `subscribers` key.
+## Others
 
-    ```php
-    // config/services.php
+### Mailer (not in Framework)
 
-     return [ 'event' => [
-        'events' => [
-            'event.terminate' => [
-                'listeners' => [
-                    // [listener::class, priority],
-                    // [EntityListener::class, 10],
-                ]
-            ]
-        ],
-        'subscribers' => [
-            App\Service\Mailer\MailerSubscriber::class
-        ]
-    ]];
-    ```
-- Mailer
-
-  Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
-  - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
-  - Spool transport: emails are sent after returning the HTTP response.
-
-- Debug
-  - If `APP_DEBUG` is set to true in `.env.local`, the browser will display a beautifier error when a bug occurs. Otherwise, it will show an error page (403, 404, 500) that you can customize.
+Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
+- SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
+- Spool transport: emails are sent after returning the HTTP response.
