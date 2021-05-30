@@ -8,14 +8,14 @@ use stdClass;
 
 class DAO extends AbstractDAO
 {
-    public function buildObject(stdClass $class): stdClass
-    {
-        return $class;
-    }
-
     public function __construct(Connection $connection)
     {
         parent::__construct($connection);
+    }
+
+    public function buildObject(stdClass $class): stdClass
+    {
+        return $class;
     }
 
     /**
