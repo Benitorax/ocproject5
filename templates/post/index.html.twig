@@ -12,9 +12,9 @@
                         <p>{{ post.lead }}</p>
                         <small class="form-text text-muted text-right">
                             {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
-                                Published: {{ post.createdAt|date('M d, Y, H:i') }}
+                                Published: {{ post.createdAt|date('M d, Y, g:i A') }}
                             {% else %}
-                                Updated: {{ post.updatedAt|date('M d, Y, H:i') }}
+                                Updated: {{ post.updatedAt|date('M d, Y, g:i A') }}
                             {% endif %}
                         </small>
                     </div>

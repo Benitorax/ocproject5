@@ -41,7 +41,7 @@
                             <td>
                                 <b style="color: slategrey">{{ post.title }}</b><br>
                                 By <i>{{ post.user.username ?: 'Deleted account' }}</i><br>
-                                Last updated: {{ post.updatedAt|date('M d, Y, H:i') }}<br>
+                                Last updated: {{ post.updatedAt|date('M d, Y, g:i A') }}<br>
                                 Published: {% if post.isPublished is same as(true) -%}
                                     <span class="badge bg-success text-white">Yes</span>
                                 {%- else -%}
