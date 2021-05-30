@@ -46,14 +46,14 @@ class Container
      */
     public function get($className)
     {
-        // the EventDispatcher must be retrieved separately
-        if (EventDispatcher::class === $className) {
-            return $this->getEventDispatcher();
-        }
-
         if ($this->has($className)) {
             /** @var T */
             return $this->services[$className];
+        }
+
+        // the EventDispatcher must be retrieved separately
+        if (EventDispatcher::class === $className) {
+            return $this->getEventDispatcher();
         }
 
         // checks if the service className has an alias in config

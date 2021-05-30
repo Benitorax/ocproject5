@@ -2,17 +2,19 @@
 
 namespace Framework;
 
+use Throwable;
+use Framework\Dotenv\Dotenv;
+use Framework\Router\Router;
+use Framework\Security\Auth;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\DAO\UserDAOInterface;
-use Framework\Dotenv\Dotenv;
-use Framework\EventDispatcher\Event\TerminateEvent;
-use Framework\EventDispatcher\EventDispatcher;
 use Framework\Router\RequestContext;
-use Framework\Router\Router;
-use Framework\Security\Auth;
+use Framework\EventDispatcher\EventDispatcher;
+use Framework\EventDispatcher\Event\ExceptionEvent;
+use Framework\EventDispatcher\Event\TerminateEvent;
 use Framework\Security\RememberMe\RememberMeManager;
 
 class App
@@ -28,11 +30,19 @@ class App
 
     public function handle(Request $request): Response
     {
-        $this->boot($request);
-        $response = $this->container->get(Router::class)->run($request);
-        $response = $this->addCookiesToResponse($request, $response);
+        try {
+            $this->boot($request);
+            $response = $this->container->get(Router::class)->run($request);
 
-        return $response;
+            return $this->addCookiesToResponse($request, $response);
+        } catch (Throwable $throwable) {
+            $eventDispatcher = $this->container->get(EventDispatcher::class);
+            $event = new ExceptionEvent($this->container, $request, $throwable);
+            $eventDispatcher->dispatch($event);
+
+            /** @var Response */
+            return $event->getResponse();
+        }
     }
 
     public function boot(Request $request): void

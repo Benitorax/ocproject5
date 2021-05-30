@@ -6,6 +6,9 @@
  * alias => ['fullyQualifiedClassName/which/is/type-hinted' => 'fullyQualifiedClassName/which/replace']
  */
 
+use Framework\EventDispatcher\Event\ExceptionEvent;
+use Framework\EventDispatcher\Event\TerminateEvent;
+
 return [
     'alias' => [
         // Security
@@ -14,15 +17,21 @@ return [
     ],
     'event' => [
         'events' => [
-            'event.terminate' => [
+            TerminateEvent::class => [
                 'listeners' => [
                     // [listener::class, priority],
                     // [EntityListener::class, 10],
                 ]
+            ],
+            ExceptionEvent::class => [
+                'listeners' => [
+                    // [listener::class, priority],
+                ]
             ]
         ],
         'subscribers' => [
-            App\Service\Mailer\MailerSubscriber::class
+            App\Service\Mailer\MailerSubscriber::class,
+            Framework\Controller\ControllerSubscriber::class
         ]
     ]
 ];

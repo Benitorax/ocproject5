@@ -50,9 +50,10 @@ class Dotenv
     }
 
     /**
+     * @param null|string|bool $default
      * @return mixed
      */
-    public function get(string $key, ?string $default = null)
+    public function get(string $key, $default = null)
     {
         return array_key_exists($key, $this->variables) ? $this->variables[$key] : $default;
     }

@@ -7,6 +7,7 @@ use Swift_TransportException;
 use Swift_Transport_SpoolTransport;
 use App\Service\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\TransportBuilder;
+use Framework\EventDispatcher\Event\ExceptionEvent;
 use Framework\EventDispatcher\Event\TerminateEvent;
 use Framework\EventDispatcher\Subscriber\EventSubscriberInterface;
 
@@ -14,6 +15,7 @@ class MailerSubscriber implements EventSubscriberInterface
 {
     private MailerBuilder $mailerBuilder;
     private TransportBuilder $transportBuilder;
+    private bool $wasExceptionThrown = false;
 
     public function __construct(MailerBuilder $mailerBuilder, TransportBuilder $transportBuilder)
     {
@@ -24,8 +26,12 @@ class MailerSubscriber implements EventSubscriberInterface
     /**
      * Sends emails from SpoolTransport.
      */
-    public function onTerminateEvent(): void
+    public function onTerminate(): void
     {
+        if ($this->wasExceptionThrown) {
+            return;
+        }
+
         $transport = $this->mailerBuilder->getSpoolMailer()->getTransport();
         if ($transport instanceof Swift_Transport_SpoolTransport) {
             $spool = $transport->getSpool();
@@ -45,10 +51,16 @@ class MailerSubscriber implements EventSubscriberInterface
         }
     }
 
+    public function onException(): void
+    {
+        $this->wasExceptionThrown = true;
+    }
+
     public static function getSubscribedEvents(): array
     {
         return [
-            TerminateEvent::class => ['onTerminateEvent']
+            TerminateEvent::class => 'onTerminate',
+            ExceptionEvent::class => 'onException'
         ];
     }
 }

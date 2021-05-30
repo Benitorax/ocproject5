@@ -8,38 +8,28 @@ use Framework\Router\Route;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Controller\ErrorController;
-use Framework\Dotenv\Dotenv;
-use Throwable;
 
 class Router
 {
     private Request $request;
     private Container $container;
     private array $routes;
-    private bool $debug;
 
-    public function __construct(Container $container, Dotenv $dotenv)
+    public function __construct(Container $container)
     {
         $this->initializeRoutes();
         $this->container = $container;
-        $this->debug = $dotenv->get('APP_DEBUG');
     }
 
     public function run(Request $request): Response
     {
         $this->request = $request;
         $pathInfo = $this->request->getPathInfo();
+        $route = $this->match($pathInfo, $this->request->getMethod());
+        $this->request->attributes->set('route', $route->getName());
+        $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $pathInfo);
 
-        try {
-            $route = $this->match($pathInfo, $this->request->getMethod());
-            $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $pathInfo);
-            $this->request->attributes->set('route', $route->getName());
-
-            return $this->executeController($route->getCallable(), $arguments);
-        } catch (Throwable $e) {
-            return $this->executeErrorController($e);
-        }
+        return $this->executeController($route->getCallable(), $arguments);
     }
 
     /**
@@ -80,27 +70,6 @@ class Router
         }
 
         return false;
-    }
-
-    /**
-     * Returns a response with error page.
-     */
-    public function executeErrorController(Throwable $error): Response
-    {
-        if ($this->debug) {
-            return $this->executeController([ErrorController::class, 'debug'], $error);
-        }
-
-        $code = (int) $error->getCode();
-        $codeNumber = (int) substr($error->getCode(), 0, 1);
-
-        if (5 === $codeNumber) {
-            return $this->executeController([ErrorController::class, 'server']);
-        } elseif (403 === $code) {
-            return $this->executeController([ErrorController::class, 'forbidden']);
-        }
-
-        return $this->executeController([ErrorController::class, 'notFound']);
     }
 
     /**
