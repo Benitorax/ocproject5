@@ -6,10 +6,11 @@ use DateTime;
 use stdClass;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
+use Framework\DAO\Connection;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
-use App\Service\Pagination\PaginationDAOInterface;
 use Framework\DAO\UserDAOInterface;
+use App\Service\Pagination\PaginationDAOInterface;
 
 class UserDAO extends AbstractDAO implements PaginationDAOInterface, UserDAOInterface
 {
@@ -19,6 +20,11 @@ class UserDAO extends AbstractDAO implements PaginationDAOInterface, UserDAOInte
     ];
 
     private QueryExpression $query;
+
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+    }
 
     /**
      * Returns an User object from stdClass.

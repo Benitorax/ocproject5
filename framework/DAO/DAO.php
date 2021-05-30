@@ -13,6 +13,11 @@ class DAO extends AbstractDAO
         return $class;
     }
 
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+    }
+
     /**
      * returns the count of a SQL command.
      *

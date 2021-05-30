@@ -7,6 +7,7 @@ use stdClass;
 use App\Model\Post;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
+use Framework\DAO\Connection;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
 use App\Service\Pagination\PaginationDAOInterface;
@@ -19,6 +20,11 @@ class PostDAO extends AbstractDAO implements PaginationDAOInterface
     ];
 
     private QueryExpression $query;
+
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+    }
 
     /**
      * Returns a Post object from stdClass.

@@ -4,38 +4,26 @@ namespace Framework\DAO;
 
 use PDO;
 use stdClass;
-use Exception;
 use PDOStatement;
+use Framework\DAO\Connection;
 use Framework\DAO\DAOInterface;
 use Framework\DAO\QueryExpression;
 
 abstract class AbstractDAO implements DAOInterface
 {
-    /** @var PDO */
-    private $connection;
+    private Connection $connection;
 
-    private function checkConnection(): PDO
+    protected function __construct(Connection $connection)
     {
-        if (null === $this->connection) {
-            return $this->getConnection();
-        }
-
-        return $this->connection;
-    }
-
-    private function getConnection(): PDO
-    {
-        $this->connection = new PDO($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        return $this->connection;
+        $this->connection = $connection;
     }
 
     /** @param mixed[] $parameters for bindValue() method*/
     protected function createQuery(string $sql, array $parameters = null): PDOStatement
     {
         if ($parameters) {
-            $stmt = $this->checkConnection()->prepare($sql);
+            /** @var PDOStatement */
+            $stmt = $this->connection->prepare($sql);
 
             foreach ($parameters as $key => $value) {
                 $stmt->bindValue(':' . $key, $value);
@@ -43,11 +31,10 @@ abstract class AbstractDAO implements DAOInterface
 
             $stmt->execute($parameters);
 
-            /** @var PDOStatement */
             return $stmt;
         }
 
-        $stmt = $this->checkConnection()->query($sql);
+        $stmt = $this->connection->query($sql);
 
         /** @var PDOStatement */
         return $stmt;
