@@ -135,8 +135,9 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
 - EventDispatcher
 
-  You can create your own events, event listeners or subscribers:
-  - Event class must extend `Event`.
+  The framework has 2 events (`TerminateEvent` and `ExceptionEvent`) and 1 subscriber (`ControllerSubscriber`).
+  Moreover, you can create your own events, event listeners or subscribers:
+  - Event class must extend `Event`. 
   - Subscriber class must extend `EventSubscriberInterface`.
   - Listener class must implement `__invoke` method.
   
@@ -147,14 +148,20 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
    return [ 'event' => [
       'events' => [
-          'event.terminate' => [
+          TerminateEvent::class => [
               'listeners' => [
                   // [listener::class, priority],
                   // [EntityListener::class, 10],
               ]
+          ],
+          ExceptionEvent::class => [
+              'listeners' => [
+                  // [listener::class, priority],
+              ]
           ]
       ],
       'subscribers' => [
+          Framework\Controller\ControllerSubscriber::class,
           App\Service\Mailer\MailerSubscriber::class
       ]
   ]];
@@ -202,7 +209,7 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
 ## Others
 
-### Mailer (not in Framework)
+### Mailer
 
 Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
 - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
