@@ -9,6 +9,7 @@ use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\Controller\ErrorController;
+use Framework\Dotenv\Dotenv;
 use Throwable;
 
 class Router
@@ -16,15 +17,16 @@ class Router
     private Request $request;
     private Container $container;
     private array $routes;
+    private bool $debug;
 
-    public function __construct(Container $container)
+    public function __construct(Container $container, Dotenv $dotenv)
     {
         $this->initializeRoutes();
-
         $this->container = $container;
+        $this->debug = $dotenv->get('APP_DEBUG');
     }
 
-    public function run(Request $request, bool $debug): Response
+    public function run(Request $request): Response
     {
         $this->request = $request;
         $pathInfo = $this->request->getPathInfo();
@@ -36,7 +38,7 @@ class Router
 
             return $this->executeController($route->getCallable(), $arguments);
         } catch (Throwable $e) {
-            return $this->executeErrorController($e, $debug);
+            return $this->executeErrorController($e);
         }
     }
 
@@ -83,9 +85,9 @@ class Router
     /**
      * Returns a response with error page.
      */
-    public function executeErrorController(Throwable $error, bool $debug): Response
+    public function executeErrorController(Throwable $error): Response
     {
-        if ($debug) {
+        if ($this->debug) {
             return $this->executeController([ErrorController::class, 'debug'], $error);
         }
 

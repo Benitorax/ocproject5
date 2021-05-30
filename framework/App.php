@@ -8,6 +8,7 @@ use Framework\Session\Session;
 use Framework\Response\Response;
 use Framework\Container\Container;
 use Framework\DAO\UserDAOInterface;
+use Framework\Dotenv\Dotenv;
 use Framework\EventDispatcher\Event\TerminateEvent;
 use Framework\EventDispatcher\EventDispatcher;
 use Framework\Router\RequestContext;
@@ -21,17 +22,18 @@ class App
 {
     private Container $container;
     private Session $session;
-    private bool $debug;
 
-    public function __construct(bool $debug)
+    public function __construct(Dotenv $dotenv)
     {
-        $this->debug = $debug;
+        $this->container = new Container();
+        $this->container->set($this);
+        $this->container->set($dotenv);
     }
 
     public function handle(Request $request): Response
     {
         $this->boot($request);
-        $response = $this->container->get(Router::class)->run($request, $this->debug);
+        $response = $this->container->get(Router::class)->run($request);
         $response = $this->addCookiesToResponse($request, $response);
 
         return $response;
@@ -39,9 +41,6 @@ class App
 
     public function boot(Request $request): void
     {
-        $this->container = new Container();
-        $this->container->set($this);
-
         $context = $this->container->get(RequestContext::class);
         $context->fromRequest($request);
 

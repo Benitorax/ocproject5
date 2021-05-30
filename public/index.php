@@ -8,13 +8,14 @@ use Framework\App;
 use Framework\Dotenv\Dotenv;
 use Framework\Request\Request;
 
+$dotenv = new Dotenv();
 if (file_exists(dirname(__DIR__) . '/.env.local')) {
-    (new Dotenv())->loadEnv(dirname(__DIR__) . '/.env.local');
+    $dotenv->loadEnv(dirname(__DIR__) . '/.env.local');
 } else {
-    (new Dotenv())->loadEnv(dirname(__DIR__) . '/.env');
+    $dotenv->loadEnv(dirname(__DIR__) . '/.env');
 }
 
-$app = new App($_SERVER['APP_DEBUG']);
+$app = new App($dotenv);
 $request = (new Request())->create();
 $response = $app->handle($request);
 $response->send();
