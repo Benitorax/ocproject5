@@ -4,19 +4,22 @@ namespace App\Service\Mailer;
 
 use App\Model\User;
 use App\DAO\UserDAO;
-use App\Service\Mailer\Mailer;
 use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
+use App\Service\Mailer\Builder\MailerBuilder;
+use App\Service\Mailer\Builder\MessageBuilder;
 
 class Notification
 {
     private UserDAO $userDAO;
-    private Mailer $mailer;
+    private MailerBuilder $mailerBuilder;
+    private MessageBuilder $messageBuilder;
 
-    public function __construct(UserDAO $userDAO, Mailer $mailer)
+    public function __construct(UserDAO $userDAO, MailerBuilder $mailerBuilder, MessageBuilder $messageBuilder)
     {
         $this->userDAO = $userDAO;
-        $this->mailer = $mailer;
+        $this->mailerBuilder = $mailerBuilder;
+        $this->messageBuilder = $messageBuilder;
     }
 
     /**
@@ -26,11 +29,12 @@ class Notification
     {
         /** @var User[] */
         $admins = $this->userDAO->getAllAdmin();
-
+        $mailer = $this->mailerBuilder->getSpoolMailer();
         $count = 0;
 
         foreach ($admins as $admin) {
-            $count += $this->mailer->notifyContact($form, $admin);
+            $message = $this->messageBuilder->createContact($form, $admin);
+            $count += $mailer->send($message);
         }
 
         return $count;
@@ -41,9 +45,10 @@ class Notification
      */
     public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
     {
-        $count = $this->mailer->notifyResetPasswordRequest($user, $token);
+        $message = $this->messageBuilder->createResetPasswordRequest($user, $token);
+        $mailer = $this->mailerBuilder->getSmtpMailer();
 
-        return $count;
+        return $mailer->send($message);
     }
 
     /**
@@ -51,8 +56,9 @@ class Notification
      */
     public function notifyResetPassword(User $user): int
     {
-        $count = $this->mailer->notifyResetPassword($user);
+        $message = $this->messageBuilder->createResetPassword($user);
+        $mailer = $this->mailerBuilder->getSmtpMailer();
 
-        return $count;
+        return $mailer->send($message);
     }
 }

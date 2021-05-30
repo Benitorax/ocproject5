@@ -5,6 +5,7 @@ namespace Framework\Security\RememberMe;
 use DateTime;
 use stdClass;
 use Framework\DAO\AbstractDAO;
+use Framework\DAO\Connection;
 use Framework\DAO\DAOInterface;
 use Framework\DAO\QueryExpression;
 use Framework\Security\RememberMe\PersistentToken;
@@ -18,8 +19,9 @@ class RememberMeDAO extends AbstractDAO implements DAOInterface
 
     private QueryExpression $query;
 
-    public function __construct()
+    public function __construct(Connection $connection)
     {
+        parent::__construct($connection);
         $this->query = new QueryExpression();
     }
 

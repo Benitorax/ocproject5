@@ -56,17 +56,11 @@ abstract class AbstractForm implements FormInterface
      */
     public function snakeCaseToCamelCase(string $string): string
     {
-        $strings = [];
+        $pascalCase = implode('', array_map(function ($element) {
+            return ucfirst($element);
+        }, explode('_', $string)));
 
-        foreach (explode('_', $string) as $index => $name) {
-            if ($index === 0) {
-                $strings[] = $name;
-            } else {
-                $strings[] = ucfirst($name);
-            }
-        }
-
-        return implode('', $strings);
+        return lcfirst($pascalCase);
     }
 
     public function getCsrfToken(): string

@@ -4,38 +4,26 @@ namespace Framework\DAO;
 
 use PDO;
 use stdClass;
-use Exception;
 use PDOStatement;
+use Framework\DAO\Connection;
 use Framework\DAO\DAOInterface;
 use Framework\DAO\QueryExpression;
 
 abstract class AbstractDAO implements DAOInterface
 {
-    /** @var PDO */
-    private $connection;
+    private Connection $connection;
 
-    private function checkConnection(): PDO
+    protected function __construct(Connection $connection)
     {
-        if (null === $this->connection) {
-            return $this->getConnection();
-        }
-
-        return $this->connection;
-    }
-
-    private function getConnection(): PDO
-    {
-        $this->connection = new PDO($_ENV['DB_HOST'], $_ENV['DB_USERNAME'], $_ENV['DB_PASSWORD']);
-        $this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
-
-        return $this->connection;
+        $this->connection = $connection;
     }
 
     /** @param mixed[] $parameters for bindValue() method*/
     protected function createQuery(string $sql, array $parameters = null): PDOStatement
     {
         if ($parameters) {
-            $stmt = $this->checkConnection()->prepare($sql);
+            /** @var PDOStatement */
+            $stmt = $this->connection->prepare($sql);
 
             foreach ($parameters as $key => $value) {
                 $stmt->bindValue(':' . $key, $value);
@@ -43,11 +31,10 @@ abstract class AbstractDAO implements DAOInterface
 
             $stmt->execute($parameters);
 
-            /** @var PDOStatement */
             return $stmt;
         }
 
-        $stmt = $this->checkConnection()->query($sql);
+        $stmt = $this->connection->query($sql);
 
         /** @var PDOStatement */
         return $stmt;
@@ -121,16 +108,11 @@ abstract class AbstractDAO implements DAOInterface
      */
     public function update(string $tableName, array $parameters, array $where): void
     {
-        $sql = 'UPDATE ' . $tableName . ' SET';
+        $sql = 'UPDATE ' . $tableName;
 
-        $i = 1;
-        foreach (array_keys($parameters) as $colName) {
-            $sql .= ' ' . $colName . '=:' . $colName;
-            if ($i < count($parameters)) {
-                $sql .= ', ';
-            }
-            $i++;
-        }
+        $sql .= ' SET ' . implode(', ', array_map(function ($colName) {
+            return $colName . '=:' . $colName;
+        }, array_keys($parameters)));
 
         $sql = $this->addWhere($sql, $where);
         $parameters = array_merge($parameters, $where);
@@ -145,21 +127,11 @@ abstract class AbstractDAO implements DAOInterface
      */
     private function paramsToStrings(array $parameters): array
     {
-        $i = 1;
-        $colNameString = '';
-        $paramString = '';
-
-        // TO DO replace $parameters with array_keys($parameters) to delete $value
-        foreach (array_keys($parameters) as $key) {
-            if ($i < count($parameters)) {
-                $colNameString .= $key . ', ';
-                $paramString .= ':' . $key . ', ';
-            } else {
-                $colNameString .= $key;
-                $paramString .= ':' . $key;
-            }
-            $i++;
-        }
+        $keys = array_keys($parameters);
+        $colNameString = implode(', ', $keys);
+        $paramString = implode(', ', array_map(function ($element) {
+            return ':' . $element;
+        }, $keys));
 
         return [$colNameString, $paramString];
     }
@@ -173,17 +145,9 @@ abstract class AbstractDAO implements DAOInterface
             return $sql;
         }
 
-        $i = 1;
-        $where = ' WHERE ';
-
-        foreach (array_keys((array) $parameters) as $key) {
-            if ($i < count((array) $parameters)) {
-                $where .= $key . ' = :' . $key . ' AND ';
-            } else {
-                $where .= $key . ' = :' . $key;
-            }
-            $i++;
-        }
+        $where = ' WHERE ' . implode(' AND ', array_map(function ($element) {
+            return $element . ' = :' . $element;
+        }, array_keys($parameters)));
 
         return $sql . $where;
     }

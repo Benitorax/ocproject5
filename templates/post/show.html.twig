@@ -14,9 +14,9 @@
             <p>By {{ post.user.username ?: '<span class="text-muted"><i>Deleted account</i></span>' }}</p>
             <small style="color: grey">
                 {% if post.createdAt|date('Y-m-d H:i:s') is same as(post.updatedAt|date('Y-m-d H:i:s')) %}
-                    Published: {{ post.createdAt|date('M d, Y, H:i') }}
+                    Published: {{ post.createdAt|date('M d, Y, g:i A') }}
                 {% else %}
-                    Updated: {{ post.updatedAt|date('M d, Y, H:i') }}
+                    Updated: {{ post.updatedAt|date('M d, Y, g:i A') }}
                 {% endif %}
             </small>
         </div>
@@ -50,10 +50,12 @@
                 <div class="media my-3">
                     <div class="media-body">
                         <h5 class="mb-0"><b>{{ comment.user.username }}</b></h5>
-                        <small style="color: grey">{{ comment.updatedAt|date('M d, Y, H:i') }}</small>
+                        <small style="color: grey">{{ comment.updatedAt|date('M d, Y, g:i A') }}</small>
                         <p class="mt-2">{{ comment.content|nl2br }}</p>
                     </div>
                 </div>
+            {% else %}
+                <div class="text-center">Be the first to comment.</div>
             {% endfor %}
         </div>
     </div>

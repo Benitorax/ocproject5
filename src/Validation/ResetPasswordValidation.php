@@ -4,9 +4,9 @@ namespace App\Validation;
 
 use App\Form\ResetPasswordForm;
 use Framework\Form\AbstractForm;
-use Framework\Validation\Validation;
+use Framework\Validation\AbstractValidation;
 
-class ResetPasswordValidation extends Validation
+class ResetPasswordValidation extends AbstractValidation
 {
     private const PASSWORD1 = [
         ['notBlank'],

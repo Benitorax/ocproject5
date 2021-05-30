@@ -8,7 +8,6 @@ use Framework\Router\Route;
 use Framework\Request\Request;
 use Framework\Response\Response;
 use Framework\Container\Container;
-use Framework\Controller\ErrorController;
 
 class Router
 {
@@ -19,7 +18,6 @@ class Router
     public function __construct(Container $container)
     {
         $this->initializeRoutes();
-
         $this->container = $container;
     }
 
@@ -27,21 +25,11 @@ class Router
     {
         $this->request = $request;
         $pathInfo = $this->request->getPathInfo();
+        $route = $this->match($pathInfo, $this->request->getMethod());
+        $this->request->attributes->set('route', $route->getName());
+        $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $pathInfo);
 
-        try {
-            $route = $this->match($pathInfo, $this->request->getMethod());
-            $arguments = $this->resolveControllerArguments($route->getCallable(), $route->getPath(), $pathInfo);
-            $this->request->attributes->set('route', $route->getName());
-
-            return $this->executeController($route->getCallable(), $arguments);
-        } catch (Exception $e) {
-            return $this->errorServer($e);
-            // if (5 === (int) substr($e->getCode(), 0, 1)) {
-            //     return $this->errorServer($e);
-            // } else {
-            //     return $this->errorNotFound();
-            // }
-        }
+        return $this->executeController($route->getCallable(), $arguments);
     }
 
     /**
@@ -82,26 +70,6 @@ class Router
         }
 
         return false;
-    }
-
-    /**
-     * Returns an error 404 page.
-     *
-     * @param Exception $error
-     */
-    public function errorNotFound($error = null): Response
-    {
-        return $this->executeController([ErrorController::class, 'notFound'], $error);
-    }
-
-    /**
-     * Returns an error server page.
-     *
-     * @param Exception $error
-     */
-    public function errorServer($error = null): Response
-    {
-        return $this->executeController([ErrorController::class, 'server'], $error);
     }
 
     /**
@@ -178,17 +146,18 @@ class Router
         foreach ($reflection->getParameters() as $param) {
             if (array_key_exists($param->name, $routeParams)) {
                 $arguments[] = $routeParams[$param->name];
-            } else {
-                throw new Exception(
-                    sprintf(
-                        "The parameter {%s} for %s::%s doesn't exist inside your route",
-                        $param->name,
-                        $callable[0],
-                        $callable[1]
-                    ),
-                    500
-                );
+                continue;
             }
+
+            throw new Exception(
+                sprintf(
+                    "The parameter {%s} for %s::%s doesn't exist inside your route",
+                    $param->name,
+                    $callable[0],
+                    $callable[1]
+                ),
+                500
+            );
         }
 
         return $arguments;

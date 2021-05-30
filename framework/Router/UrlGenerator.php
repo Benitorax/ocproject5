@@ -66,9 +66,11 @@ class UrlGenerator
                     $routeParams[$paramName],
                     (string) $routePath
                 );
-            } else {
-                throw new Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
+
+                continue;
             }
+
+            throw new Exception(sprintf("The route parameter '%s' cannot be found.", $paramName), 500);
         }
 
         return $routePath;

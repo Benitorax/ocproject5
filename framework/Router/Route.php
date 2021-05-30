@@ -10,7 +10,7 @@ class Route
     private array $methods;
 
     /**
-     * @param string|array $methods
+     * @param null|string|array $methods
      */
     public function __construct(string $path, string $callable, $methods, string $name)
     {
@@ -44,17 +44,21 @@ class Route
     }
 
     /**
-     * @param string|array $method
+     * @param null|string|array $method
      */
     public function setMethods($method): void
     {
-        if (!$method) {
+        if (null === $method) {
             $this->methods = ['GET'];
-        } elseif (!is_array($method)) {
-            $this->methods = [$method];
-        } else {
+
+            return;
+        } elseif (is_array($method)) {
             $this->methods = $method;
+
+            return;
         }
+
+        $this->methods = [$method];
     }
 
     public function setCallable(string $callable): void

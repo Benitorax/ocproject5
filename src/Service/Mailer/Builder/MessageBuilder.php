@@ -1,87 +1,73 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service\Mailer\Builder;
 
-use Swift_Mailer;
 use Swift_Message;
 use App\Model\User;
 use Framework\View\View;
 use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
 
-class Mailer
+/**
+ * MessageBuilder method names are identical to Mailer's.
+ */
+class MessageBuilder
 {
-    private Swift_Mailer $mailer;
     private View $view;
 
     public function __construct(View $view)
     {
-        $transport = (new \Swift_SmtpTransport())
-            ->setHost($_ENV['MAILER_HOST'])
-            ->setPort($_ENV['MAILER_PORT'])
-            ->setEncryption($_ENV['MAILER_ENCRYPTION'])
-            ->setUsername($_ENV['MAILER_USERNAME'])
-            ->setPassword($_ENV['MAILER_PASSWORD'])
-        ;
-
-        $this->mailer = new Swift_Mailer($transport);
         $this->view = $view;
     }
 
     /**
-     * Send email when a contact form is submitted.
+     * Prepares message for submitting contact form.
      */
-    public function notifyContact(ContactForm $form, User $recipient): int
+    public function createContact(ContactForm $form, User $recipient): Swift_Message
     {
-        $message = $this->prepareMessage('You have receive a message')
+        return $this->prepareMessage('You have receive a message')
             ->setFrom(['example@mail.com' => 'MyWebsite'])
             ->setTo([$recipient->getEmail() => $recipient->getUsername()])
             ->setBody(
                 $this->view->renderEmail('mail/contact.html.twig', [
-                        'form' => $form,
-                        'recipient' => $recipient
+                    'form' => $form,
+                    'recipient' => $recipient
                 ]),
                 'text/html'
             )
         ;
-
-        return $this->mailer->send($message);
     }
 
     /**
-     * Send email to user to reset password.
+     * Prepares message for reset password request.
      */
-    public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
+    public function createResetPasswordRequest(User $user, ResetPasswordToken $token): Swift_Message
     {
-        $message = $this->prepareMessage('Reset password request')
+        return $this->prepareMessage('Reset password request')
             ->setFrom(['example@mail.com' => 'MyWebsite'])
             ->setTo([$user->getEmail() => $user->getUsername()])
             ->setBody(
                 $this->view->renderEmail('mail/reset_password_request.html.twig', [
-                        'token' => $token,
-                        'recipient' => $user
+                    'token' => $token,
+                    'recipient' => $user
                 ]),
                 'text/html'
             )
         ;
-
-        return $this->mailer->send($message);
     }
 
     /**
-     * Send email to user to reset password.
+     * Prepares message for reset password.
      */
-    public function notifyResetPassword(User $user): int
+    public function createResetPassword(User $user): Swift_Message
     {
-        $message = $this->prepareMessage('Reset password')
+        return $this->prepareMessage('Reset password')
             ->setTo([$user->getEmail() => $user->getUsername()])
             ->setBody(
                 $this->view->renderEmail('mail/reset_password.html.twig', ['recipient' => $user]),
                 'text/html'
             )
         ;
-
-        return $this->mailer->send($message);
     }
 
     /**

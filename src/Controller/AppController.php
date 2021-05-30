@@ -5,8 +5,8 @@ namespace App\Controller;
 use App\Form\ContactForm;
 use App\Form\RegisterForm;
 use App\Service\UserManager;
-use App\Service\Mailer\Notification;
 use Framework\Response\Response;
+use App\Service\Mailer\Notification;
 use Framework\Controller\AbstractController;
 
 class AppController extends AbstractController

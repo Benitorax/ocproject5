@@ -8,9 +8,10 @@ use App\Model\Post;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use App\Model\Comment;
-use App\Service\Pagination\PaginationDAOInterface;
+use Framework\DAO\Connection;
 use Framework\DAO\AbstractDAO;
 use Framework\DAO\QueryExpression;
+use App\Service\Pagination\PaginationDAOInterface;
 
 class CommentDAO extends AbstractDAO implements PaginationDAOInterface
 {
@@ -21,9 +22,9 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
 
     private QueryExpression $query;
 
-    public function __construct()
+    public function __construct(Connection $connection)
     {
-        $this->query = new QueryExpression();
+        parent::__construct($connection);
     }
 
     /**

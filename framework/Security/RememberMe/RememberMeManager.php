@@ -145,17 +145,6 @@ class RememberMeManager
      */
     public function deleteToken(Request $request): void
     {
-        if (!empty($this->tokenStorage->getToken())) {
-            $this->rememberMeDAO->deleteTokenByIdentifier((string) $this->tokenStorage->getToken()->getIdentifier());
-        }
-        $this->cancelCookie($request);
-    }
-
-    /**
-     * Deletes Token by its series from database.
-     */
-    public function deleteTokenBySeries(Request $request): void
-    {
         if (($cookie = $request->attributes->get(self::COOKIE_ATTR_NAME)) && null === $cookie->getValue()) {
             return;
         }
@@ -165,11 +154,12 @@ class RememberMeManager
         }
 
         $cookieParts = $this->decodeCookie($cookie);
-        [$series, $tokenValue] = $cookieParts;
+        $series = $cookieParts[0];
 
-        if (!empty($this->tokenStorage->getToken())) {
+        if (!empty($series)) {
             $this->rememberMeDAO->deleteTokenBySeries($series);
         }
+
         $this->cancelCookie($request);
     }
 

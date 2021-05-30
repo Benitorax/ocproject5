@@ -7,6 +7,7 @@ use stdClass;
 use App\Model\User;
 use Ramsey\Uuid\Uuid;
 use DateTimeImmutable;
+use Framework\DAO\Connection;
 use Framework\DAO\AbstractDAO;
 use App\Model\ResetPasswordToken;
 use Framework\DAO\QueryExpression;
@@ -19,6 +20,11 @@ class ResetPasswordTokenDAO extends AbstractDAO
     ];
 
     private QueryExpression $query;
+
+    public function __construct(Connection $connection)
+    {
+        parent::__construct($connection);
+    }
 
     /**
      * Returns an User object from stdClass.
