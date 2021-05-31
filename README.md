@@ -115,7 +115,60 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
   ];
   ```
 - A Form class must extend `AbstractForm`.
+
+  Setter method name must match form field name in snake_case:
+  
+  ```php
+  class Contact extends AbstractForm
+  {
+      private string $username;
+      private string $phoneNumber;
+      
+      public function setUsername(string $username)
+      {
+          $this->username = $username;
+      }
+      
+      public function setPhoneNumber(string $phoneNumber)
+      {
+          $this->phoneNumber = $phoneNumber;
+      }
+  }
+  ```
+  
+  ```html
+  <form method="POST" action="/contact/create">
+    <input type="text" name="username">
+    <input type="text" name="phone_number">
+    <button>Submit</button>
+  </form>
+  ```
+  
+  The field name `phone_number` is in snake_case whereas the setter name `setPhoneNumber` is in camelCase (or PascalCase without the prefix `set`).
+  
 - A Validation class must extend `AbstractValidation`.
+
+  Property constraints are set as properties, then they're used in `validate()` method. They're combined with `check([Constraint], $value, 'fieldName')` method which returns error message when it's not validated. And finally error message is set in form with `$form->addError()`.
+  
+  ```php
+  class EmailValidation extends AbstractValidation
+  {
+      private const EMAIL = [
+          ['notBlank'],
+          ['minLength', 8],
+          ['maxLength', 50],
+          ['email']
+      ];
+
+      public function validate(AbstractForm $form): void
+      {
+          /** @var EmailForm $form */
+          $form->addError('email', $this->check(self::EMAIL, $form->getEmail(), 'email'));
+          $form->addError('csrf', $this->checkCsrfToken($form->getCsrfToken()));
+      }
+  }
+  ```
+  
 - A DAO class must extend `AbstractDAO`.
 
   You can make query expression like [Doctrine/ORM](https://github.com/doctrine/orm):
