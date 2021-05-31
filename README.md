@@ -148,7 +148,7 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
   
 - A Validation class must extend `AbstractValidation`.
 
-  Property constraints are set as properties, then they're used in `validate()` method. They're combined with `check([Constraint], $value, 'fieldName')` method which returns error message when it's not validated. And finally error message is set in form with `$form->addError()`.
+  Property constraints are set as properties, then they're used in `validate()` method. They're combined with `check([constraints], $value, ?'fieldName')` method which returns error message when it's not validated. And finally the error message is set in form with `$form->addError($key, $message)`.
   
   ```php
   class EmailValidation extends AbstractValidation
