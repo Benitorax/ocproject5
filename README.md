@@ -26,18 +26,18 @@ There are a register page and a login page as well.
 Copy the `.env file` in the root folder, rename it to `.env.local` and configure the following variables for:
 - the database:
   ```
-  "DB_HOST": "mysql:host=localhost;dbname=my_blog;charset=utf8"
-  "DB_USERNAME": "root"
-  "DB_PASSWORD": ""
+  DB_HOST=mysql:host=localhost;dbname=my_blog;charset=utf8
+  DB_USERNAME=root
+  DB_PASSWORD=
   ```
 
 - and the emailing:
   ```
-  "MAILER_HOST": "smtp.example.org"
-  "MAILER_PORT": 25
-  "MAILER_ENCRYPTION": "ssl"
-  "MAILER_USERNAME": "example@email.com"
-  "MAILER_PASSWORD": "password"
+  MAILER_HOST=smtp.example.org
+  MAILER_PORT=25
+  MAILER_ENCRYPTION=ssl
+  MAILER_USERNAME=example@email.com
+  MAILER_PASSWORD=password
   ```
 
 ### Step 2: Create database
@@ -54,11 +54,6 @@ Or import `ocproject5.sql` from phpMyAdmin if you have access.
 - Run the command in your terminal from the project root:
   ```
   php -S 127.0.0.1:8000 -t public
-  ```
-
-- Or if you use Symfony CLI you can run:
-  ```
-  symfony serve -d
   ```
 
 ### Step 4: Load some data

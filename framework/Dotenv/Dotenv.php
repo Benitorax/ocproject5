@@ -14,18 +14,32 @@ class Dotenv
      */
     public function loadEnv(string $path): void
     {
-        $env = (string) file_get_contents($path);
-        $data = (array) json_decode($env);
+        $data = is_file($path) ? file_get_contents($path) : null;
+        $data = str_replace(["\r\n", "\r"], "\n", (string) $data);
+        $data = explode("\n", $data);
 
-        foreach ($data as $key => $value) {
-            $_ENV[$key] = $value;
-            $_SERVER[$key] = $value;
-            $this->set($key, $value);
+        foreach ($data as $row) {
+            if (0 === strlen($row) || '#' === $row[0]) {
+                continue;
+            }
+
+            [$key, $value] = explode('=', $row, 2);
+            $value = trim($value);
+
+            // if conditions are true, then sets value to empty string
+            // or converts to bool variable
+            if (in_array($value, ['""', '\'\''])) {
+                $value = '';
+            } elseif (in_array($value, ['false', 'true'])) {
+                $value = 'true' === $value ? true : false;
+            }
+
+            $this->set(trim($key), $value);
         }
 
         // ensures that APP_DEBUG is defined
         $key = 'APP_DEBUG';
-        $_SERVER[$key] = $_ENV[$key] = $_SERVER[$key] === true ?? false;
+        $_SERVER[$key] = $_ENV[$key] = $this->get($key) === true ?? false;
         $this->set($key, $_SERVER[$key]);
     }
 

@@ -34,13 +34,13 @@ class ControllerSubscriber implements EventSubscriberInterface
         $code = (int) $throwable->getCode();
         $codeNumber = (int) substr($throwable->getCode(), 0, 1);
 
-        if (5 === $codeNumber) {
-            $event->setResponse($this->controller->server());
-        } elseif (403 === $code) {
+        if (403 === $code) {
             $event->setResponse($this->controller->forbidden());
+        } elseif (4 === $codeNumber) {
+            $event->setResponse($this->controller->notFound());
         }
 
-        $event->setResponse($this->controller->notFound());
+        $event->setResponse($this->controller->server());
     }
 
     public static function getSubscribedEvents()
