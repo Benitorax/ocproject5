@@ -11,7 +11,7 @@ class Request
     public Parameter $request;
     public Parameter $cookies;
     public Parameter $server;
-    private ?Session $session;
+    private ?Session $session = null;
     public Parameter $attributes;
     private ?string $requestUri = null;
     private ?string $pathInfo = null;

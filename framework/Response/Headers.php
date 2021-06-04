@@ -45,14 +45,9 @@ class Headers
      */
     public function all(?string $key = null): array
     {
-        $headers = [];
-        if (1 <= \func_num_args() && null !== $key = func_get_arg(0)) {
-            $headers = $this->headers[strtr($key, self::UPPER, self::LOWER)] ?? [];
-        } else {
-            $headers = $this->headers;
-        }
+        $headers = $this->headers;
 
-        if (1 <= \func_num_args() && null !== $key = func_get_arg(0)) {
+        if (null !== $key) {
             $key = strtr($key, self::UPPER, self::LOWER);
 
             return 'set-cookie' !== $key ? $headers[$key] ?? [] : array_map('strval', $this->getCookies());
@@ -66,11 +61,32 @@ class Headers
     }
 
     /**
+     * Returns the first value or default value.
+     *
+     * @return string|null
+     */
+    public function get(string $key, string $default = null)
+    {
+        $headers = $this->all($key);
+
+        if (!$headers) {
+            return $default;
+        }
+
+        if (null === $headers[0]) {
+            return null;
+        }
+
+        return (string) $headers[0];
+    }
+
+    /**
      * @param string|array $values
      */
     public function set(string $key, $values, bool $replace = true): void
     {
         $uniqueKey = strtr($key, self::UPPER, self::LOWER);
+        $this->headerNames[$uniqueKey] = $key;
 
         if ('set-cookie' === $uniqueKey) {
             if ($replace) {
@@ -79,26 +95,23 @@ class Headers
             foreach ((array) $values as $cookie) {
                 $this->setCookie($cookie);
             }
-            $this->headerNames[$uniqueKey] = $key;
 
             return;
         }
 
-        $this->headerNames[$uniqueKey] = $key;
-
-        if (\is_array($values)) {
+        if (is_array($values)) {
             $values = array_values($values);
 
-            if (true === $replace || !isset($this->headers[$key])) {
-                $this->headers[$key] = $values;
+            if (true === $replace || !isset($this->headers[$uniqueKey])) {
+                $this->headers[$uniqueKey] = $values;
             } else {
-                $this->headers[$key] = array_merge($this->headers[$key], $values);
+                $this->headers[$uniqueKey] = array_merge($this->headers[$uniqueKey], $values);
             }
         } else {
-            if (true === $replace || !isset($this->headers[$key])) {
-                $this->headers[$key] = [$values];
+            if (true === $replace || !isset($this->headers[$uniqueKey])) {
+                $this->headers[$uniqueKey] = [$values];
             } else {
-                $this->headers[$key][] = $values;
+                $this->headers[$uniqueKey][] = $values;
             }
         }
     }
