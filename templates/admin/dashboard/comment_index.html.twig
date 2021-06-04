@@ -41,7 +41,7 @@
                             <td>
                                 <div class="row">
                                     <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
-                                        <form method="POST" action='{{ path('admin_comment_validate', {uuid: comment.uuid}) }}'>
+                                        <form name="comment-validate" method="POST" action='{{ path('admin_comment_validate', {uuid: comment.uuid}) }}'>
                                             <button type="submit" class="btn btn-success"><i class="bi bi-check2"></i></button>
                                             {{ _form.input_csrf(csrf_token()) }}
                                         </form>

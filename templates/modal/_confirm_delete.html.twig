@@ -14,7 +14,7 @@
             </div>
             <div class="modal-body">
                 Are you sure you want to delete?
-                <form method="POST" id="deleteModalForm">
+                <form name="modal-delete" method="POST" id="deleteModalForm">
                     {% import "form/_form.html.twig" as _form %}
                     {{ _form.input_csrf(csrf_token()) }}
                 </form>

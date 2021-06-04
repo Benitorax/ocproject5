@@ -27,7 +27,7 @@
         <div class="collapse navbar-collapse" id="headerNav">
             <ul class="navbar-nav ml-auto">
                 {% if app.user is not null %}
-                    <form method="POST" action="{{ path('logout') }}">
+                    <form name="logout" method="POST" action="{{ path('logout') }}">
                         {% import "form/_form.html.twig" as _form %}
                         {{ _form.input_csrf(csrf_token()) }}
                         <button type="submit" class="float-right btn my-2 my-sm-0" style="color: #99ccff; background-color: #666699">Logout</button>
