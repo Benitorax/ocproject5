@@ -146,8 +146,7 @@ class FixturesController extends AbstractController
             $dateTime2 = $dateTime1;
         }
 
-        $post = new Post();
-        $post->setUuid(Uuid::uuid4())
+        $post = (new Post())->setUuid(Uuid::uuid4())
             ->setTitle($this->faker->realText(70, 5))
             ->setLead($this->faker->realText(255, 3))
             ->setContent($this->faker->paragraphs(3, true))
@@ -174,13 +173,13 @@ class FixturesController extends AbstractController
         $dateTime1 = $this->faker->dateTimeBetween('-2 years', '-10 months');
         $user = $this->getRandomUser();
 
-        $comment =  new Comment();
-        $comment->setUuid(Uuid::uuid4())
+        $comment =  (new Comment())->setUuid(Uuid::uuid4())
             ->setContent($this->faker->realText(mt_rand(200, 800), 3))
             ->setPost($post)
             ->setUser($user)
             ->setCreatedAt($dateTime1)
-            ->setUpdatedAt($dateTime1);
+            ->setUpdatedAt($dateTime1)
+        ;
 
         if (in_array('admin', $user->getRoles())) {
             $comment->setIsValidated(true);

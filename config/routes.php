@@ -123,7 +123,7 @@ return [
         'method' => ['GET', 'POST'],
         'callable' => 'App\Controller\AppController::register'
     ],
-    '/terms_of_use' => [
+    '/terms-of-use' => [
         'name' => 'terms_of_use',
         'callable' => 'App\Controller\AppController::termsOfUse'
     ],

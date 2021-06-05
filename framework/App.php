@@ -96,6 +96,10 @@ class App
 
     public function shutDown(): void
     {
+        if (\PHP_SESSION_ACTIVE === session_status()) {
+            $this->container->get(Session::class)->stop();
+        }
+
         $dotenv = $this->container->get(Dotenv::class);
         $this->container = new Container();
         $this->container->set($this);

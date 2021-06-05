@@ -18,8 +18,11 @@ abstract class AbstractDAO implements DAOInterface
         $this->connection = $connection;
     }
 
-    /** @param mixed[] $parameters for bindValue() method*/
-    protected function createQuery(string $sql, array $parameters = null): PDOStatement
+    /**
+     * @param mixed[] $parameters for bindValue() method
+     * @return PDOStatement
+    */
+    protected function createQuery(string $sql, array $parameters = null)
     {
         if ($parameters) {
             /** @var PDOStatement */
