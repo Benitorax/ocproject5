@@ -30,7 +30,17 @@ trait WebTestAssertionsTrait
     public static function assertSelectedTextContains(string $selector, string $text): void
     {
         $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
-        self::assertStringContainsString($text, $selectedTexts);
+        self::assertStringContainsString(htmlspecialchars($text), $selectedTexts);
+    }
+
+    /**
+     * The selector is the tag element
+     * e.g.: $selector = "h1"
+     */
+    public static function assertSelectedTextNotContains(string $selector, string $text): void
+    {
+        $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
+        self::assertStringNotContainsString(htmlspecialchars($text), $selectedTexts);
     }
 
     public static function getStatusCode(): int

@@ -28,7 +28,7 @@ class Crawler
 
         // matches method
         if (preg_match('#method=[\'"]([-\w]*)[\'"]#', $form[0], $match)) {
-            $method = $match[1];
+            $method = strtoupper($match[1]);
         }
 
         // matches action
@@ -82,7 +82,7 @@ class Crawler
     public function getTextByTag(string $selector, int $counter = null): array
     {
         // matches tag element
-        $pattern = '#<' . $selector . '(>|[-=\'"\\\/\s\w]*>).*<\/' . $selector . '>#';
+        $pattern = '#<' . $selector . '(>|[@&.!?,;:\-=\'"\\\/\s\w]*>)[@&.!?,;:\-<>=\'"\\\/\w\s]*<\/' . $selector . '>#';
         if (preg_match_all($pattern, $this->content, $texts)) {
             if ($counter) {
                 return [$texts[0][$counter]];

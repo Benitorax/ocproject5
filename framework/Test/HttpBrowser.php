@@ -77,7 +77,7 @@ class HttpBrowser
      */
     public function submitForm(string $form, array $parameters): crawler
     {
-        $form = $this->crawler->getForm('contact');
+        $form = $this->crawler->getForm($form);
         $form->setValues($parameters);
 
         return $this->submit($form);

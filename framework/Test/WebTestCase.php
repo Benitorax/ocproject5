@@ -13,7 +13,6 @@ class WebTestCase extends TestCase
     use WebTestAssertionsTrait;
 
     public static ?App $app = null;
-    public static ?Container $container = null;
     public static HttpBrowser $client;
 
     /**
@@ -35,7 +34,6 @@ class WebTestCase extends TestCase
     {
         static::ensureAppShutdown();
         static::$app = static::createApp();
-        self::$container = static::$app->getContainer();
 
         return static::$app;
     }
@@ -46,10 +44,10 @@ class WebTestCase extends TestCase
     protected static function createApp(): App
     {
         $dotenv = new Dotenv();
-        if (file_exists(dirname(__DIR__, 2) . '/.env.local')) {
-            $dotenv->loadEnv(dirname(__DIR__, 2) . '/.env.local');
+        if (file_exists(dirname(__DIR__, 2) . '/.env.test.local')) {
+            $dotenv->loadEnv(dirname(__DIR__, 2) . '/.env.test.local');
         } else {
-            $dotenv->loadEnv(dirname(__DIR__, 2) . '/.env');
+            $dotenv->loadEnv(dirname(__DIR__, 2) . '/.env.test');
         }
 
         return new App($dotenv);
@@ -60,10 +58,6 @@ class WebTestCase extends TestCase
      */
     protected static function ensureAppShutdown(): void
     {
-        if (null !== self::$container) {
-            self::$container = null;
-        }
-
         if (null !== self::$app) {
             self::$app->shutDown();
         }
