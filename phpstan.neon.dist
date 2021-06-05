@@ -4,5 +4,6 @@ parameters:
         - framework
         - public
         - src
+        - tests
     checkGenericClassInNonGenericObjectType: false
     checkMissingIterableValueType: false
