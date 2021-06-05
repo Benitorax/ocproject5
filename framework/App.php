@@ -96,6 +96,11 @@ class App
 
     public function shutDown(): void
     {
+        $dotenv = $this->container->get(Dotenv::class);
+        $this->container = new Container();
+        $this->container->set($this);
+        $this->container->set($dotenv);
+
         $this->booted = false;
     }
 }
