@@ -46,7 +46,6 @@ class HttpBrowser
         }
 
         return $this->crawler = new Crawler($this->response->getContent(), $uri);
-        // $this->app->terminate($this->request, $this->response);
     }
 
     /**

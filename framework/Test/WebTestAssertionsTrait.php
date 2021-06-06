@@ -27,7 +27,7 @@ trait WebTestAssertionsTrait
      * The selector is the tag element
      * e.g.: $selector = "h1"
      */
-    public static function assertSelectedTextContains(string $selector, string $text): void
+    public static function assertTextContains(string $selector, string $text): void
     {
         $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
         self::assertStringContainsString(htmlspecialchars($text), $selectedTexts);
@@ -37,7 +37,7 @@ trait WebTestAssertionsTrait
      * The selector is the tag element
      * e.g.: $selector = "h1"
      */
-    public static function assertSelectedTextNotContains(string $selector, string $text): void
+    public static function assertTextNotContains(string $selector, string $text): void
     {
         $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
         self::assertStringNotContainsString(htmlspecialchars($text), $selectedTexts);
