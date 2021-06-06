@@ -8,18 +8,26 @@ use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
 use App\Service\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\MessageBuilder;
+use App\Service\Mailer\Event\MailEvent;
+use Framework\EventDispatcher\EventDispatcher;
 
 class Notification
 {
     private UserDAO $userDAO;
     private MailerBuilder $mailerBuilder;
     private MessageBuilder $messageBuilder;
+    private EventDispatcher $dispatcher;
 
-    public function __construct(UserDAO $userDAO, MailerBuilder $mailerBuilder, MessageBuilder $messageBuilder)
-    {
+    public function __construct(
+        UserDAO $userDAO,
+        MailerBuilder $mailerBuilder,
+        MessageBuilder $messageBuilder,
+        EventDispatcher $dispatcher
+    ) {
         $this->userDAO = $userDAO;
         $this->mailerBuilder = $mailerBuilder;
         $this->messageBuilder = $messageBuilder;
+        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -34,6 +42,7 @@ class Notification
 
         foreach ($admins as $admin) {
             $message = $this->messageBuilder->createContact($form, $admin);
+            $this->dispatcher->dispatch(new MailEvent($message));
             $count += $mailer->send($message);
         }
 

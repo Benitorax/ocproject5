@@ -1,10 +1,11 @@
 <?php
 
-namespace App\Service\Mailer;
+namespace App\Service\Mailer\Subscriber;
 
 use Swift_MemorySpool;
 use Swift_TransportException;
 use Swift_Transport_SpoolTransport;
+use App\Service\Mailer\Event\MailEvent;
 use App\Service\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\TransportBuilder;
 use Framework\EventDispatcher\Event\ExceptionEvent;
@@ -16,6 +17,11 @@ class MailerSubscriber implements EventSubscriberInterface
     private MailerBuilder $mailerBuilder;
     private TransportBuilder $transportBuilder;
     private bool $wasExceptionThrown = false;
+
+    /**
+     * @var MailEvent[]
+     */
+    private array $mailEvents;
 
     public function __construct(MailerBuilder $mailerBuilder, TransportBuilder $transportBuilder)
     {
@@ -39,16 +45,15 @@ class MailerSubscriber implements EventSubscriberInterface
                 try {
                     $spool->flushQueue($this->transportBuilder->getSmtpTransport());
                 } catch (Swift_TransportException $exception) {
-                    // TODO: possibly log the exception
-                    // if (null !== $this->logger) {
-                    //     $this->logger->error(sprintf(
-                    //         'Exception occurred while flushing email queue: %s',
-                    //          $exception->getMessage()
-                    //     ));
-                    // }
+                    // Nothing to do
                 }
             }
         }
+    }
+
+    public function onMail(MailEvent $event): void
+    {
+        $this->mailEvents[] = $event;
     }
 
     public function onException(): void
@@ -60,7 +65,16 @@ class MailerSubscriber implements EventSubscriberInterface
     {
         return [
             TerminateEvent::class => 'onTerminate',
-            ExceptionEvent::class => 'onException'
+            ExceptionEvent::class => 'onException',
+            MailEvent::class => 'onMail'
         ];
+    }
+
+    /**
+     * @return MailEvent[]
+     */
+    public function getMailEvents()
+    {
+        return $this->mailEvents;
     }
 }
