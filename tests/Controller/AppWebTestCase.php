@@ -14,7 +14,9 @@ use App\DAO\CommentDAO;
 use App\Service\PostManager;
 use Framework\Test\WebTestCase;
 use Framework\Container\Container;
+use App\Service\Mailer\Event\MailEvent;
 use Framework\Security\Hasher\PasswordHasher;
+use App\Service\Mailer\Subscriber\MailerSubscriber;
 
 class AppWebTestCase extends WebTestCase
 {
@@ -27,12 +29,18 @@ class AppWebTestCase extends WebTestCase
     {
         $app = static::bootApp();
         $this->container = $app->getContainer();
+        $this->cleanDatabase();
         $this->userDAO = $this->container->get(UserDAO::class);
         $this->postDAO = $this->container->get(PostDAO::class);
         $this->commentDAO = $this->container->get(CommentDAO::class);
     }
 
     public function tearDown(): void
+    {
+        $this->cleanDatabase();
+    }
+
+    public function cleanDatabase(): void
     {
         // cleans database after each test
         $this->container->get(DAO::class)->makeQuery(
@@ -47,7 +55,6 @@ class AppWebTestCase extends WebTestCase
             "
         );
     }
-
     public function createUser(string $username, string $email, string $password, bool $isAdmin = false): User
     {
         $user = (new User())->setUuid(Uuid::uuid4())
@@ -100,12 +107,38 @@ class AppWebTestCase extends WebTestCase
 
         if (in_array('admin', $user->getRoles())) {
             $comment->setIsValidated(true);
-        } else {
-            $comment->setIsValidated(false);
         }
 
         $this->commentDAO->add($comment);
 
         return $comment;
+    }
+
+    public function assertEmailCount(int $expectedCount): void
+    {
+        $count = count(self::getMailEvents());
+        self::assertSame($expectedCount, $count, sprintf(
+            'The email count should be %d, but %d given.',
+            $expectedCount,
+            $count
+        ));
+    }
+
+    public function assertQueuedEmailCount(int $expectedCount): void
+    {
+        $count = count(self::getMailEvents());
+        self::assertSame($expectedCount, $count, sprintf(
+            'The queued email count should be %d, but %d given.',
+            $expectedCount,
+            $count
+        ));
+    }
+
+    /**
+     * @return MailEvent[]
+     */
+    public static function getMailEvents()
+    {
+        return self::$client->getContainer()->get(MailerSubscriber::class)->getMailEvents();
     }
 }
