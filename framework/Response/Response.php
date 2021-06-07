@@ -177,11 +177,17 @@ class Response
 
     /**
      * Gets a response header.
-     *
-     * @return string|null
      */
-    public function getHeader(string $name)
+    public function getHeader(string $name): ?string
     {
         return $this->headers->get($name);
+    }
+
+    /**
+     * Gets a response cookies.
+     */
+    public function getCookies(): array
+    {
+        return $this->headers->getCookies();
     }
 }
