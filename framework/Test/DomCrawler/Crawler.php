@@ -32,7 +32,7 @@ class Crawler
         }
 
         // matches action
-        if (preg_match('#action=[\'"]([-\w]*)[\'"]#', $form[0], $match)) {
+        if (preg_match('#action=[\'"]([-\/\w]*)[\'"]#', $form[0], $match)) {
             $uri = $match[1];
         }
 
@@ -55,7 +55,7 @@ class Crawler
     public function selectLink(string $text, ?int $counter = null): Link
     {
         // matches form
-        $pattern = '#<a [-=\'"\\\/\s\w]*>[.-<>\'"=\/\w\s]*' . $text . '[.-<>\'"=\/\w\s]*<\/a>#';
+        $pattern = '#<a [@&.!?,;:\-=\'"\\\/\s\w]*>[.-<>\'"=\/\w\s]*' . $text . '[@&.!?,;:\-<>\'"=\/\w\s]*<\/a>#';
         if (!preg_match_all($pattern, $this->content, $links)) {
             throw new \Exception(sprintf('Link with text "%s" does not exist.', $text));
         }
@@ -64,7 +64,7 @@ class Crawler
 
         // matches href
         $uri = null;
-        if (preg_match('#href=[\'"](.*)[\'"]#', $link[0], $match)) {
+        if (preg_match('#href=[\'"]([@&.!?,;:\-<>=\/\w]*)[\'"]#', $link[0], $match)) {
             $uri = $match[1];
         }
 
@@ -82,7 +82,7 @@ class Crawler
     public function getTextByTag(string $selector, int $counter = null): array
     {
         // matches tag element
-        $pattern = '#<' . $selector . '(>|[@&.!?,;:\-=\'"\\\/\s\w]*>)[@&.!?,;:\-<>=\'"\\\/\w\s]*<\/' . $selector . '>#';
+        $pattern = '#<' . $selector . '(>|[@&.!?,;:\-=\'"\\\/\s\w\#]*>)[@&.!?,;:\-<>=\'"\\\/\w\s\#]*<\/' . $selector . '>#';
         if (preg_match_all($pattern, $this->content, $texts)) {
             if ($counter) {
                 return [$texts[0][$counter]];

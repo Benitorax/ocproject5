@@ -2,6 +2,7 @@
 
 namespace Framework\Test;
 
+use Framework\Cookie\Cookie;
 use Framework\Response\Response;
 use Framework\Test\DomCrawler\Crawler;
 
@@ -30,7 +31,11 @@ trait WebTestAssertionsTrait
     public static function assertTextContains(string $selector, string $text): void
     {
         $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
-        self::assertStringContainsString(htmlspecialchars($text), $selectedTexts);
+        self::assertStringContainsString(htmlspecialchars($text, ENT_QUOTES), $selectedTexts, sprintf(
+            'Failed asserting that text within <%s> contains "%s"',
+            $selector,
+            $text
+        ));
     }
 
     /**
@@ -40,7 +45,34 @@ trait WebTestAssertionsTrait
     public static function assertTextNotContains(string $selector, string $text): void
     {
         $selectedTexts = implode('', self::getCrawler()->getTextByTag($selector));
-        self::assertStringNotContainsString(htmlspecialchars($text), $selectedTexts);
+        self::assertStringNotContainsString(htmlspecialchars($text, ENT_QUOTES), $selectedTexts, sprintf(
+            'Failed asserting that text within <%s> does not contain "%s"',
+            $selector,
+            $text
+        ));
+    }
+
+    public static function assertCookiesHasName(string $name): void
+    {
+        $cookieNames = [];
+        foreach (self::getCookies() as $cookie) {
+            $cookieNames[] = $cookie->getName();
+        }
+
+        self::assertContains($name, $cookieNames, sprintf(
+            'Failed asserting that client has cookie "%s',
+            $name
+        ));
+    }
+
+    public static function assertCookiesCount(int $count): void
+    {
+        $expectedCount = count(self::getCookies());
+        self::assertSame($expectedCount, $count, sprintf(
+            'Failed asserting that client should have %d cookies, but %s given',
+            $expectedCount,
+            $count
+        ));
     }
 
     public static function getStatusCode(): int
@@ -56,5 +88,13 @@ trait WebTestAssertionsTrait
     public static function getCrawler(): Crawler
     {
         return self::$client->getCrawler();
+    }
+
+    /**
+     * @return Cookie[]
+     */
+    public static function getCookies()
+    {
+        return self::$client->getCookies();
     }
 }

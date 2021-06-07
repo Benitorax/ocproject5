@@ -3,6 +3,7 @@
 namespace Framework\Test;
 
 use Framework\App;
+use Framework\Cookie\Cookie;
 use Framework\Request\Request;
 use Framework\Session\Session;
 use Framework\Response\Response;
@@ -19,6 +20,12 @@ class HttpBrowser
     private Request $request;
     private Response $response;
     private Crawler $crawler;
+    private Session $session;
+    /**
+     * @var Cookie[]
+     */
+    private $cookies = [];
+
     private ?string $redirect = null;
 
     private const DEFAULT_VALUES = [
@@ -30,6 +37,7 @@ class HttpBrowser
     public function setApp(App $app): void
     {
         $this->app = $app;
+        $this->session = $this->getContainer()->get(Session::class);
     }
 
     public function request(string $method, string $uri, array $parameters = null): Crawler
@@ -44,6 +52,9 @@ class HttpBrowser
         if ($code >= 300 && $code < 400) {
             $this->redirect = $this->response->getHeader('Location');
         }
+
+        $this->session = $this->app->getContainer()->get(Session::class);
+        $this->cookies = $this->response->getCookies();
 
         return $this->crawler = new Crawler($this->response->getContent(), $uri);
     }
@@ -74,10 +85,12 @@ class HttpBrowser
     /**
      * Makes a request from Form.
      */
-    public function submitForm(string $form, array $parameters): crawler
+    public function submitForm(string $formName, ?array $parameters = null): crawler
     {
-        $form = $this->crawler->getForm($form);
-        $form->setValues($parameters);
+        $form = $this->crawler->getForm($formName);
+        if ($parameters) {
+            $form->setValues($parameters);
+        }
 
         return $this->submit($form);
     }
@@ -139,9 +152,6 @@ class HttpBrowser
         $this->getContainer()->get(Session::class)->set('user', $user);
         $this->getContainer()->get(TokenStorage::class)->setUser($user);
 
-        //$cookie = new Cookie($session->getName(), $session->getId());
-        //$this->getCookieJar()->set($cookie);
-
         return $this;
     }
 
@@ -150,9 +160,8 @@ class HttpBrowser
      */
     private function rebootApp(): void
     {
-        $session = $this->getContainer()->get(Session::class);
         $this->app->shutDown();
-        $this->getContainer()->set($session);
+        $this->getContainer()->set($this->session);
     }
 
     public function getContainer(): Container
@@ -168,5 +177,13 @@ class HttpBrowser
     public function getCrawler(): Crawler
     {
         return $this->crawler;
+    }
+
+    /**
+     * @return Cookie[]
+     */
+    public function getCookies()
+    {
+        return $this->cookies;
     }
 }
