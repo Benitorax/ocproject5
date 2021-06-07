@@ -56,6 +56,7 @@ class Notification
     {
         $message = $this->messageBuilder->createResetPasswordRequest($user, $token);
         $mailer = $this->mailerBuilder->getSmtpMailer();
+        $this->dispatcher->dispatch(new MailEvent($message));
 
         return $mailer->send($message);
     }
@@ -67,6 +68,7 @@ class Notification
     {
         $message = $this->messageBuilder->createResetPassword($user);
         $mailer = $this->mailerBuilder->getSmtpMailer();
+        $this->dispatcher->dispatch(new MailEvent($message));
 
         return $mailer->send($message);
     }

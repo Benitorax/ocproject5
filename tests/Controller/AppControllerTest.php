@@ -37,30 +37,6 @@ class AppControllerTest extends AppWebTestCase
         $this->assertTextContains('div', 'The box "terms of use" must be checked');
     }
 
-    public function testLogin(): void
-    {
-        $this->createUser('Sacha', 'sacha@mail.com', '123456');
-
-        // wrong password
-        $client = static::createClient();
-        $client->request('GET', '/login');
-        $client->submitForm('login', [
-            'email' => 'sacha@mail.com',
-            'password' => '123455'
-        ]);
-        $this->assertTextContains('div', 'Email or password Invalid.');
-
-        // right password
-        $client->submitForm('login', [
-            'email' => 'sacha@mail.com',
-            'password' => '123456'
-        ]);
-
-        $this->assertResponseIsRedirect();
-        $client->followRedirect();
-        $this->assertTextContains('div', 'Welcome, Sacha!');
-    }
-
     public function testHomepage(): void
     {
         // create an admin user who can receive message from contact form

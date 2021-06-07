@@ -21,7 +21,7 @@ class MailerSubscriber implements EventSubscriberInterface
     /**
      * @var MailEvent[]
      */
-    private array $mailEvents;
+    private array $mailEvents = [];
 
     public function __construct(MailerBuilder $mailerBuilder, TransportBuilder $transportBuilder)
     {
