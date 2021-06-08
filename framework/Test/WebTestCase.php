@@ -5,7 +5,6 @@ namespace Framework\Test;
 use Framework\App;
 use Framework\Dotenv\Dotenv;
 use Framework\Test\HttpBrowser;
-use Framework\Container\Container;
 use PHPUnit\Framework\TestCase;
 
 class WebTestCase extends TestCase

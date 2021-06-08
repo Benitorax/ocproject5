@@ -77,7 +77,7 @@ class HttpBrowser
     /**
      * Makes a request from Form.
      */
-    public function submit(Form $form): crawler
+    public function submit(Form $form): Crawler
     {
         return $this->request($form->getMethod(), $form->getUri(), $form->getParameters());
     }
@@ -85,7 +85,7 @@ class HttpBrowser
     /**
      * Makes a request from Form.
      */
-    public function submitForm(string $formName, ?array $parameters = null): crawler
+    public function submitForm(string $formName, ?array $parameters = null): Crawler
     {
         $form = $this->crawler->getForm($formName);
         if ($parameters) {
@@ -98,7 +98,7 @@ class HttpBrowser
     /**
      * Makes a request from Link.
      */
-    public function click(Link $link): crawler
+    public function click(Link $link): Crawler
     {
         return $this->request($link->getMethod(), $link->getUri());
     }
@@ -106,7 +106,7 @@ class HttpBrowser
     /**
      * Makes a request from Link.
      */
-    public function clickLink(string $text, int $counter = null): crawler
+    public function clickLink(string $text, int $counter = null): Crawler
     {
         $link = $this->crawler->selectLink($text, $counter);
 

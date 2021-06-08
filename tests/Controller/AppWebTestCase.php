@@ -55,6 +55,7 @@ class AppWebTestCase extends WebTestCase
             "
         );
     }
+
     public function createUser(string $username, string $email, string $password, bool $isAdmin = false): User
     {
         $user = (new User())->setUuid(Uuid::uuid4())

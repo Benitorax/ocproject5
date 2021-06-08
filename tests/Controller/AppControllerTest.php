@@ -23,7 +23,6 @@ class AppControllerTest extends AppWebTestCase
         $this->assertTextContains('div', 'You register with success!');
 
         // fills each field wrong
-        $client = static::createClient();
         $client->request('GET', '/register');
         $client->submitForm('register', [
             'email' => 'sacha@mail.com',
@@ -62,14 +61,13 @@ class AppControllerTest extends AppWebTestCase
         $this->assertTextContains('div', 'The field "subject" should not be empty');
         $this->assertTextContains('div', 'The field "content" should contain at least 20 characters');
 
-        // submit contact form rightly
+        // submit contact form correctly
         $client->submitForm('contact', [
             'subject' => 'My super subject',
             'content' => 'My super content which has enough characters.'
         ]);
         $this->assertTextContains('div', 'Your message has been sent with success!');
-        $this->assertEmailCount(2);
-        //$this->assertQueuedEmailCount(2);
+        $this->assertQueuedEmailCount(2);
     }
 
     public function testTermsOfUse(): void
