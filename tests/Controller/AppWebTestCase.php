@@ -3,7 +3,6 @@
 namespace App\Tests\Controller;
 
 use Framework\Test\WebTestCase;
-use App\Tests\Controller\Fixtures\FixturesData;
 use App\Tests\Controller\AppTestAssertionsTrait;
 use App\Tests\Controller\Fixtures\FixturesLoader;
 

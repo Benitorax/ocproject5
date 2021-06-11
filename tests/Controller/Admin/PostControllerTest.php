@@ -40,6 +40,11 @@ class PostControllerTest extends AppWebTestCase
         // create button should be clickable
         self::$client->clickLink('Create a post');
         $this->assertResponseIsSuccessful();
+
+        // should go to edit page when click on edit button
+        self::$client->request('GET', '/admin/posts');
+        self::$client->clickLink('post-edit-' . self::$posts['unpublished'][0]->getUuid());
+        $this->assertTextContainsForm('post');
     }
 
     public function testCreateWithWrongData(): void

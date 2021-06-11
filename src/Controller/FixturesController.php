@@ -149,7 +149,7 @@ class FixturesController extends AbstractController
         $post = (new Post())->setUuid(Uuid::uuid4())
             ->setTitle($this->faker->realText(70, 5))
             ->setLead($this->faker->realText(255, 3))
-            ->setContent($this->faker->paragraphs(3, true))
+            ->setContent(implode('', (array) $this->faker->paragraphs(3, true)))
             ->setCreatedAt($dateTime1)
             ->setUpdatedAt($dateTime2)
             ->setIsPublished($isPublished)
@@ -162,6 +162,7 @@ class FixturesController extends AbstractController
 
         $this->postDAO->add($post);
 
+        /** @var Post */
         return $this->postDAO->getOneByUuid($post->getUuid()); // returns Post with Id
     }
 

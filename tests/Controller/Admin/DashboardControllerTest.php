@@ -43,6 +43,10 @@ class DashboardControllerTest extends AppWebTestCase
         self::$client->request('GET', '/admin/dashboard/draft');
         $this->assertTextContains('td', self::$posts['unpublished'][0]->getTitle());
         $this->assertTextContains('td', self::$posts['unpublished'][0]->getTitle());
+
+        // should go to edit page when click on edit button
+        self::$client->clickLink('post-edit-' . self::$posts['unpublished'][0]->getUuid());
+        $this->assertTextContainsForm('post');
     }
 
     public function testShowComments(): void

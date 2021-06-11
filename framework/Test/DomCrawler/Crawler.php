@@ -57,9 +57,14 @@ class Crawler
         // looks for every <a> which contains $text
         $links = [];
         foreach ($nodes as $node) {
-            if (preg_match('#' . $text . '#', $node->nodeValue)) {
+            $nodeHTML = $this->document->saveHTML($node);
+            if (preg_match('#' . $text . '#', (string) $nodeHTML)) {
                 $links[] = $node;
             }
+        }
+
+        if (count($links) === 0) {
+            throw new \Exception(sprintf('No tag <a> with %s was found', $text));
         }
 
         $link = null !== $counter ? $links[$counter] : $links[0];
