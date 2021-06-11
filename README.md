@@ -184,7 +184,7 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
 - EventDispatcher
 
-  The framework has 2 events (`TerminateEvent` and `ExceptionEvent`) and 1 subscriber (`ControllerSubscriber`).
+  The framework has 2 built-in events (`TerminateEvent` and `ExceptionEvent`) and 2 built-in subscribers (`ControllerSubscriber` and `MailerSubscriber`).
   Moreover, you can create your own events, event listeners or subscribers:
   - Event class must extend `Event`. 
   - Subscriber class must extend `EventSubscriberInterface`.
@@ -211,10 +211,16 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
       ],
       'subscribers' => [
           Framework\Controller\ControllerSubscriber::class,
-          App\Service\Mailer\MailerSubscriber::class
+          Framework\Mailer\Subscriber\MailerSubscriber::class
       ]
   ]];
   ```
+
+- Mailer
+
+  By using SwiftMailer and EventDispatcher, the Mailer have 2 types of transport:
+  - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
+  - Spool transport: emails are sent after returning the HTTP response.
 
 - Debug
 
@@ -310,22 +316,15 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
           $crawler = $client->followRedirect();
           
           // some built-in assertion methods:
-          $this->assertResponseIsSuccessful(); // should match status code from 200 to 299
-          $this->assertResponseIsRedirect(); // should match status code from 300 to 399
-          $this->assertResponseIsError(); // should match status code from 400 to 599
+          $this->assertResponseIsSuccessful(); // match status code from 200 to 299
+          $this->assertResponseIsRedirect(); // match status code from 300 to 399
+          $this->assertResponseIsError(); // match status code from 400 to 599
           $this->assertTextContains('div', 'I should be display');
           $this->assertTextNotContains('h1', 'I should not be display');
           $this->assertTextContainsForm('login'); // <form name="login">
           $this->assertTextNotContainsForm('register'); // <form name="register">
           $this->assertCookiesHasName('REMEMBERME');
+          $this->assertEmailCount(2); // match 2 sent emails
       }
   }
   ```
-
-## Others
-
-### Mailer
-
-Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
-- SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
-- Spool transport: emails are sent after returning the HTTP response.
