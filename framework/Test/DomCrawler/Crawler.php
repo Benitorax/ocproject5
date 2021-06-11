@@ -6,11 +6,17 @@ class Crawler
 {
     private string $content;
     private string $uri;
+    private \DOMXPath $finder;
+    private \DOMDocument $document;
 
     public function __construct(string $content, string $uri)
     {
         $this->content = $content;
         $this->uri = $uri;
+        $this->document = new \DOMDocument();
+        @$this->document->loadHTML($this->content);
+
+        $this->finder = new \DOMXPath($this->document);
     }
 
     /**
@@ -20,32 +26,21 @@ class Crawler
      */
     public function getForm(string $name): Form
     {
-        // matches <form [...] name="$name" [...]>
-        $pattern = '#<form[ "\'-=\w\s]*name="' . $name . '"[ "\'-=\w\s]*>#';
-        if (!preg_match($pattern, $this->content, $form)) {
-            throw new \Exception(sprintf('Form with name "%s" does not exist.', $name));
-        }
+        // looks for <form> with name="$name"
+        /** @var \DOMNodeList */
+        $nodes = $this->finder->query('//form[@name=\'' . $name . '\']');
+        $method = strtoupper($nodes[0]->getAttribute('method'));
+        $uri = $nodes[0]->getAttribute('action');
 
-        // matches method="[...]" or method='[...]'
-        if (preg_match('#method=[\'"]([-\w]*)[\'"]#', $form[0], $match)) {
-            $method = strtoupper($match[1]);
-        }
+        $form = new Form(
+            strlen($method) > 0 ? $method : 'GET',
+            strlen($uri) > 0 ? $uri : $this->uri
+        );
 
-        // matches action="[...]" or action='[...]'
-        if (preg_match('#action=[\'"]([-\/\w]*)[\'"]#', $form[0], $match)) {
-            $uri = $match[1];
-        }
-
-        $form = new Form($method ?? 'GET', $uri ?? $this->uri);
-
-        // matches <input [...] name="csrf_token" [...]>.
-        $pattern = '#<input[ "\'-=\w]*name="csrf_token"[ "\'-=\w]*>#';
-        if (preg_match($pattern, $this->content, $input)) {
-            // matches value="[...]" or value='[...]'
-            if (preg_match('#value=[\'"]([-\w]*)[\'"]#', $input[0], $match)) {
-                $form->setValue('csrf_token', $match[1]);
-            }
-        }
+        // looks for input with name="csrf_token"
+        /** @var \DOMNodeList */
+        $nodes = $this->finder->query('//input[@name=\'csrf_token\']');
+        $form->setValue('csrf_token', $nodes[0]->getAttribute('value'));
 
         return $form;
     }
@@ -55,25 +50,21 @@ class Crawler
      */
     public function selectLink(string $text, ?int $counter = null): Link
     {
-        // matches <a [...]>[...]$text[...]</a>
-        $pattern = '#<a [@&.!?,;:\-=\'"\\\/\s\w]*>[.-<>\'"=\/\w\s]*' . $text . '[@&.!?,;:\-<>\'"=\/\w\s]*<\/a>#';
-        if (!preg_match_all($pattern, $this->content, $links)) {
-            throw new \Exception(sprintf('Link with text "%s" does not exist.', $text));
+        // looks for every <a>
+        /** @var \DOMNodeList */
+        $nodes = $this->finder->query('//a');
+
+        // looks for every <a> which contains $text
+        $links = [];
+        foreach ($nodes as $node) {
+            if (preg_match('#' . $text . '#', $node->nodeValue)) {
+                $links[] = $node;
+            }
         }
 
-        $link = null === $counter ? $links[0] : $links[$counter];
+        $link = null !== $counter ? $links[$counter] : $links[0];
 
-        // matches href href="[...]"
-        $uri = null;
-        if (preg_match('#href=[\'"]([@&.!?,;:\-<>=\/\w]*)[\'"]#', $link[0], $match)) {
-            $uri = $match[1];
-        }
-
-        if (null === $uri) {
-            throw new \Exception(sprintf('Link with text "%s" has no href attribute.', $text));
-        }
-
-        return new Link($uri);
+        return new Link($link->getAttribute('href')); // @phpstan-ignore-line
     }
 
     /**
@@ -82,16 +73,23 @@ class Crawler
      */
     public function getTextByTag(string $selector, int $counter = null): array
     {
-        // matches tag element <$selector [...]>[...]</$selector>
-        $pattern = '#<' . $selector . '(>|[@&.!?,;:\-=\'"\\\/\s\w\#]*>)[@&.!?,;:\-<>=\'"\\\/\w\s\#]*<\/' . $selector . '>#';
-        if (preg_match_all($pattern, $this->content, $texts)) {
-            if ($counter) {
-                return [$texts[0][$counter]];
-            }
+        /** @var \DOMNodeList */
+        $nodes = $this->finder->query('//' . $selector);
 
-            return $texts[0];
+        if (null !== $counter) {
+            return [$this->document->saveHTML($nodes[$counter])];
         }
 
-        return [];
+        $texts = [];
+        foreach ($nodes as $node) {
+            $texts[] = $this->document->saveHTML($node);
+        }
+
+        return $texts;
+    }
+
+    public function getContent(): string
+    {
+        return $this->content;
     }
 }

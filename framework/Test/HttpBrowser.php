@@ -13,6 +13,7 @@ use Framework\Test\DomCrawler\Link;
 use Framework\Security\TokenStorage;
 use Framework\Test\DomCrawler\Crawler;
 use Framework\Security\User\UserInterface;
+use Framework\Security\Csrf\CsrfTokenManager;
 
 class HttpBrowser
 {
@@ -185,5 +186,10 @@ class HttpBrowser
     public function getCookies()
     {
         return $this->cookies;
+    }
+
+    public function getCsrfToken(): string
+    {
+        return $this->getContainer()->get(CsrfTokenManager::class)->generateToken();
     }
 }
