@@ -39,16 +39,13 @@ class CommentController extends AbstractController
     {
         // checks if post exists
         $post = $this->postManager->getPostByUuid($uuid);
-        if (!$post instanceof Post || ($post instanceof Post && !$post->getIsPublished())) {
+        if (null === $post || ($post instanceof Post && !$post->getIsPublished())) {
             return $this->json(['error' => 'Post does not exist.'], 404);
         }
 
         // checks if users exists and is not blocked
         $user = $this->getUser();
-        if (
-            null === $user ||
-            ($user instanceof User && $user->getIsBlocked())
-        ) {
+        if (null === $user || ($user instanceof User && $user->getIsBlocked())) {
             return $this->json(['error' => 'You are not allowed to submit comment.'], 403);
         }
 

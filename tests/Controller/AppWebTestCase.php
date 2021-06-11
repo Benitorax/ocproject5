@@ -14,12 +14,13 @@ use App\DAO\CommentDAO;
 use App\Service\PostManager;
 use Framework\Test\WebTestCase;
 use Framework\Container\Container;
-use App\Service\Mailer\Event\MailEvent;
 use Framework\Security\Hasher\PasswordHasher;
-use App\Service\Mailer\Subscriber\MailerSubscriber;
+use App\Tests\Controller\AppTestAssertionsTrait;
 
 class AppWebTestCase extends WebTestCase
 {
+    use AppTestAssertionsTrait;
+    
     protected Container $container;
     public static array $posts;
     public static array $users;
@@ -63,58 +64,47 @@ class AppWebTestCase extends WebTestCase
         $data = new FixturesData();
 
         // loads user
-        if (!empty($data::USERS)) {
-            foreach ($data::USERS as $user) {
-                self::$users['user'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], false);
-            }
+        foreach ($data::USERS as $user) {
+            self::$users['user'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], false);
         }
 
         // loads admin users
-        if (!empty($data::ADMIN_USERS)) {
-            foreach ($data::ADMIN_USERS as $user) {
-                self::$users['admin'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], true);
-            }
+        foreach ($data::ADMIN_USERS as $user) {
+            self::$users['admin'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], true);
         }
 
         self::$users['all'] = array_merge(self::$users['user'], self::$users['admin']);
 
         // loads published posts
-        if (!empty($data::PUBLISHED_POSTS)) {
-            foreach ($data::PUBLISHED_POSTS as $post) {
-                self::$posts['published'][] = $this->createPost(
-                    self::$users['admin'][array_rand(self::$users['admin'])],
-                    $post[0],
-                    $post[1],
-                    $post[2],
-                    true
-                );
-            }
+        foreach ($data::PUBLISHED_POSTS as $post) {
+            self::$posts['published'][] = $this->createPost(
+                self::$users['admin'][array_rand(self::$users['admin'])],
+                $post[0],
+                $post[1],
+                $post[2],
+                true
+            );
         }
 
         // loads unpublished posts
-        if (!empty($data::UNPUBLISHED_POSTS)) {
-            foreach ($data::UNPUBLISHED_POSTS as $post) {
-                self::$posts['unpublished'][] = $this->createPost(
-                    self::$users['admin'][array_rand(self::$users['admin'])],
-                    $post[0],
-                    $post[1],
-                    $post[2],
-                    false
-                );
-            }
+        foreach ($data::UNPUBLISHED_POSTS as $post) {
+            self::$posts['unpublished'][] = $this->createPost(
+                self::$users['admin'][array_rand(self::$users['admin'])],
+                $post[0],
+                $post[1],
+                $post[2],
+                false
+            );
         }
 
-        // loads invalidated comments
-        if (!empty($data::COMMENTS)) {
-            // adds comments only to first published post
-            foreach ($data::COMMENTS as $comment) {
-                $this->addCommentToPost(
-                    self::$posts['published'][0],
-                    self::$users['user'][array_rand(self::$users['user'])],
-                    $comment[0],
-                    $comment[1]
-                );
-            }
+        // adds comments only to first published post
+        foreach ($data::COMMENTS as $comment) {
+            $this->addCommentToPost(
+                self::$posts['published'][0],
+                self::$users['user'][array_rand(self::$users['user'])],
+                $comment[0],
+                $comment[1]
+            );
         }
     }
 
@@ -181,33 +171,5 @@ class AppWebTestCase extends WebTestCase
         $this->container->get(CommentDAO::class)->add($comment);
 
         return $comment;
-    }
-
-    public function assertEmailCount(int $expectedCount): void
-    {
-        $count = count(self::getMailEvents());
-        self::assertSame($expectedCount, $count, sprintf(
-            'The email count should be %d, but %d given.',
-            $expectedCount,
-            $count
-        ));
-    }
-
-    public function assertQueuedEmailCount(int $expectedCount): void
-    {
-        $count = count(self::getMailEvents());
-        self::assertSame($expectedCount, $count, sprintf(
-            'The queued email count should be %d, but %d given.',
-            $expectedCount,
-            $count
-        ));
-    }
-
-    /**
-     * @return MailEvent[]
-     */
-    public static function getMailEvents()
-    {
-        return self::$client->getContainer()->get(MailerSubscriber::class)->getMailEvents();
     }
 }

@@ -18,7 +18,7 @@ class PostControllerTest extends AppWebTestCase
         $this->assertTextNotContains('h4', self::$posts['unpublished'][0]->getTitle());
 
         // post title should be clickable to see the content of the post
-        $crawler = self::$client->clickLink($post->getTitle());
+        self::$client->clickLink($post->getTitle());
         $this->assertTextContains('p', $post->getContent());
     }
 
