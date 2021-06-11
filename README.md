@@ -68,6 +68,7 @@ Find a user who has admin role in your database. Then log in with this user.
 - [SwiftMailer](https://github.com/swiftmailer/swiftmailer) to send emails.
 - [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
 - [PSR/EventDispatcher](https://github.com/php-fig/event-dispatcher) to respect PSR-14 (Event Dispatcher).
+- [PHPUnit](https://github.com/sebastianbergmann/phpunit) to run tests.
 
 ## Clean code
 - [PHPStan](https://github.com/phpstan/phpstan): level 8
@@ -254,6 +255,72 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
   - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
   - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
+
+- Test
+
+  The test service allows functional tests using [PHPUnit](https://github.com/sebastianbergmann/phpunit). 
+  
+  Controller test class must extend `WebTestCase` class:
+  
+  ```php
+  // tests/Controller/AppControllerTest.php
+  use Framework\Test\WebTestCase;
+
+  class AppControllerTest extends WebTestCase
+  {
+      public function testSomething(): void
+      {
+          // This calls WebTestCase::bootApp(), and creates a
+          // "client" that is acting as the browser
+          $client = static::createClient();
+
+          // Request a specific page
+          $client->request('GET', '/');
+
+          // Validate a successful response and some content
+          $this->assertResponseIsSuccessful();
+          $this->assertTextContains('h1', 'Hello World');
+          
+          // Click a link on the page
+          $client->clickLink('Register');
+          
+          // Submit a form on the page
+          $client->submitForm('register', [
+              'email' => 'roger@mail.com',
+              'password1' => '123456',
+              'password2' => '123456',
+              'username' => 'Roger',
+              'terms' => 'on'
+          ]);
+          
+          // Validate and follow redirection 
+          $this->assertResponseIsRedirect();
+          $client->followRedirect();
+          $this->assertTextContains('div', 'You register with success!');
+
+          // Log in a user before accessing a private page
+          $user = $userDAO->getOneByMail('roger@mail.com');
+          $client->loginUser($user);
+          $client->request('GET', '/private-page');
+          
+          // $crawler is always returned after calling these methods
+          $crawler = $client->request('GET', '/');
+          $crawler = $client->clickLink('Login');
+          $crawler = $client->submitForm('login', []);
+          $crawler = $client->followRedirect();
+          
+          // some built-in assertion methods:
+          $this->assertResponseIsSuccessful(); // should match status code from 200 to 299
+          $this->assertResponseIsRedirect(); // should match status code from 300 to 399
+          $this->assertResponseIsError(); // should match status code from 400 to 599
+          $this->assertTextContains('div', 'I should be display');
+          $this->assertTextNotContains('h1', 'I should not be display');
+          $this->assertTextContainsForm('login'); // <form name="login">
+          $this->assertTextNotContainsForm('register'); // <form name="register">
+          $this->assertCookiesHasName('REMEMBERME');
+      }
+  }
+  ```
 
 ## Others
 
