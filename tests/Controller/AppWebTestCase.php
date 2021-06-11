@@ -21,18 +21,16 @@ use App\Service\Mailer\Subscriber\MailerSubscriber;
 class AppWebTestCase extends WebTestCase
 {
     protected Container $container;
-    protected UserDAO $userDAO;
-    protected PostDAO $postDAO;
-    protected CommentDAO $commentDAO;
+    public static array $posts;
+    public static array $users;
 
     public function setup(): void
     {
         $app = static::bootApp();
         $this->container = $app->getContainer();
         $this->cleanDatabase();
-        $this->userDAO = $this->container->get(UserDAO::class);
-        $this->postDAO = $this->container->get(PostDAO::class);
-        $this->commentDAO = $this->container->get(CommentDAO::class);
+        $this->loadFixtures();
+        self::$client = static::createClient();
     }
 
     public function tearDown(): void
@@ -42,7 +40,7 @@ class AppWebTestCase extends WebTestCase
 
     public function cleanDatabase(): void
     {
-        // cleans database after each test
+        // cleans database
         $this->container->get(DAO::class)->makeQuery(
             "
             SET FOREIGN_KEY_CHECKS=0;
@@ -54,25 +52,95 @@ class AppWebTestCase extends WebTestCase
             SET FOREIGN_KEY_CHECKS=1;
             "
         );
+
+        // cleans posts and users properties
+        self::$posts = [];
+        self::$users = [];
     }
 
-    public function createUser(string $username, string $email, string $password, bool $isAdmin = false): User
+    public function loadFixtures(): void
     {
+        $data = new FixturesData();
+
+        // loads user
+        if (!empty($data::USERS)) {
+            foreach ($data::USERS as $user) {
+                self::$users['user'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], false);
+            }
+        }
+
+        // loads admin users
+        if (!empty($data::ADMIN_USERS)) {
+            foreach ($data::ADMIN_USERS as $user) {
+                self::$users['admin'][$user[0]] = $this->createUser($user[0], $user[1], $user[2], $user[3], true);
+            }
+        }
+
+        self::$users['all'] = array_merge(self::$users['user'], self::$users['admin']);
+
+        // loads published posts
+        if (!empty($data::PUBLISHED_POSTS)) {
+            foreach ($data::PUBLISHED_POSTS as $post) {
+                self::$posts['published'][] = $this->createPost(
+                    self::$users['admin'][array_rand(self::$users['admin'])],
+                    $post[0],
+                    $post[1],
+                    $post[2],
+                    true
+                );
+            }
+        }
+
+        // loads unpublished posts
+        if (!empty($data::UNPUBLISHED_POSTS)) {
+            foreach ($data::UNPUBLISHED_POSTS as $post) {
+                self::$posts['unpublished'][] = $this->createPost(
+                    self::$users['admin'][array_rand(self::$users['admin'])],
+                    $post[0],
+                    $post[1],
+                    $post[2],
+                    false
+                );
+            }
+        }
+
+        // loads invalidated comments
+        if (!empty($data::COMMENTS)) {
+            // adds comments only to first published post
+            foreach ($data::COMMENTS as $comment) {
+                $this->addCommentToPost(
+                    self::$posts['published'][0],
+                    self::$users['user'][array_rand(self::$users['user'])],
+                    $comment[0],
+                    $comment[1]
+                );
+            }
+        }
+    }
+
+    public function createUser(
+        string $username,
+        string $email,
+        string $password,
+        bool $isBlocked,
+        bool $isAdmin = false
+    ): User {
         $user = (new User())->setUuid(Uuid::uuid4())
             ->setEmail($email)
             ->setPassword((string) $this->container->get(PasswordHasher::class)->hash($password))
             ->setUsername($username)
             ->setCreatedAt(new DateTime())
             ->setUpdatedAt(new DateTime())
+            ->setIsBlocked($isBlocked)
         ;
 
         if ($isAdmin) {
             $user->setRoles(['user', 'admin']);
         }
 
-        $this->userDAO->add($user);
+        $this->container->get(UserDAO::class)->add($user);
         /** @var User */
-        return $this->userDAO->getOneByEmail($email); // returns User with Id
+        return $this->container->get(UserDAO::class)->getOneByEmail($email); // returns User with Id
     }
 
     public function createPost(User $user, string $title, string $lead, string $content, bool $isPublished): Post
@@ -81,8 +149,8 @@ class AppWebTestCase extends WebTestCase
             ->setTitle($title)
             ->setLead($lead)
             ->setContent($content)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
+            ->setCreatedAt(new DateTime('-5 months'))
+            ->setUpdatedAt(new DateTime('-4 months'))
             ->setIsPublished($isPublished)
             ->setUser($user)
         ;
@@ -91,26 +159,26 @@ class AppWebTestCase extends WebTestCase
             $post->setSlug($this->container->get(PostManager::class)->slugify($post->getTitle()));
         }
 
-        $this->postDAO->add($post);
+        $this->container->get(PostDAO::class)->add($post);
         /** @var Post */
-        return $this->postDAO->getOneByUuid($post->getUuid()); // returns Post with Id
+        return $this->container->get(PostDAO::class)->getOneByUuid($post->getUuid()); // returns Post with Id
     }
 
-    public function addCommentToPost(Post $post, User $user, string $comment): Comment
+    public function addCommentToPost(Post $post, User $user, string $comment, bool $isValidated): Comment
     {
         $comment =  (new Comment())->setUuid(Uuid::uuid4())
             ->setContent($comment)
             ->setPost($post)
             ->setUser($user)
-            ->setCreatedAt(new DateTime())
-            ->setUpdatedAt(new DateTime())
+            ->setCreatedAt(new DateTime('-4 months'))
+            ->setUpdatedAt(new DateTime('- 3 months'))
         ;
 
-        if (in_array('admin', $user->getRoles())) {
+        if ($isValidated || in_array('admin', $user->getRoles())) {
             $comment->setIsValidated(true);
         }
 
-        $this->commentDAO->add($comment);
+        $this->container->get(CommentDAO::class)->add($comment);
 
         return $comment;
     }
