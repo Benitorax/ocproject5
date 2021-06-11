@@ -12,7 +12,7 @@ class ErrorController extends AbstractController
      */
     public function forbidden(): Response
     {
-        return $this->render('error/error_403.html.twig');
+        return $this->render('error/error_403.html.twig', [], new Response('', 403));
     }
 
     /**
@@ -20,7 +20,7 @@ class ErrorController extends AbstractController
      */
     public function notFound(): Response
     {
-        return $this->render('error/error_404.html.twig');
+        return $this->render('error/error_404.html.twig', [], new Response('', 404));
     }
 
     /**
@@ -28,7 +28,7 @@ class ErrorController extends AbstractController
      */
     public function server(): Response
     {
-        return $this->render('error/error_500.html.twig');
+        return $this->render('error/error_500.html.twig', [], new Response('', 500));
     }
 
     /**
@@ -38,6 +38,6 @@ class ErrorController extends AbstractController
     {
         return $this->render('error/debug.html.twig', [
             'error' => $error
-        ]);
+        ], new Response('', 400));
     }
 }

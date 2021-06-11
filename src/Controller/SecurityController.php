@@ -53,7 +53,7 @@ class SecurityController extends AbstractController
             }
 
             // if user does not exist then displays invalid credentials
-            $this->addFlash('danger', 'Email or password Invalid.');
+            $this->addFlash('danger', 'Email or password invalid.');
         }
 
         return $this->render('security/login.html.twig', ['form' => $form]);

@@ -95,6 +95,6 @@ class PostController extends AbstractController
             $this->addFlash('success', 'The post has been deleted with success!');
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/posts');
     }
 }

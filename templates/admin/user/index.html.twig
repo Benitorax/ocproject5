@@ -64,12 +64,12 @@
                                     {% import "form/_form.html.twig" as _form %}
                                     <div class="col-12 col-sm-auto p-0 pr-1 pb-1">
                                         {% if user.isBlocked is same as(true) %}
-                                            <form name="unblock" method="POST" action="{{ path('admin_user_unblock', {uuid: user.uuid}) }}">
+                                            <form name="unblock-{{ user.username|lower }}" method="POST" action="{{ path('admin_user_unblock', {uuid: user.uuid}) }}">
                                                 {{ _form.input_csrf(csrf_token()) }}
                                                 <button class="btn btn-info"><i class="bi bi-unlock"></i></button>
                                             </form>
                                         {% else %}
-                                            <form name="block" method="POST" action="{{ path('admin_user_block', {uuid: user.uuid}) }}">
+                                            <form name="block-{{ user.username|lower }}" method="POST" action="{{ path('admin_user_block', {uuid: user.uuid}) }}">
                                                 {{ _form.input_csrf(csrf_token()) }}
                                                 <button class="btn btn-warning"><i class="bi bi-lock"></i></button>
                                             </form>

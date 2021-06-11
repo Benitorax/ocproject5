@@ -39,7 +39,7 @@ class CommentController extends AbstractController
     {
         // checks if post exists
         $post = $this->postManager->getPostByUuid($uuid);
-        if (!$post instanceof Post) {
+        if (!$post instanceof Post || ($post instanceof Post && !$post->getIsPublished())) {
             return $this->json(['error' => 'Post does not exist.'], 404);
         }
 
