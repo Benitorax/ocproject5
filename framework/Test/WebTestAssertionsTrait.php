@@ -4,7 +4,9 @@ namespace Framework\Test;
 
 use Framework\Cookie\Cookie;
 use Framework\Response\Response;
+use Framework\Mailer\Event\MailEvent;
 use Framework\Test\DomCrawler\Crawler;
+use Framework\Mailer\Subscriber\MailerSubscriber;
 
 trait WebTestAssertionsTrait
 {
@@ -101,6 +103,26 @@ trait WebTestAssertionsTrait
         ));
     }
 
+    public static function assertEmailCount(int $expectedCount): void
+    {
+        $count = count(self::getMailEvents());
+        self::assertSame($expectedCount, $count, sprintf(
+            'The email count should be %d, but %d given.',
+            $expectedCount,
+            $count
+        ));
+    }
+
+    public static function assertQueuedEmailCount(int $expectedCount): void
+    {
+        $count = count(self::getMailEvents());
+        self::assertSame($expectedCount, $count, sprintf(
+            'The queued email count should be %d, but %d given.',
+            $expectedCount,
+            $count
+        ));
+    }
+
     public static function getStatusCode(): int
     {
         return self::getResponse()->getStatusCode();
@@ -122,5 +144,13 @@ trait WebTestAssertionsTrait
     public static function getCookies()
     {
         return self::$client->getCookies();
+    }
+
+    /**
+     * @return MailEvent[]
+     */
+    public static function getMailEvents()
+    {
+        return self::$client->getContainer()->get(MailerSubscriber::class)->getMailEvents();
     }
 }

@@ -3,13 +3,10 @@
 namespace App\Tests\Controller;
 
 use Framework\Test\WebTestCase;
-use App\Tests\Controller\AppTestAssertionsTrait;
 use App\Tests\Controller\Fixtures\FixturesLoader;
 
 class AppWebTestCase extends WebTestCase
 {
-    use AppTestAssertionsTrait;
-
     protected FixturesLoader $loader;
     public static array $posts;
     public static array $users;

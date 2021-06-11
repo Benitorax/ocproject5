@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Service\Mailer\Subscriber;
+namespace Framework\Mailer\Subscriber;
 
 use Swift_MemorySpool;
 use Swift_TransportException;
 use Swift_Transport_SpoolTransport;
-use App\Service\Mailer\Event\MailEvent;
-use App\Service\Mailer\Builder\MailerBuilder;
-use App\Service\Mailer\Builder\TransportBuilder;
+use Framework\Mailer\Event\MailEvent;
+use Framework\Mailer\Builder\MailerBuilder;
+use Framework\Mailer\Builder\TransportBuilder;
 use Framework\EventDispatcher\Event\ExceptionEvent;
 use Framework\EventDispatcher\Event\TerminateEvent;
 use Framework\EventDispatcher\Subscriber\EventSubscriberInterface;

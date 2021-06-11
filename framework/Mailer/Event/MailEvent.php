@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Mailer\Event;
+namespace Framework\Mailer\Event;
 
 use Swift_Message;
 

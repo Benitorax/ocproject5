@@ -6,9 +6,9 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
-use App\Service\Mailer\Builder\MailerBuilder;
+use Framework\Mailer\Event\MailEvent;
+use Framework\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\MessageBuilder;
-use App\Service\Mailer\Event\MailEvent;
 use Framework\EventDispatcher\EventDispatcher;
 
 class Notification
