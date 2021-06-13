@@ -53,6 +53,14 @@ class ResetPasswordManager
      */
     public function manageResetRequest(string $email): void
     {
+        $this->addFlash(
+            'success',
+            sprintf(
+                'If you\'re registered with %s, then an email has been sent to reset your password.',
+                $email
+            )
+        );
+
         $this->tokenDAO->deleteExpiredTokens();
         $user = $this->userManager->getOneByEmail($email);
 
@@ -62,10 +70,6 @@ class ResetPasswordManager
 
         $token = $this->generateToken($user);
         $this->notification->notifyResetPasswordRequest($user, $token);
-        $this->addFlash(
-            'success',
-            sprintf('An email has been sent to %s to reset your password.', $email)
-        );
     }
 
     /**
@@ -135,7 +139,7 @@ class ResetPasswordManager
      */
     public function addFlashAndReturnException(string $message): Exception
     {
-        $this->addFlash('danger', $message);
+        $this->addFlash('danger', $message . ' Please try to reset your password again.');
 
         return new Exception($message);
     }
@@ -146,7 +150,7 @@ class ResetPasswordManager
      */
     public function addFlash(string $type, string $message): void
     {
-        $this->session->getFlashes()->add($type, $message . ' Please try to reset your password again.');
+        $this->session->getFlashes()->add($type, $message);
     }
 
     /**

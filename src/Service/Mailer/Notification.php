@@ -6,19 +6,22 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
-use App\Service\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\MessageBuilder;
+use Framework\Mailer\Mailer;
 
 class Notification
 {
     private UserDAO $userDAO;
-    private MailerBuilder $mailerBuilder;
+    private Mailer $mailer;
     private MessageBuilder $messageBuilder;
 
-    public function __construct(UserDAO $userDAO, MailerBuilder $mailerBuilder, MessageBuilder $messageBuilder)
-    {
+    public function __construct(
+        UserDAO $userDAO,
+        Mailer $mailer,
+        MessageBuilder $messageBuilder
+    ) {
         $this->userDAO = $userDAO;
-        $this->mailerBuilder = $mailerBuilder;
+        $this->mailer = $mailer;
         $this->messageBuilder = $messageBuilder;
     }
 
@@ -29,7 +32,7 @@ class Notification
     {
         /** @var User[] */
         $admins = $this->userDAO->getAllAdmin();
-        $mailer = $this->mailerBuilder->getSpoolMailer();
+        $mailer = $this->mailer->setType(Mailer::SPOOL_MEMORY);
         $count = 0;
 
         foreach ($admins as $admin) {
@@ -46,7 +49,7 @@ class Notification
     public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
     {
         $message = $this->messageBuilder->createResetPasswordRequest($user, $token);
-        $mailer = $this->mailerBuilder->getSmtpMailer();
+        $mailer = $this->mailer->setType(Mailer::SMTP);
 
         return $mailer->send($message);
     }
@@ -57,7 +60,7 @@ class Notification
     public function notifyResetPassword(User $user): int
     {
         $message = $this->messageBuilder->createResetPassword($user);
-        $mailer = $this->mailerBuilder->getSmtpMailer();
+        $mailer = $this->mailer->setType(Mailer::SMTP);
 
         return $mailer->send($message);
     }

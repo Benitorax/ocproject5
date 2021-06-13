@@ -19,6 +19,7 @@ use Framework\Security\RememberMe\RememberMeManager;
 
 class App
 {
+    private bool $booted = false;
     private Container $container;
 
     public function __construct(Dotenv $dotenv)
@@ -31,7 +32,10 @@ class App
     public function handle(Request $request): Response
     {
         try {
-            $this->boot($request);
+            if (false === $this->booted) {
+                $this->boot($request);
+            }
+
             $response = $this->container->get(Router::class)->run($request);
 
             return $this->addCookiesToResponse($request, $response);
@@ -47,6 +51,11 @@ class App
 
     public function boot(Request $request): void
     {
+        if (true === $this->booted) {
+            throw new \Exception('The App can\'t boot because it has already booted');
+        }
+
+        $this->booted = true;
         $context = $this->container->get(RequestContext::class);
         $context->fromRequest($request);
 
@@ -78,5 +87,24 @@ class App
     {
         $eventDispatcher = $this->container->get(EventDispatcher::class);
         $eventDispatcher->dispatch(new TerminateEvent($request, $response));
+    }
+
+    public function getContainer(): Container
+    {
+        return $this->container;
+    }
+
+    public function shutDown(): void
+    {
+        if (\PHP_SESSION_ACTIVE === session_status()) {
+            $this->container->get(Session::class)->stop();
+        }
+
+        $dotenv = $this->container->get(Dotenv::class);
+        $this->container = new Container();
+        $this->container->set($this);
+        $this->container->set($dotenv);
+
+        $this->booted = false;
     }
 }

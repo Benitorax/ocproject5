@@ -30,7 +30,7 @@ class CommentController extends AbstractController
             $this->addFlash('success', 'The comment has been validated with success!');
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/dashboard/comments');
     }
 
     /**
@@ -45,6 +45,6 @@ class CommentController extends AbstractController
             $this->addFlash('success', 'The comment has been deleted with success!');
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/dashboard/comments');
     }
 }

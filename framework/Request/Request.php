@@ -11,15 +11,15 @@ class Request
     public Parameter $request;
     public Parameter $cookies;
     public Parameter $server;
-    private ?Session $session;
+    private ?Session $session = null;
     public Parameter $attributes;
     private ?string $requestUri = null;
     private ?string $pathInfo = null;
 
-    public function create(): self
+    public function create(?array $parameters = null): self
     {
         $this->query = new Parameter($_GET ?: []);
-        $this->request = new Parameter($_POST ?: []);
+        $this->request = $parameters ? new Parameter($parameters) : new Parameter($_POST ?: []);
         $this->cookies = new Parameter($_COOKIE ?: []);
         $this->server = new Parameter($_SERVER ?: []);
         $this->attributes = new Parameter([]);

@@ -131,16 +131,14 @@ class Response
         return $this;
     }
 
-    /**
-     * Retrieves the status code for the current web response.
-     *
-     * @final
-     */
     public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
+    /**
+     * Sends response content.
+     */
     public function sendContent(): self
     {
         echo $this->content;
@@ -148,6 +146,9 @@ class Response
         return $this;
     }
 
+    /**
+     * Sends response headers.
+     */
     public function sendHeaders(): self
     {
         // headers have already been sent by the developer
@@ -172,5 +173,21 @@ class Response
         header(sprintf('HTTP/%s %s %s', $this->version, $this->statusCode, $this->statusText), true, $this->statusCode);
 
         return $this;
+    }
+
+    /**
+     * Gets a response header.
+     */
+    public function getHeader(string $name): ?string
+    {
+        return $this->headers->get($name);
+    }
+
+    /**
+     * Gets a response cookies.
+     */
+    public function getCookies(): array
+    {
+        return $this->headers->getCookies();
     }
 }

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Service\Mailer\Builder;
+namespace Framework\Mailer\Builder;
 
 use Swift_MemorySpool;
+use Swift_NullTransport;
 use Swift_SmtpTransport;
 use Framework\Dotenv\Dotenv;
 use Swift_Transport_SpoolTransport;
@@ -41,9 +42,14 @@ class TransportBuilder
 
     /**
      * Returns a SmtpTransport.
+     * @return Swift_SmtpTransport|Swift_NullTransport
      */
-    public function getSmtpTransport(): Swift_SmtpTransport
+    public function getSmtpTransport()
     {
+        if (count($this->config) === 0) {
+            return $this->getNullTransport();
+        }
+
         if (null !== $this->smtpTransport) {
             return $this->smtpTransport;
         }
@@ -55,5 +61,13 @@ class TransportBuilder
             ->setUsername($this->config['USERNAME'])
             ->setPassword($this->config['PASSWORD'])
         ;
+    }
+
+    /**
+     * Returns a NullTransport.
+     */
+    public function getNullTransport(): Swift_NullTransport
+    {
+        return new Swift_NullTransport();
     }
 }

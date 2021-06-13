@@ -5,6 +5,11 @@
             "Framework\\": "framework/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\Tests\\": "tests/"
+        }
+    },
     "require": {
         "php": "^7.3",
         "twig/twig": "^3.3",
@@ -15,6 +20,7 @@
     "require-dev": {
         "phpstan/phpstan": "^0.12.78",
         "squizlabs/php_codesniffer": "3.*",
-        "fzaninotto/faker": "^1.9"
+        "fzaninotto/faker": "^1.9",
+        "phpunit/phpunit": "9"
     }
 }

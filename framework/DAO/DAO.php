@@ -3,8 +3,9 @@
 namespace Framework\DAO;
 
 use PDO;
-use Framework\DAO\AbstractDAO;
 use stdClass;
+use PDOStatement;
+use Framework\DAO\AbstractDAO;
 
 class DAO extends AbstractDAO
 {
@@ -39,5 +40,17 @@ class DAO extends AbstractDAO
         $stmt->closeCursor();
 
         return $count;
+    }
+
+    /**
+     * @return bool|PDOStatement
+     */
+    public function makeQuery(string $sql, array $parameters = null)
+    {
+        if (null !== $parameters) {
+            return $this->createQuery($sql, $parameters);
+        }
+
+        return $this->createQuery($sql);
     }
 }

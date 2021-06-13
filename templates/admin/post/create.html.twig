@@ -9,7 +9,7 @@
             <h5 class="card-title text-center">Create a post</h5>
             <div class="card">
                 <div class="card-body">
-                    <form method="POST">
+                    <form name="post" method="POST">
                         {{ _form.message_csrf(form) }}
                         <div class="form-group">
                             <label for="title">Title</label>

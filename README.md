@@ -26,18 +26,18 @@ There are a register page and a login page as well.
 Copy the `.env file` in the root folder, rename it to `.env.local` and configure the following variables for:
 - the database:
   ```
-  "DB_HOST": "mysql:host=localhost;dbname=my_blog;charset=utf8"
-  "DB_USERNAME": "root"
-  "DB_PASSWORD": ""
+  DB_HOST=mysql:host=localhost;dbname=my_blog;charset=utf8
+  DB_USERNAME=root
+  DB_PASSWORD=
   ```
 
 - and the emailing:
   ```
-  "MAILER_HOST": "smtp.example.org"
-  "MAILER_PORT": 25
-  "MAILER_ENCRYPTION": "ssl"
-  "MAILER_USERNAME": "example@email.com"
-  "MAILER_PASSWORD": "password"
+  MAILER_HOST=smtp.example.org
+  MAILER_PORT=25
+  MAILER_ENCRYPTION=ssl
+  MAILER_USERNAME=example@email.com
+  MAILER_PASSWORD=password
   ```
 
 ### Step 2: Create database
@@ -56,11 +56,6 @@ Or import `ocproject5.sql` from phpMyAdmin if you have access.
   php -S 127.0.0.1:8000 -t public
   ```
 
-- Or if you use Symfony CLI you can run:
-  ```
-  symfony serve -d
-  ```
-
 ### Step 4: Load some data
 Go to url http://127.0.0.1:8000/fixtures to load fixtures. It redirects to homepage, so you can navigate on the website after loading data.
 
@@ -73,6 +68,7 @@ Find a user who has admin role in your database. Then log in with this user.
 - [SwiftMailer](https://github.com/swiftmailer/swiftmailer) to send emails.
 - [Faker](https://github.com/fzaninotto/Faker) to load fixtures.
 - [PSR/EventDispatcher](https://github.com/php-fig/event-dispatcher) to respect PSR-14 (Event Dispatcher).
+- [PHPUnit](https://github.com/sebastianbergmann/phpunit) to run tests.
 
 ## Clean code
 - [PHPStan](https://github.com/phpstan/phpstan): level 8
@@ -188,7 +184,7 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
 - EventDispatcher
 
-  The framework has 2 events (`TerminateEvent` and `ExceptionEvent`) and 1 subscriber (`ControllerSubscriber`).
+  The framework has 2 built-in events (`TerminateEvent` and `ExceptionEvent`) and 2 built-in subscribers (`ControllerSubscriber` and `MailerSubscriber`).
   Moreover, you can create your own events, event listeners or subscribers:
   - Event class must extend `Event`. 
   - Subscriber class must extend `EventSubscriberInterface`.
@@ -215,10 +211,16 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
       ],
       'subscribers' => [
           Framework\Controller\ControllerSubscriber::class,
-          App\Service\Mailer\MailerSubscriber::class
+          Framework\Mailer\Subscriber\MailerSubscriber::class
       ]
   ]];
   ```
+
+- Mailer
+
+  By using SwiftMailer and EventDispatcher, the Mailer have 2 types of transport:
+  - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
+  - Spool transport: emails are sent after returning the HTTP response.
 
 - Debug
 
@@ -260,10 +262,69 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
   - The remember me system with the [split token strategy](https://paragonie.com/blog/2017/02/split-tokens-token-based-authentication-protocols-without-side-channels) is also inspired by [Symfony's](https://github.com/symfony/security-http).
   - Extra: the reset password system with split token strategy (*not included in the framework but only for the app*) is inspired by [SymfonyCasts/ResetPasswordBundle](https://github.com/SymfonyCasts/reset-password-bundle).
 
-## Others
+- Test
 
-### Mailer
+  The test service allows functional tests using [PHPUnit](https://github.com/sebastianbergmann/phpunit). 
+  
+  Controller test class must extend `WebTestCase` class:
+  
+  ```php
+  // tests/Controller/AppControllerTest.php
+  use Framework\Test\WebTestCase;
 
-Thanks to SwiftMailer, EventDispatcher and MailerSubscriber, the Mailer can have 2 types of transport:
-- SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
-- Spool transport: emails are sent after returning the HTTP response.
+  class AppControllerTest extends WebTestCase
+  {
+      public function testSomething(): void
+      {
+          // This calls WebTestCase::bootApp(), and creates a
+          // "client" that is acting as the browser
+          $client = static::createClient();
+
+          // Request a specific page
+          $client->request('GET', '/');
+
+          // Validate a successful response and some content
+          $this->assertResponseIsSuccessful();
+          $this->assertTextContains('h1', 'Hello World');
+          
+          // Click a link on the page
+          $client->clickLink('Register');
+          
+          // Submit a form on the page
+          $client->submitForm('register', [
+              'email' => 'roger@mail.com',
+              'password1' => '123456',
+              'password2' => '123456',
+              'username' => 'Roger',
+              'terms' => 'on'
+          ]);
+          
+          // Validate and follow redirection 
+          $this->assertResponseIsRedirect();
+          $client->followRedirect();
+          $this->assertTextContains('div', 'You register with success!');
+
+          // Log in a user before accessing a private page
+          $user = $userDAO->getOneByMail('roger@mail.com');
+          $client->loginUser($user);
+          $client->request('GET', '/private-page');
+          
+          // $crawler is always returned after calling these methods
+          $crawler = $client->request('GET', '/');
+          $crawler = $client->clickLink('Login');
+          $crawler = $client->submitForm('login', []);
+          $crawler = $client->followRedirect();
+          
+          // some built-in assertion methods:
+          $this->assertResponseIsSuccessful(); // match status code from 200 to 299
+          $this->assertResponseIsRedirect(); // match status code from 300 to 399
+          $this->assertResponseIsError(); // match status code from 400 to 599
+          $this->assertTextContains('div', 'I should be display');
+          $this->assertTextNotContains('h1', 'I should not be display');
+          $this->assertTextContainsForm('login'); // <form name="login">
+          $this->assertTextNotContainsForm('register'); // <form name="register">
+          $this->assertCookiesHasName('REMEMBERME');
+          $this->assertEmailCount(2); // match 2 sent emails
+      }
+  }
+  ```

@@ -50,7 +50,7 @@ class UserController extends AbstractController
             $this->addFlash('success', 'The user has been blocked with success!');
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/users');
     }
 
     /**
@@ -65,7 +65,7 @@ class UserController extends AbstractController
             $this->addFlash('success', 'The user has been unblocked with success!');
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/users');
     }
 
     /**
@@ -87,6 +87,6 @@ class UserController extends AbstractController
             }
         }
 
-        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER'));
+        return $this->redirectToUrl($this->request->server->get('HTTP_REFERER') ?? '/admin/users');
     }
 }

@@ -30,7 +30,7 @@ return [
             ]
         ],
         'subscribers' => [
-            App\Service\Mailer\MailerSubscriber::class,
+            Framework\Mailer\Subscriber\MailerSubscriber::class,
             Framework\Controller\ControllerSubscriber::class
         ]
     ]

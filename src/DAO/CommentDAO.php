@@ -80,6 +80,20 @@ class CommentDAO extends AbstractDAO implements PaginationDAOInterface
     }
 
     /**
+     * Get comments which haven't been validated yet.
+     * @return null|Comment[]
+     */
+    public function getCommentsToValidate()
+    {
+        $this->setCommentsToValidateQuery();
+
+        /** @var null|Comment[] */
+        $comments = $this->getResult($this, $this->query);
+
+        return $comments;
+    }
+
+    /**
      * Get comments by Post id.
      * @return null|Comment[]
      */

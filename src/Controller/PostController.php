@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Form\CommentForm;
+use App\Model\Post;
 use App\Service\PostManager;
 use App\Service\CommentManager;
 use Exception;
@@ -39,7 +40,8 @@ class PostController extends AbstractController
      */
     public function show(string $slug): Response
     {
-        if (null === $post = $this->postManager->getOneBySlug($slug)) {
+        $post = $this->postManager->getOneBySlug($slug);
+        if (null === $post || ($post instanceof Post && !$post->getIsPublished())) {
             throw new Exception('Post doesn\'t exist.', 404);
         }
 

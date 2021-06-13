@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Service\Mailer\Builder;
+namespace Framework\Mailer\Builder;
 
 use Swift_Mailer;
 

@@ -53,7 +53,7 @@ class SecurityController extends AbstractController
             }
 
             // if user does not exist then displays invalid credentials
-            $this->addFlash('danger', 'Email or password Invalid.');
+            $this->addFlash('danger', 'Email or password invalid.');
         }
 
         return $this->render('security/login.html.twig', ['form' => $form]);
@@ -69,7 +69,6 @@ class SecurityController extends AbstractController
         // checks if the csrf token is valid to execute the logout
         if ($this->isCsrfTokenValid()) {
             $this->auth->handleLogout($this->request);
-            $this->addFlash('success', 'You logout with success!');
 
             return $this->redirectToRoute('home');
         }
@@ -116,7 +115,7 @@ class SecurityController extends AbstractController
 
         try {
             $user = $this->resetPasswordManager->validateTokenAndFetchUser($token);
-        } catch (Exception $e) {
+        } catch (Exception $exception) {
             return $this->redirectToRoute('password_reset_request');
         }
 
