@@ -6,28 +6,23 @@ use App\Model\User;
 use App\DAO\UserDAO;
 use App\Form\ContactForm;
 use App\Model\ResetPasswordToken;
-use Framework\Mailer\Event\MailEvent;
-use Framework\Mailer\Builder\MailerBuilder;
 use App\Service\Mailer\Builder\MessageBuilder;
-use Framework\EventDispatcher\EventDispatcher;
+use Framework\Mailer\Mailer;
 
 class Notification
 {
     private UserDAO $userDAO;
-    private MailerBuilder $mailerBuilder;
+    private Mailer $mailer;
     private MessageBuilder $messageBuilder;
-    private EventDispatcher $dispatcher;
 
     public function __construct(
         UserDAO $userDAO,
-        MailerBuilder $mailerBuilder,
-        MessageBuilder $messageBuilder,
-        EventDispatcher $dispatcher
+        Mailer $mailer,
+        MessageBuilder $messageBuilder
     ) {
         $this->userDAO = $userDAO;
-        $this->mailerBuilder = $mailerBuilder;
+        $this->mailer = $mailer;
         $this->messageBuilder = $messageBuilder;
-        $this->dispatcher = $dispatcher;
     }
 
     /**
@@ -37,12 +32,11 @@ class Notification
     {
         /** @var User[] */
         $admins = $this->userDAO->getAllAdmin();
-        $mailer = $this->mailerBuilder->getSpoolMailer();
+        $mailer = $this->mailer->setType(Mailer::SPOOL_MEMORY);
         $count = 0;
 
         foreach ($admins as $admin) {
             $message = $this->messageBuilder->createContact($form, $admin);
-            $this->dispatcher->dispatch(new MailEvent($message));
             $count += $mailer->send($message);
         }
 
@@ -55,8 +49,7 @@ class Notification
     public function notifyResetPasswordRequest(User $user, ResetPasswordToken $token): int
     {
         $message = $this->messageBuilder->createResetPasswordRequest($user, $token);
-        $mailer = $this->mailerBuilder->getSmtpMailer();
-        $this->dispatcher->dispatch(new MailEvent($message));
+        $mailer = $this->mailer->setType(Mailer::SMTP);
 
         return $mailer->send($message);
     }
@@ -67,8 +60,7 @@ class Notification
     public function notifyResetPassword(User $user): int
     {
         $message = $this->messageBuilder->createResetPassword($user);
-        $mailer = $this->mailerBuilder->getSmtpMailer();
-        $this->dispatcher->dispatch(new MailEvent($message));
+        $mailer = $this->mailer->setType(Mailer::SMTP);
 
         return $mailer->send($message);
     }
