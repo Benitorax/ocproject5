@@ -3,10 +3,10 @@
 namespace Framework\Test;
 
 use Framework\Cookie\Cookie;
+use Framework\Mailer\MailLogger;
 use Framework\Response\Response;
 use Framework\Mailer\Event\MailEvent;
 use Framework\Test\DomCrawler\Crawler;
-use Framework\Mailer\Subscriber\MailerSubscriber;
 
 trait WebTestAssertionsTrait
 {
@@ -151,6 +151,6 @@ trait WebTestAssertionsTrait
      */
     public static function getMailEvents()
     {
-        return self::$client->getContainer()->get(MailerSubscriber::class)->getMailEvents();
+        return self::$client->getContainer()->get(MailLogger::class)->getEvents();
     }
 }
