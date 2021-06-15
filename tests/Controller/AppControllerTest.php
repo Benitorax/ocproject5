@@ -4,7 +4,6 @@ namespace App\Tests\Controller;
 
 class AppControllerTest extends AppWebTestCase
 {
-
     public function testRegister(): void
     {
         // register correctly
@@ -37,8 +36,8 @@ class AppControllerTest extends AppWebTestCase
     public function testHomepage(): void
     {
         // not logged in
-        // self::$client->request('GET', '/');
-        // $this->assertTextNotContainsForm('contact');
+        self::$client->request('GET', '/');
+        $this->assertTextNotContainsForm('contact');
 
         // logged in
         self::$client->loginUser(self::$users['user']['Sacha']);
