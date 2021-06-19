@@ -115,7 +115,7 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
   Setter method name must match form field name in snake_case:
   
   ```php
-  class Contact extends AbstractForm
+  class ContactForm extends AbstractForm
   {
       private string $username;
       private string $phoneNumber;
@@ -150,10 +150,9 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
   class EmailValidation extends AbstractValidation
   {
       private const EMAIL = [
-          ['notBlank'],
-          ['minLength', 8],
-          ['maxLength', 50],
-          ['email']
+        NotBlank::class => ['label' => 'email'],
+        Length::class => ['min' => 8, 'max' => 50, 'label' => 'email'],
+        Email::class => ['label' => 'email']
       ];
 
       public function validate(AbstractForm $form): void
@@ -218,21 +217,36 @@ Therefore, the appearance of controllers and templates remind of Symfony but the
 
 - Mailer
 
-  By using SwiftMailer and EventDispatcher, the Mailer have 2 types of transport:
+  By using SwiftMailer, the Mailer have 2 types of transport:
   - SMTP transport: emails are sent immediately but it can slow down the sending of the HTTP response. 
   - Spool transport: emails are sent after returning the HTTP response.
-
+  ```php
+  $mailer = new Framework\Mailer\Mailer();
+  
+  // The type must be set before using the mailer:
+  
+  // to get SMTP mailer
+  $mailer->setType(Mailer::SMTP);
+  
+  // to get spool memory mailer
+  $mailer->setType(Mailer::SPOOL_MEMORY);
+  
+  // use the send() method like Swift_Mailer
+  $mailer->send(new Swift_Message());
+  ```
 - Debug
 
   If `APP_DEBUG` is set to true in `.env.local`, the browser will display a beautifier error when a bug occurs. Otherwise, it will show an error page (403, 404, 500) that you can customize.
 
 - Dotenv
  
-  This class is responsible for loading environment variable from `.env.local`. So you can add your own variables, then variables are retrieved from Dotenv with dependency injection:
+  This class is responsible for loading environment variable from `.env.local`. So you can add your own variables, then variables are retrieved from Dotenv with dependency injection.
+
+  This is how the TransportBuilder retrieves the env variables from Dotenv:
 
   ```php
   // Mailer/Builder/TransportBuilder.php
-  
+
       public function __construct(Dotenv $dotenv)
     {
         // loads config from environment variables
