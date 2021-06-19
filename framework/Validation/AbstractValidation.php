@@ -2,50 +2,40 @@
 
 namespace Framework\Validation;
 
-use Framework\Validation\Constraint;
+use Framework\DAO\DAO;
 use Framework\Security\Csrf\CsrfTokenManager;
 use Framework\Validation\ValidationInterface;
+use Framework\Validation\Constraint\Unique;
 
 abstract class AbstractValidation implements ValidationInterface
 {
-    private Constraint $constraint;
+    private DAO $dao;
     private CsrfTokenManager $csrfTokenManager;
 
-    public function __construct(Constraint $constraint, CsrfTokenManager $csrfTokenManager)
+    public function __construct(DAO $dao, CsrfTokenManager $csrfTokenManager)
     {
-        $this->constraint = $constraint;
+        $this->dao = $dao;
         $this->csrfTokenManager = $csrfTokenManager;
     }
 
     /**
      * Validates a value by calling the Constraint's methods.
      *
-     * @param bool|string|int $value
-     * @param string $name the name of the field for the error message
+     * @param array $constraints
+     * @param mixed $value
      */
-    public function check(array $constraints, $value, string $name = null): ?string
+    public function check($constraints, $value): ?string
     {
-        foreach ($constraints as $constraint) {
-            $error = $this->constraint->validate($constraint, $value, $name);
-
-            if (!empty($error)) {
-                return $error;
+        foreach ($constraints as $class => $options) {
+            $constraint = new $class($options);
+            if ($constraint instanceof Unique) {
+                $constraint->setDAO($this->dao);
             }
-        }
 
-        return null;
-    }
-
-    /**
-     * Checks if value1 is equal to value2.
-     * @param string $name the name of the field for the error message
-     */
-    public function checkIdentical(string $value1, string $value2, string $name = null): ?string
-    {
-        $error = $this->constraint->identical($value1, $value2, $name);
-
-        if (!empty($error)) {
-            return $error;
+            $message = $constraint->validate($value);
+            if (null !== $message) {
+                return $message;
+            }
         }
 
         return null;

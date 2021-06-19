@@ -11,22 +11,23 @@ use Framework\Mailer\Builder\TransportBuilder;
 use Framework\EventDispatcher\Event\ExceptionEvent;
 use Framework\EventDispatcher\Event\TerminateEvent;
 use Framework\EventDispatcher\Subscriber\EventSubscriberInterface;
+use Framework\Mailer\MailLogger;
 
 class MailerSubscriber implements EventSubscriberInterface
 {
     private MailerBuilder $mailerBuilder;
     private TransportBuilder $transportBuilder;
+    private MailLogger $logger;
     private bool $wasExceptionThrown = false;
 
-    /**
-     * @var MailEvent[]
-     */
-    private array $mailEvents = [];
-
-    public function __construct(MailerBuilder $mailerBuilder, TransportBuilder $transportBuilder)
-    {
+    public function __construct(
+        MailerBuilder $mailerBuilder,
+        TransportBuilder $transportBuilder,
+        MailLogger $logger
+    ) {
         $this->mailerBuilder = $mailerBuilder;
         $this->transportBuilder = $transportBuilder;
+        $this->logger = $logger;
     }
 
     /**
@@ -53,7 +54,7 @@ class MailerSubscriber implements EventSubscriberInterface
 
     public function onMail(MailEvent $event): void
     {
-        $this->mailEvents[] = $event;
+        $this->logger->log($event);
     }
 
     public function onException(): void
@@ -68,13 +69,5 @@ class MailerSubscriber implements EventSubscriberInterface
             ExceptionEvent::class => 'onException',
             MailEvent::class => 'onMail'
         ];
-    }
-
-    /**
-     * @return MailEvent[]
-     */
-    public function getMailEvents()
-    {
-        return $this->mailEvents;
     }
 }
