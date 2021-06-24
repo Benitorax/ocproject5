@@ -36,8 +36,10 @@ class ControllerSubscriber implements EventSubscriberInterface
 
         if (403 === $code) {
             $event->setResponse($this->controller->forbidden());
+            return;
         } elseif (4 === $codeNumber) {
             $event->setResponse($this->controller->notFound());
+            return;
         }
 
         $event->setResponse($this->controller->server());
